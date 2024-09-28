@@ -2,7 +2,7 @@
   "name": "yt-watch-later",
   "displayName": "YT Watch Later",
   "version": "0.0.1",
-  "description": "Add a dedicated Watch Later button to all YouTube videos.",
+  "description": "Add YouTube videos to your Watch Later playlist with a single click.",
   "author": "dnwjn <hello@dnwjn.dev>",
   "scripts": {
     "dev": "plasmo dev",
