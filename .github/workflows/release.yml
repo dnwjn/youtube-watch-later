@@ -1,0 +1,40 @@
+name: Create release
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm modules
+        uses: actions/cache@v4
+        with:
+          path: ~/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build the extension
+        run: npm run build
+
+      - name: Create a new release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: build/chrome-mv3-prod.zip
+          generateReleaseNotes: true
