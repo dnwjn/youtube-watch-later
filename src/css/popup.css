@@ -1,0 +1,139 @@
+:root {
+  --animation-speed: 0.2s;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #2d2d2d;
+  color: #fff;
+  width: 300px;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.header {
+  text-align: center;
+  background-color: #3d3d3d;
+  padding: 10px;
+}
+
+.header .logo {
+  width: 50px;
+}
+
+.header .title {
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.content {
+  padding: 0 10px;
+}
+
+.content {
+  border-top: none;
+  margin-top: 0;
+}
+
+.content ~ .content {
+  border-top: 3px solid #3d3d3d;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.content .title {
+  margin-bottom: 5px;
+}
+
+.content .extension-status {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.content .extension-status.enabled {
+  background-color: #00ff00;
+}
+
+.content .extension-status.disabled {
+  background-color: #ff0000;
+}
+
+.content .instruction {
+  color: #ccc;
+  font-style: italic;
+  margin-top: 0;
+}
+
+.content .setting {
+  border: none;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #3d3d3d;
+  padding: 10px;
+  border: 1px solid #3d3d3d;
+  text-align: center;
+  display: block;
+  transition: all var(--animation-speed);
+}
+
+.content button.setting {
+  width: 100%;
+}
+
+.content .setting .status {
+  font-weight: bold;
+}
+
+.content .setting .default {
+  display: inline-block;
+}
+
+.content .setting .hover {
+  display: none;
+}
+
+.content .setting:hover {
+  background-color: #4d4d4d;
+}
+
+.content .setting:hover .default {
+  display: none;
+}
+
+.content .setting:hover .hover {
+  display: inline-block;
+}
+
+.footer {
+  margin-top: 10px;
+}
+
+.footer .credits {
+  padding: 10px;
+  font-size: 10px;
+  text-align: center;
+  background-color: #3d3d3d;
+  display: block;
+  transition: all var(--animation-speed);
+}
+
+.footer .credits:hover {
+  background-color: #4d4d4d;
+  text-decoration: none;
+}
+
+.footer .credits .author {
+  font-weight: bold;
+}

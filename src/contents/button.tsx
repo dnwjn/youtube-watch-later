@@ -261,7 +261,7 @@ const sha1 = async (message: string) => {
 }
 
 const getAuthorizationHeader = async () => {
-  const sapisidCookie = await sendToBackground({
+  const sapisidCookie = await sendToBackground<string | null>({
     name: 'visitor-cookie',
   })
 
@@ -279,7 +279,7 @@ const getAuthorizationHeader = async () => {
 }
 
 const getVisitorIdFromCookies = async () => {
-  const visitorId = await sendToBackground({
+  const visitorId = await sendToBackground<string | null>({
     name: 'visitor-id',
   })
 
