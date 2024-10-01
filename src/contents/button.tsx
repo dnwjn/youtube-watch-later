@@ -2,6 +2,7 @@ import type {
   PlasmoCSConfig,
   PlasmoGetInlineAnchorList,
   PlasmoGetStyle,
+  PlasmoMountShadowHost,
 } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -23,10 +24,19 @@ export const getStyle: PlasmoGetStyle = () => {
             z-index: 10 !important;
         }
 
+        #plasmo-shadow-container,
+        #plasmo-shadow-container .plasmo-csui-container {
+            position: unset !important;
+        }
+
+        #plasmo-shadow-container:has(.watch-later-btn.inside-notification.spaced) {
+            margin-top: 60px;
+        }
+
         .watch-later-btn {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            left: 10px;
+            top: 10px;
             background-color: #ff0000;
             color: #fff;
             padding: 5px;
@@ -37,6 +47,13 @@ export const getStyle: PlasmoGetStyle = () => {
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transition: background-color .5s cubic-bezier(.05,0,0,1);
+        }
+
+        .watch-later-btn.inside-notification {
+            left: unset;
+            top: unset;
+            right: 10px;
+            bottom: 10px;
         }
 
         .watch-later-btn:not(.loading):not(.success):not(.error):hover {
@@ -106,6 +123,16 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   )
 }
 
+export const mountShadowHost: PlasmoMountShadowHost = ({
+  shadowHost,
+  anchor,
+  mountState,
+}) => {
+  // Insert the shadow host as the first child of the anchor element.
+  anchor.element.insertBefore(shadowHost, anchor.element.firstChild)
+  mountState.observer.disconnect()
+}
+
 const Icon = ({ status }: { status: number }) => {
   if (status === 3) {
     return (
@@ -173,6 +200,14 @@ const WatchLaterButton = ({ anchor }) => {
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
+
+    if (element.tagName === 'YTD-NOTIFICATION-RENDERER') {
+      classes.push('inside-notification')
+
+      if (element.offsetHeight < 100) {
+        classes.push('spaced')
+      }
+    }
 
     if (status === 2) {
       classes.push('loading')
