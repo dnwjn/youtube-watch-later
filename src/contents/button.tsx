@@ -278,35 +278,23 @@ const getAuthorizationHeader = async () => {
   return authorizationHeader
 }
 
-const getVisitorIdFromCookies = async () => {
-  const visitorId = await sendToBackground<string | null>({
-    name: 'visitor-id',
-  })
-
-  if (!visitorId) {
-    throw new Error('Visitor ID cookie not found')
-  }
-
-  return visitorId
-}
-
 const addToWatchLater = async (
   videoId: string,
   ytData: YTData,
 ): Promise<void> => {
   return new Promise(async (resolve, reject) => {
-    const { authUser, clientVersion } = ytData
+    const { authUser, clientVersion, pageId, visitorId } = ytData
 
     try {
       const authorizationHeader = await getAuthorizationHeader()
-      const visitorId = await getVisitorIdFromCookies()
 
-      if (!authUser || !clientVersion || !authorizationHeader || !visitorId) {
+      if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
         logError('Missing required data:', {
           authUser,
           clientVersion,
-          authorizationHeader,
+          pageId,
           visitorId,
+          authorizationHeader,
         })
         reject()
         return
@@ -337,9 +325,11 @@ const addToWatchLater = async (
             'Content-Type': 'application/json',
             'X-Origin': 'https://www.youtube.com',
             'X-Goog-Authuser': authUser,
-            'X-Goog-Visitor-Id': visitorId, // TODO: Still adds to different user's WL after user switched
+            ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
+            'X-Goog-Visitor-Id': visitorId,
             'X-Youtube-Bootstrap-Logged-In': 'true',
             'X-Youtube-Client-Name': '1',
+            'X-Youtube-Client-Version': clientVersion,
           },
           body: JSON.stringify(payload),
         },

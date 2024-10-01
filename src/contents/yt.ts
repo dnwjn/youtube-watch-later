@@ -8,13 +8,19 @@ export const config: PlasmoCSConfig = {
 }
 
 const getYtData = async () => {
-  if (typeof window.ytcfg !== 'undefined') {
-    const authUser = window.ytcfg.get('SESSION_INDEX')
-    const clientVersion = window.ytcfg.get('INNERTUBE_CLIENT_VERSION')
+  const ytcfg = (window as any).ytcfg
+
+  if (typeof ytcfg !== 'undefined') {
+    const authUser = ytcfg.get('SESSION_INDEX')
+    const clientVersion = ytcfg.get('INNERTUBE_CLIENT_VERSION')
+    const pageId = ytcfg.get('DELEGATED_SESSION_ID')
+    const visitorId = ytcfg.get('VISITOR_DATA')
 
     const ytData: YTData = {
       authUser,
       clientVersion,
+      pageId,
+      visitorId,
     }
 
     window.dispatchEvent(new CustomEvent('ytwl-yt', { detail: ytData }))
