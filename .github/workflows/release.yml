@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: package-lock.json
 
       - name: Install npm dependencies
@@ -32,5 +32,5 @@ jobs:
       - name: Create a new release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: build/chrome-mv3-prod.zip
+          artifacts: 'build/*-prod.zip'
           generateReleaseNotes: true

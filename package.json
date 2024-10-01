@@ -6,7 +6,12 @@
   "author": "dnwjn <hello@dnwjn.dev>",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "plasmo build --zip",
+    "build": "npm run build:brave && npm run build:chrome && npm run build:edge && npm run build:firefox && npm run build:opera",
+    "build:brave": "plasmo build --zip --target=brave-mv3",
+    "build:chrome": "plasmo build --zip --target=chrome-mv3",
+    "build:edge": "plasmo build --zip --target=edge-mv3",
+    "build:firefox": "plasmo build --zip --target=firefox-mv2",
+    "build:opera": "plasmo build --zip --target=opera-mv3",
     "build:bundle": "plasmo build --source-maps --bundle-buddy",
     "package": "plasmo package",
     "pretty": "prettier --write ."
