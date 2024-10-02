@@ -129,11 +129,15 @@ a {
   transition: all var(--animation-speed);
 }
 
-.footer .credits:hover {
+.footer a.credits:hover {
   background-color: #4d4d4d;
   text-decoration: none;
 }
 
-.footer .credits .author {
+.footer .credits.small {
+  font-size: 9px;
+}
+
+.footer .credits .name {
   font-weight: bold;
 }

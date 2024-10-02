@@ -1,5 +1,6 @@
+import packageJson from '@root/package.json'
 import logo from 'data-base64:@root/assets/icon.png'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
@@ -10,6 +11,14 @@ import '~css/popup.css'
 const Popup = () => {
   const [enabled, setEnabled] = useState<boolean>(false)
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
+
+  const version = useMemo(() => {
+    if (process.env.NODE_ENV === 'development') {
+      return 'DEV'
+    }
+
+    return `v${packageJson.version}`
+  }, [process.env.NODE_ENV, packageJson.version])
 
   const checkIfEnabled = async () => {
     const activeTab = await getActiveTab()
@@ -73,8 +82,12 @@ const Popup = () => {
 
       <div className="footer">
         <a className="credits" href="https://github.com/dnwjn">
-          Crafted with ❤️ + 💻 + 🧠 by <span className="author">dnwjn</span>
+          Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
         </a>
+
+        <div className="credits small">
+          Version: <span className="name">{version}</span>
+        </div>
       </div>
     </div>
   )
