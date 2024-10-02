@@ -222,8 +222,8 @@ const WatchLaterButton = ({ anchor }) => {
     return classes.join(' ')
   }, [status])
 
-  const addVideo = async (e) => {
-    e.stopPropagation()
+  const addVideo = async (event) => {
+    event.stopPropagation()
 
     if (status !== 1) return
 
@@ -244,10 +244,10 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }
 
-  const setYtwlYt = (e) => {
+  const setYtwlYt = (event) => {
     if (ytData) return
 
-    const newYtData = e.detail as YTData | null
+    const newYtData = event.detail as YTData | null
 
     if (newYtData) {
       setYtData(newYtData)
@@ -296,12 +296,18 @@ const sha1 = async (message: string) => {
 }
 
 const getAuthorizationHeader = async () => {
-  const sapisidCookie = await sendToBackground<string | null>({
-    name: 'visitor-cookie',
-  })
+  let sapisidCookie: string | null
+
+  try {
+    sapisidCookie = await sendToBackground<string | null>({
+      name: 'visitor-cookie',
+    })
+  } catch (error) {
+    throw new Error('Visitor cookie not found. Reason: ' + error)
+  }
 
   if (!sapisidCookie) {
-    throw new Error('Visitor cookie not found')
+    throw new Error('Visitor cookie not found. Reason: no value')
   }
 
   const sapisid = sapisidCookie
@@ -360,6 +366,7 @@ const addToWatchLater = async (
             'Content-Type': 'application/json',
             'X-Origin': 'https://www.youtube.com',
             'X-Goog-Authuser': authUser,
+            // PageId seems to be only available when you've switched to a different user from the original one.
             ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
             'X-Goog-Visitor-Id': visitorId,
             'X-Youtube-Bootstrap-Logged-In': 'true',
