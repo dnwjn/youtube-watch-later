@@ -35,8 +35,8 @@ export const getStyle: PlasmoGetStyle = () => {
 
         .watch-later-btn {
             position: absolute;
-            left: 10px;
-            top: 10px;
+            left: 6px;
+            top: 4px;
             background-color: #ff0000;
             color: #fff;
             padding: 5px;
@@ -53,7 +53,7 @@ export const getStyle: PlasmoGetStyle = () => {
             left: unset;
             top: unset;
             right: 10px;
-            bottom: 10px;
+            bottom: 8px;
         }
 
         .watch-later-btn:not(.loading):not(.success):not(.error):hover {
