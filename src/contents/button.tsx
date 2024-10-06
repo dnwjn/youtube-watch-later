@@ -109,13 +109,6 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
           a.href.includes('?v='),
         ),
       )
-      // Filter out elements that are in the Watch Later playlist.
-      .filter(
-        (element) =>
-          !Array.from(element.querySelectorAll('a')).some((a) =>
-            a.href.includes('list=WL'),
-          ),
-      )
       .map((element) => ({
         element,
         insertPosition: 'beforebegin',
@@ -187,7 +180,7 @@ const Icon = ({ status }: { status: number }) => {
 const WatchLaterButton = ({ anchor }) => {
   const { element } = anchor
 
-  const { ytData, setYtData } = useWatchLaterStore()
+  const { ytData, url, enabled, setYtData, setUrl, setEnabled } = useWatchLaterStore()
 
   /**
    * 0: Hidden
@@ -197,11 +190,15 @@ const WatchLaterButton = ({ anchor }) => {
    * 4: Error
    */
   const [status, setStatus] = useState(0)
+  const [visible, setVisible] = useState(false)
+  const [hasData, setHasData] = useState(false)
+
+  const isInNotification = element.tagName === 'YTD-NOTIFICATION-RENDERER'
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
 
-    if (element.tagName === 'YTD-NOTIFICATION-RENDERER') {
+    if (isInNotification) {
       classes.push('inside-notification')
 
       if (element.offsetHeight < 100) {
@@ -252,23 +249,54 @@ const WatchLaterButton = ({ anchor }) => {
     if (newYtData) {
       setYtData(newYtData)
       window.removeEventListener('ytwl-yt', setYtwlYt)
-      setStatus(1)
+      setHasData(true)
     } else {
-      setStatus(4)
+      setHasData(false)
     }
   }
 
+  const handleNavigateStart = () => {
+    setEnabled(false)
+  }
+
+  const handleNavigateFinish = (event) => {
+    const newUrl = event.detail?.response?.url as string | null
+    setUrl(newUrl)
+    setEnabled(true)
+  }
+
+  useEffect(() => {
+    if (!enabled || (!isInNotification && url?.includes('/playlist?list=WL'))) {
+      setVisible(false)
+    } else {
+      setVisible(true)
+    }
+  }, [enabled, isInNotification, url])
+
+  useEffect(() => {
+    if (visible && hasData) {
+      setStatus(1)
+    } else {
+      setStatus(0)
+    }
+  }, [visible, hasData])
+
   useEffect(() => {
     if (ytData) {
-      setStatus(1)
+      setHasData(true)
       return
     }
 
     window.addEventListener('ytwl-yt', setYtwlYt)
+    window.addEventListener('ytwl-yt-nav-start', handleNavigateStart)
+    window.addEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+
     window.dispatchEvent(new CustomEvent('ytwl-yt-req'))
 
     return () => {
       window.removeEventListener('ytwl-yt', setYtwlYt)
+      window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
+      window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
     }
   }, [])
 
