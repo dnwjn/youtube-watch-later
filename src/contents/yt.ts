@@ -29,14 +29,22 @@ const getYtData = async () => {
 
 window.addEventListener('ytwl-yt-req', getYtData)
 
-// window.addEventListener('yt-navigate-finish', () => {
-//     setTimeout(async () => {
-//         await main();
-//     }, 1000);
-// });
 
-// window.addEventListener('hashchange', () => {
-//     setTimeout(async () => {
-//         await main();
-//     }, 1000);
-// });
+const handleNavigateStart = (event) => {
+  window.dispatchEvent(new CustomEvent('ytwl-yt-nav-start'))
+}
+
+window.addEventListener('yt-navigate-start', handleNavigateStart)
+
+
+let navigateFinishTimeout: NodeJS.Timeout = null
+
+const handleNavigateFinish = (event) => {
+  clearTimeout(navigateFinishTimeout)
+
+  navigateFinishTimeout = setTimeout(() => {
+    window.dispatchEvent(new CustomEvent('ytwl-yt-nav-finish', { detail: event.detail }))
+  }, 100)
+}
+
+window.addEventListener('yt-navigate-finish', handleNavigateFinish)
