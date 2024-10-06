@@ -29,13 +29,11 @@ const getYtData = async () => {
 
 window.addEventListener('ytwl-yt-req', getYtData)
 
-
 const handleNavigateStart = (event) => {
   window.dispatchEvent(new CustomEvent('ytwl-yt-nav-start'))
 }
 
 window.addEventListener('yt-navigate-start', handleNavigateStart)
-
 
 let navigateFinishTimeout: NodeJS.Timeout = null
 
@@ -43,7 +41,9 @@ const handleNavigateFinish = (event) => {
   clearTimeout(navigateFinishTimeout)
 
   navigateFinishTimeout = setTimeout(() => {
-    window.dispatchEvent(new CustomEvent('ytwl-yt-nav-finish', { detail: event.detail }))
+    window.dispatchEvent(
+      new CustomEvent('ytwl-yt-nav-finish', { detail: event.detail }),
+    )
   }, 100)
 }
 

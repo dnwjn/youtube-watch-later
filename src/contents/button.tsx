@@ -180,7 +180,8 @@ const Icon = ({ status }: { status: number }) => {
 const WatchLaterButton = ({ anchor }) => {
   const { element } = anchor
 
-  const { ytData, url, enabled, setYtData, setUrl, setEnabled } = useWatchLaterStore()
+  const { ytData, url, enabled, setYtData, setUrl, setEnabled } =
+    useWatchLaterStore()
 
   /**
    * 0: Hidden
