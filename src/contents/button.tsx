@@ -37,7 +37,7 @@ export const getStyle: PlasmoGetStyle = () => {
             position: absolute;
             left: 6px;
             top: 4px;
-            background-color: #ff0000;
+            background-color: transparent;
             color: #fff;
             padding: 5px;
             border: none;
@@ -45,8 +45,13 @@ export const getStyle: PlasmoGetStyle = () => {
             cursor: pointer;
             font-size: 12px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transition: background-color .5s cubic-bezier(.05,0,0,1);
+            outline: none;
+        }
+
+        .watch-later-btn.inside-thumbnail {
+            background-color: #282828;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .watch-later-btn.inside-notification {
@@ -56,8 +61,24 @@ export const getStyle: PlasmoGetStyle = () => {
             bottom: 8px;
         }
 
-        .watch-later-btn:not(.loading):not(.success):not(.error):hover {
-            background-color: #cc0000;
+        .watch-later-btn.light.inside-notification {
+            color: #030303;
+        }
+
+        .watch-later-btn.dark.inside-notification:not(.loading):not(.success):not(.error):hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .watch-later-btn.light.inside-notification:not(.loading):not(.success):not(.error):hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .watch-later-btn.dark.inside-thumbnail:not(.loading):not(.success):not(.error):hover {
+            background-color: #4c4c4c;
+        }
+
+        .watch-later-btn.light.inside-thumbnail:not(.loading):not(.success):not(.error):hover {
+            background-color: rgba(0,0,0,0.8);
         }
 
         .watch-later-btn.loading,
@@ -80,6 +101,10 @@ export const getStyle: PlasmoGetStyle = () => {
             display: inherit;
             width: 100%;
             height: 100%;
+        }
+
+        .watch-later-btn svg.with-fill {
+            fill: currentColor;
         }
 
         @keyframes blink {
@@ -168,10 +193,10 @@ const Icon = ({ status }: { status: number }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill="#fff"
       width="24"
       height="24"
-      viewBox="0 0 24 24">
+      viewBox="0 0 24 24"
+      className="with-fill">
       <path d="M14.97 16.95 10 13.87V7h2v5.76l4.03 2.49-1.06 1.7zM12 3c-4.96 0-9 4.04-9 9s4.04 9 9 9 9-4.04 9-9-4.04-9-9-9m0-1c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"></path>
     </svg>
   )
@@ -194,17 +219,28 @@ const WatchLaterButton = ({ anchor }) => {
   const [visible, setVisible] = useState(false)
   const [hasData, setHasData] = useState(false)
 
+  const isInThumbnail = element.tagName === 'YTD-THUMBNAIL'
   const isInNotification = element.tagName === 'YTD-NOTIFICATION-RENDERER'
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
 
+    if (isInThumbnail) {
+      classes.push('inside-thumbnail')
+    }
     if (isInNotification) {
       classes.push('inside-notification')
 
       if (element.offsetHeight < 100) {
         classes.push('spaced')
       }
+    }
+
+    if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
+      classes.push('dark')
+    }
+    if (ytData?.clientTheme === 'USER_INTERFACE_THEME_LIGHT') {
+      classes.push('light')
     }
 
     if (status === 2) {
@@ -218,7 +254,7 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status])
+  }, [status, ytData?.clientTheme])
 
   const addVideo = async (event) => {
     event.stopPropagation()
