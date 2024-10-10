@@ -267,7 +267,9 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   useEffect(() => {
-    if (!enabled || (!isInNotification && url?.includes('/playlist?list=WL'))) {
+    const search = url ? new URLSearchParams(url) : null
+
+    if (!enabled || (!isInNotification && search?.has('list', 'WL'))) {
       setVisible(false)
     } else {
       setVisible(true)
