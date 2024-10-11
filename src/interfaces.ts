@@ -5,3 +5,10 @@ export interface YTData {
   pageId: string | null
   visitorId: string | null
 }
+
+export interface MarkNotifReadEventDetail {
+  xpath: string
+  authorizationHeader: string
+  ytData: YTData
+  loggingEnabled: boolean
+}

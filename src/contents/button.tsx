@@ -8,8 +8,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { sendToBackground } from '@plasmohq/messaging'
 
-import { logError, logLine } from '~helpers'
-import type { YTData } from '~interfaces'
+import { getElementXPath, logError, loggingEnabled, logLine } from '~helpers'
+import type { MarkNotifReadEventDetail, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 
 export const config: PlasmoCSConfig = {
@@ -269,7 +269,13 @@ const WatchLaterButton = ({ anchor }) => {
         setStatus(2)
 
         addToWatchLater(videoId, ytData)
-          .then(() => setStatus(3))
+          .then(() => {
+            setStatus(3)
+
+            if (isInNotification) {
+              markNotificationAsRead(ytData, element)
+            }
+          })
           .catch(() => setStatus(4))
           .finally(() => {
             setTimeout(() => setStatus(1), 2000)
@@ -397,13 +403,13 @@ const addToWatchLater = async (
       const authorizationHeader = await getAuthorizationHeader()
 
       if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
-        logError('Missing required data:', {
+        logError('Missing required data', [
           authUser,
           clientVersion,
           pageId,
           visitorId,
           authorizationHeader,
-        })
+        ])
         reject()
         return
       }
@@ -447,15 +453,31 @@ const addToWatchLater = async (
       const responseJson = await response.json()
 
       if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
-        logLine('Video added to Watch Later:', videoId)
+        logLine('Video added to Watch Later', [videoId])
         resolve()
       } else {
-        logError('Failed to add video to Watch Later:', responseJson)
+        logError('Failed to add video to Watch Later', [responseJson])
         reject()
       }
     } catch (error) {
-      error('Failed to add video to Watch Later:', error)
+      logError('Failed to add video to Watch Later', [error])
       reject()
     }
   })
+}
+
+const markNotificationAsRead = async (
+  ytData: YTData,
+  element: any,
+): Promise<void> => {
+  const xpath = getElementXPath(element)
+  const authorizationHeader = await getAuthorizationHeader()
+  const detail: MarkNotifReadEventDetail = {
+    xpath,
+    authorizationHeader,
+    ytData,
+    loggingEnabled: await loggingEnabled(),
+  }
+
+  window.dispatchEvent(new CustomEvent('ytwl-mark-notif-read', { detail }))
 }
