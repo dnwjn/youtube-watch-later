@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
-import { getActiveTab, openTab } from '~helpers'
+import { getActiveTab, openTab } from '~helpers/browser'
 
 import '~css/popup.css'
 

@@ -8,7 +8,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { sendToBackground } from '@plasmohq/messaging'
 
-import { getElementXPath, logError, loggingEnabled, logLine } from '~helpers'
+import { getElementXPath } from '~helpers/browser'
+import { logError, loggingEnabled, logLine } from '~helpers/logging'
 import type { MarkNotifReadEventDetail, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 

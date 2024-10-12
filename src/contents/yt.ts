@@ -1,6 +1,6 @@
 import type { PlasmoCSConfig } from 'plasmo'
 
-import { logError, logLine } from '~helpers'
+import { logError, logLine } from '~helpers/logging'
 import type { MarkNotifReadEventDetail, YTData } from '~interfaces'
 
 export const config: PlasmoCSConfig = {
