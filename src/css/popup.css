@@ -75,7 +75,11 @@ a {
   margin-top: 0;
 }
 
-.content .setting {
+.content .setting:not(:first-child) {
+  margin-top: 10px;
+}
+
+.content .button {
   border: none;
   color: #fff;
   text-decoration: none;
@@ -88,7 +92,7 @@ a {
   transition: all var(--animation-speed);
 }
 
-.content button.setting {
+.content .button {
   width: 100%;
 }
 
@@ -104,15 +108,15 @@ a {
   display: none;
 }
 
-.content .setting:hover {
+.content .button:hover {
   background-color: #4d4d4d;
 }
 
-.content .setting:hover .default {
+.content .button:hover .default {
   display: none;
 }
 
-.content .setting:hover .hover {
+.content .button:hover .hover {
   display: inline-block;
 }
 

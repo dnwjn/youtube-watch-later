@@ -2,12 +2,7 @@ import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
 import type { Settings } from '~interfaces'
 
-const loggingEnabled = async (): Promise<boolean> => {
-  const settings: Settings = await sendToBackgroundViaRelay<Settings>({
-    name: 'settings',
-  })
-  return settings.loggingEnabled
-}
+import { loggingEnabled } from './system'
 
 export const logLine = async (message: string, ...optionalParams: any[]) => {
   if (await loggingEnabled()) {

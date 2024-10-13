@@ -10,6 +10,7 @@ import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
 import { hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
+import { markNotificationsAsRead } from '~helpers/system'
 import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 
@@ -472,6 +473,11 @@ const markNotificationAsRead = async (
   ytData: YTData,
   element: any,
 ): Promise<void> => {
+  if (!(await markNotificationsAsRead())) {
+    logLine('Marking notifications as read is disabled')
+    return
+  }
+
   const authorizationHeader = await getAuthorizationHeader()
   const { authUser, clientVersion, pageId, visitorId } = ytData
   const elementData: any = element?.data
