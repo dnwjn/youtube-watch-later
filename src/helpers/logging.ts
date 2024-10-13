@@ -1,7 +1,3 @@
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
-
-import type { Settings } from '~interfaces'
-
 import { loggingEnabled } from './system'
 
 export const logLine = async (message: string, ...optionalParams: any[]) => {
