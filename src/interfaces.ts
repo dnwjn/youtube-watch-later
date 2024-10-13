@@ -6,9 +6,6 @@ export interface YTData {
   visitorId: string | null
 }
 
-export interface MarkNotifReadEventDetail {
-  xpath: string
-  authorizationHeader: string
-  ytData: YTData
+export interface Settings {
   loggingEnabled: boolean
 }

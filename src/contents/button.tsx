@@ -6,16 +6,16 @@ import type {
 } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { sendToBackground } from '@plasmohq/messaging'
+import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
-import { getElementXPath } from '~helpers/browser'
-import { logError, loggingEnabled, logLine } from '~helpers/logging'
-import type { MarkNotifReadEventDetail, YTData } from '~interfaces'
+import { logError, logLine } from '~helpers/logging'
+import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
   all_frames: true,
+  world: 'MAIN',
 }
 
 export const getStyle: PlasmoGetStyle = () => {
@@ -373,7 +373,7 @@ const getAuthorizationHeader = async () => {
   let sapisidCookie: string | null
 
   try {
-    sapisidCookie = await sendToBackground<string | null>({
+    sapisidCookie = await sendToBackgroundViaRelay<string | null>({
       name: 'visitor-cookie',
     })
   } catch (error) {
@@ -404,13 +404,13 @@ const addToWatchLater = async (
       const authorizationHeader = await getAuthorizationHeader()
 
       if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
-        logError('Missing required data', [
+        logError('Missing required data', {
           authUser,
           clientVersion,
           pageId,
           visitorId,
           authorizationHeader,
-        ])
+        })
         reject()
         return
       }
@@ -454,14 +454,14 @@ const addToWatchLater = async (
       const responseJson = await response.json()
 
       if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
-        logLine('Video added to Watch Later', [videoId])
+        logLine('Video added to Watch Later', videoId)
         resolve()
       } else {
-        logError('Failed to add video to Watch Later', [responseJson])
+        logError('Failed to add video to Watch Later', responseJson)
         reject()
       }
     } catch (error) {
-      logError('Failed to add video to Watch Later', [error])
+      logError('Failed to add video to Watch Later', error)
       reject()
     }
   })
@@ -471,14 +471,69 @@ const markNotificationAsRead = async (
   ytData: YTData,
   element: any,
 ): Promise<void> => {
-  const xpath = getElementXPath(element)
   const authorizationHeader = await getAuthorizationHeader()
-  const detail: MarkNotifReadEventDetail = {
-    xpath,
-    authorizationHeader,
-    ytData,
-    loggingEnabled: await loggingEnabled(),
-  }
+  const { authUser, clientVersion, pageId, visitorId } = ytData
+  const elementData: any = element?.data
 
-  window.dispatchEvent(new CustomEvent('ytwl-mark-notif-read', { detail }))
+  try {
+    if (
+      !authUser ||
+      !clientVersion ||
+      !visitorId ||
+      !authorizationHeader ||
+      !elementData
+    ) {
+      logLine('Missing required data', {
+        authUser,
+        clientVersion,
+        pageId,
+        visitorId,
+        authorizationHeader,
+        elementData,
+      })
+      return
+    }
+
+    const payload = {
+      context: {
+        client: {
+          clientName: 'WEB',
+          clientVersion,
+        },
+      },
+      serializedRecordNotificationInteractionsRequest:
+        elementData.recordClickEndpoint.recordNotificationInteractionsEndpoint
+          .serializedInteractionsRequest,
+    }
+
+    const response = await fetch(
+      'https://www.youtube.com/youtubei/v1/notification/record_interactions?prettyPrint=false',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `SAPISIDHASH ${authorizationHeader}`,
+          'Content-Type': 'application/json',
+          'X-Origin': 'https://www.youtube.com',
+          'X-Goog-Authuser': authUser,
+          // PageId seems to be only available when you've switched to a different user from the original one.
+          ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
+          'X-Goog-Visitor-Id': visitorId,
+          'X-Youtube-Bootstrap-Logged-In': 'true',
+          'X-Youtube-Client-Name': '1',
+          'X-Youtube-Client-Version': clientVersion,
+        },
+        body: JSON.stringify(payload),
+      },
+    )
+
+    const responseJson = await response.json()
+
+    if (response.ok && responseJson?.success) {
+      logLine('Notification marked as read!')
+    } else {
+      logError('Failed to mark notification as read', [responseJson])
+    }
+  } catch (error) {
+    logError('Failed to mark notification as read', [error])
+  }
 }
