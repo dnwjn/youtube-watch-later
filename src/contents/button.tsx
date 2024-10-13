@@ -8,6 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
+import { hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
 import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
@@ -310,9 +311,9 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   useEffect(() => {
-    const search = url ? new URLSearchParams(url) : null
+    const isWL = hasSearch(url, 'list', 'WL')
 
-    if (!enabled || (!isInNotification && search?.has('list', 'WL'))) {
+    if (!enabled || (!isInNotification && isWL)) {
       setVisible(false)
     } else {
       setVisible(true)
