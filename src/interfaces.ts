@@ -5,3 +5,8 @@ export interface YTData {
   pageId: string | null
   visitorId: string | null
 }
+
+export interface Settings {
+  loggingEnabled: boolean
+  markNotificationsAsRead: boolean
+}

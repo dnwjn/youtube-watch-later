@@ -4,13 +4,15 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
-import { getActiveTab, openTab } from '~helpers'
+import { getActiveTab, openTab } from '~helpers/browser'
 
 import '~css/popup.css'
 
 const Popup = () => {
   const [enabled, setEnabled] = useState<boolean>(false)
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
+  const [markNotificationsAsRead, setMarkNotificationsAsRead] =
+    useStorage<boolean>('markNotificationsAsRead', false)
 
   const version = useMemo(() => {
     if (process.env.NODE_ENV === 'development') {
@@ -54,16 +56,41 @@ const Popup = () => {
 
         <p className="instruction">Click a setting to change it.</p>
 
-        <button className="setting" onClick={() => setIsLogging(!isLogging)}>
-          <div className="default">
-            Logging is{' '}
-            <span className="status">{isLogging ? 'enabled' : 'disabled'}</span>
-          </div>
-          <div className="hover">
-            <span className="status">{isLogging ? 'Disable' : 'Enable'}</span>{' '}
-            logging
-          </div>
-        </button>
+        <div className="setting">
+          <h3 className="title">Logging</h3>
+
+          <button className="button" onClick={() => setIsLogging(!isLogging)}>
+            <div className="default">
+              <span className="status">
+                {isLogging ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">{isLogging ? 'Disable' : 'Enable'}</span>
+            </div>
+          </button>
+        </div>
+
+        <div className="setting">
+          <h3 className="title">Mark notifications as read</h3>
+
+          <button
+            className="button"
+            onClick={() =>
+              setMarkNotificationsAsRead(!markNotificationsAsRead)
+            }>
+            <div className="default">
+              <span className="status">
+                {markNotificationsAsRead ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                {markNotificationsAsRead ? 'Disable' : 'Enable'}
+              </span>
+            </div>
+          </button>
+        </div>
       </div>
 
       <div className="content">
@@ -74,7 +101,7 @@ const Popup = () => {
         </p>
 
         <button
-          className="setting bold"
+          className="button bold"
           onClick={() => openTab('https://github.com/dnwjn/yt-watch-later')}>
           Go to GitHub
         </button>

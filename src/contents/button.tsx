@@ -6,15 +6,18 @@ import type {
 } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { sendToBackground } from '@plasmohq/messaging'
+import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
-import { logError, logLine } from '~helpers'
+import { hasSearch } from '~helpers/browser'
+import { logError, logLine } from '~helpers/logging'
+import { markNotificationsAsRead } from '~helpers/system'
 import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
   all_frames: true,
+  world: 'MAIN',
 }
 
 export const getStyle: PlasmoGetStyle = () => {
@@ -268,14 +271,136 @@ const WatchLaterButton = ({ anchor }) => {
       if (videoId && ytData) {
         setStatus(2)
 
-        addToWatchLater(videoId, ytData)
-          .then(() => setStatus(3))
+        addToWatchLater(videoId)
+          .then(() => {
+            setStatus(3)
+
+            if (isInNotification) {
+              markNotificationAsRead()
+            }
+          })
           .catch(() => setStatus(4))
           .finally(() => {
             setTimeout(() => setStatus(1), 2000)
           })
       }
     }
+  }
+
+  const addToWatchLater = async (videoId: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const payload = {
+          actions: [
+            {
+              action: 'ACTION_ADD_VIDEO',
+              addedVideoId: videoId,
+            },
+          ],
+          playlistId: 'WL',
+        }
+
+        const response = await _apiPost(
+          'https://www.youtube.com/youtubei/v1/browse/edit_playlist?prettyPrint=false',
+          payload,
+        )
+        const responseJson = await response.json()
+
+        if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
+          logLine('Video added to Watch Later', videoId)
+          resolve()
+        } else {
+          logError('Failed to add video to Watch Later', responseJson)
+          reject()
+        }
+      } catch (error) {
+        logError('Failed to add video to Watch Later', error)
+        reject()
+      }
+    })
+  }
+
+  const markNotificationAsRead = async (): Promise<void> => {
+    if (!(await markNotificationsAsRead())) {
+      logLine('Marking notifications as read is disabled')
+      return
+    }
+
+    try {
+      const elementData: any = element?.data
+
+      if (!elementData) {
+        logError(
+          'Missing required data to mark notification as read',
+          elementData,
+        )
+        return
+      }
+
+      const payload = {
+        serializedRecordNotificationInteractionsRequest:
+          elementData.recordClickEndpoint.recordNotificationInteractionsEndpoint
+            .serializedInteractionsRequest,
+      }
+
+      const response = await _apiPost(
+        'https://www.youtube.com/youtubei/v1/notification/record_interactions?prettyPrint=false',
+        payload,
+      )
+      const responseJson = await response.json()
+
+      if (response.ok && responseJson?.success) {
+        logLine('Notification marked as read')
+      } else {
+        logError('Failed to mark notification as read', responseJson)
+      }
+    } catch (error) {
+      logError('Failed to mark notification as read', error)
+    }
+  }
+
+  const _apiPost = async (
+    url: string,
+    payload: object,
+  ): Promise<Response | null> => {
+    return new Promise(async (resolve, reject) => {
+      const authorizationHeader = await getAuthorizationHeader()
+      const { authUser, clientVersion, pageId, visitorId } = ytData
+
+      if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
+        reject('Missing required data to make request')
+        return
+      }
+
+      const finalPayload = {
+        ...payload,
+        context: {
+          client: {
+            clientName: 'WEB',
+            clientVersion,
+          },
+        },
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `SAPISIDHASH ${authorizationHeader}`,
+          'Content-Type': 'application/json',
+          'X-Origin': 'https://www.youtube.com',
+          'X-Goog-Authuser': authUser,
+          // PageId seems to be only available when you've switched to a different user from the original one.
+          ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
+          'X-Goog-Visitor-Id': visitorId,
+          'X-Youtube-Bootstrap-Logged-In': 'true',
+          'X-Youtube-Client-Name': '1',
+          'X-Youtube-Client-Version': clientVersion,
+        },
+        body: JSON.stringify(finalPayload),
+      })
+
+      resolve(response)
+    })
   }
 
   const setYtwlYt = (event) => {
@@ -303,9 +428,9 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   useEffect(() => {
-    const search = url ? new URLSearchParams(url) : null
+    const isWL = hasSearch(url, 'list', 'WL')
 
-    if (!enabled || (!isInNotification && search?.has('list', 'WL'))) {
+    if (!enabled || (!isInNotification && isWL)) {
       setVisible(false)
     } else {
       setVisible(true)
@@ -366,7 +491,7 @@ const getAuthorizationHeader = async () => {
   let sapisidCookie: string | null
 
   try {
-    sapisidCookie = await sendToBackground<string | null>({
+    sapisidCookie = await sendToBackgroundViaRelay<string | null>({
       name: 'visitor-cookie',
     })
   } catch (error) {
@@ -384,78 +509,4 @@ const getAuthorizationHeader = async () => {
   const authorizationHeader = `${time}_${hash}`
 
   return authorizationHeader
-}
-
-const addToWatchLater = async (
-  videoId: string,
-  ytData: YTData,
-): Promise<void> => {
-  return new Promise(async (resolve, reject) => {
-    const { authUser, clientVersion, pageId, visitorId } = ytData
-
-    try {
-      const authorizationHeader = await getAuthorizationHeader()
-
-      if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
-        logError('Missing required data:', {
-          authUser,
-          clientVersion,
-          pageId,
-          visitorId,
-          authorizationHeader,
-        })
-        reject()
-        return
-      }
-
-      const payload = {
-        actions: [
-          {
-            action: 'ACTION_ADD_VIDEO',
-            addedVideoId: videoId,
-          },
-        ],
-        context: {
-          client: {
-            clientName: 'WEB',
-            clientVersion,
-          },
-        },
-        playlistId: 'WL',
-      }
-
-      const response = await fetch(
-        'https://www.youtube.com/youtubei/v1/browse/edit_playlist?prettyPrint=false',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `SAPISIDHASH ${authorizationHeader}`,
-            'Content-Type': 'application/json',
-            'X-Origin': 'https://www.youtube.com',
-            'X-Goog-Authuser': authUser,
-            // PageId seems to be only available when you've switched to a different user from the original one.
-            ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
-            'X-Goog-Visitor-Id': visitorId,
-            'X-Youtube-Bootstrap-Logged-In': 'true',
-            'X-Youtube-Client-Name': '1',
-            'X-Youtube-Client-Version': clientVersion,
-          },
-          body: JSON.stringify(payload),
-        },
-      )
-
-      const responseJson = await response.json()
-
-      if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
-        logLine('Video added to Watch Later:', videoId)
-        resolve()
-      } else {
-        logError('Failed to add video to Watch Later:', responseJson)
-        reject()
-      }
-    } catch (error) {
-      error('Failed to add video to Watch Later:', error)
-      reject()
-    }
-  })
 }

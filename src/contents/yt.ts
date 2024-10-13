@@ -12,7 +12,8 @@ const getYtData = async () => {
 
   if (typeof ytcfg !== 'undefined') {
     const authUser = ytcfg.get('SESSION_INDEX')
-    const clientTheme = ytcfg.get('INNERTUBE_CONTEXT')?.client?.userInterfaceTheme
+    const clientTheme =
+      ytcfg.get('INNERTUBE_CONTEXT')?.client?.userInterfaceTheme
     const clientVersion = ytcfg.get('INNERTUBE_CLIENT_VERSION')
     const pageId = ytcfg.get('DELEGATED_SESSION_ID')
     const visitorId = ytcfg.get('VISITOR_DATA')
