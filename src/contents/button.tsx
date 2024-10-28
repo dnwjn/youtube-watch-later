@@ -124,7 +124,7 @@ export const getStyle: PlasmoGetStyle = () => {
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(
-    'ytd-thumbnail, ytd-notification-renderer',
+    'ytd-rich-item-renderer, ytd-notification-renderer',
   )
 
   return (
@@ -222,7 +222,7 @@ const WatchLaterButton = ({ anchor }) => {
   const [visible, setVisible] = useState(false)
   const [hasData, setHasData] = useState(false)
 
-  const isInThumbnail = element.tagName === 'YTD-THUMBNAIL'
+  const isInThumbnail = element.tagName === 'YTD-RICH-ITEM-RENDERER'
   const isInNotification = element.tagName === 'YTD-NOTIFICATION-RENDERER'
 
   const buttonClasses = useMemo(() => {
