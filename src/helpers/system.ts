@@ -17,13 +17,3 @@ export const markNotificationsAsRead = async (): Promise<boolean> => {
   
   return settings.markNotificationsAsRead
 }
-
-export const analyticsEnabled = async (): Promise<boolean> => {
-  if (process.env.NODE_ENV !== 'production') return false
-
-  const settings: Settings = await sendToBackgroundViaRelay<Settings>({
-    name: 'settings',
-  })
-  
-  return settings.analyticsEnabled
-}

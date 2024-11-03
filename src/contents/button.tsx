@@ -10,7 +10,7 @@ import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
 import { hasPath, hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
-import { markNotificationsAsRead, analyticsEnabled } from '~helpers/system'
+import { markNotificationsAsRead } from '~helpers/system'
 import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 
@@ -275,34 +275,6 @@ const WatchLaterButton = ({ anchor }) => {
     return classes.join(' ')
   }, [status, ytData?.clientTheme])
 
-  const trackClick = async () => {
-    if (!(await analyticsEnabled())) {
-      logLine('Analytics is disabled')
-      return
-    }
-
-    const response = await fetch('https://analytics.dnwjn.io/api/event', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        domain: 'youtube-watch-later-extension',
-        name: 'buttonclick',
-        url: window.location.href,
-        props: {
-          variation: isInNotification ? 'notification' : 'thumbnail',
-        }
-      }),
-    })
-
-    if (response.ok) {
-      logLine('Click tracked')
-    } else {
-      logError('Failed to track click')
-    }
-  }
-
   const addVideo = async (event) => {
     event.stopPropagation()
 
@@ -322,8 +294,6 @@ const WatchLaterButton = ({ anchor }) => {
             if (isInNotification) {
               markNotificationAsRead()
             }
-
-            trackClick()
           })
           .catch(() => setStatus(4))
           .finally(() => {
