@@ -26,10 +26,10 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Build the extension
+      - name: Build extension
         run: npm run build
 
-      - name: Create a new release
+      - name: Create new release
         uses: ncipollo/release-action@v1
         with:
           artifacts: 'build/*-prod.zip'

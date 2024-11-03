@@ -287,7 +287,7 @@ const WatchLaterButton = ({ anchor }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        domain: 'yt-watch-later-extension',
+        domain: 'youtube-watch-later-extension',
         name: 'buttonclick',
         url: window.location.href,
         props: {

@@ -1,6 +1,6 @@
 {
-  "name": "yt-watch-later",
-  "displayName": "YT Watch Later",
+  "name": "youtube-watch-later",
+  "displayName": "YouTube Watch Later",
   "version": "0.0.5",
   "description": "Add YouTube videos to your Watch Later playlist with a single click.",
   "author": "dnwjn <hello@dnwjn.dev>",

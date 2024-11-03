@@ -39,7 +39,7 @@ const Popup = () => {
       <div className="header">
         <img className="logo" src={logo} alt="logo" />
 
-        <h1 className="title">YT Watch Later</h1>
+        <h1 className="title">YouTube Watch Later</h1>
       </div>
 
       <div className="content">
@@ -137,7 +137,7 @@ const Popup = () => {
 
         <button
           className="button bold"
-          onClick={() => openTab('https://github.com/dnwjn/yt-watch-later')}>
+          onClick={() => openTab('https://github.com/dnwjn/youtube-watch-later')}>
           Go to GitHub
         </button>
       </div>
