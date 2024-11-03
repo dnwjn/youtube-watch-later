@@ -2,12 +2,25 @@
   --animation-speed: 0.2s;
 }
 
+* {
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-size: 12px;
+}
+
 body {
   padding: 0;
   margin: 0;
   background-color: #2d2d2d;
   color: #fff;
   width: 300px;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 18px;
 }
 
 a {
@@ -148,4 +161,5 @@ a {
 
 .footer .credits .name {
   font-weight: bold;
+  font-size: inherit;
 }
