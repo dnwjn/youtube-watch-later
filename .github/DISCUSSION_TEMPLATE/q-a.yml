@@ -1,0 +1,9 @@
+body:
+  - type: textarea
+    attributes:
+      label: Question
+      description: What is your question?
+      placeholder: |
+        I am trying to...
+    validations:
+      required: true

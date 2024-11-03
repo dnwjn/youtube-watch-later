@@ -1,0 +1,9 @@
+body:
+  - type: textarea
+    attributes:
+      label: Idea
+      description: What is your idea?
+      placeholder: |
+        I was thinking of...
+    validations:
+      required: true
