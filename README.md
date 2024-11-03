@@ -1,41 +1,45 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# YouTube Watch Later
 
-## Getting Started
+> Have you ever browsed YouTube and used that "Add to Watch Later" button? Me too.
+> 
+> Are you annoyed when you want to use that button, but it is not there? Me too!
+> 
+> Would you love to always have such a button, so you can instantly add videos to your Watch Later playlist? ME TOO!
 
-First, run the development server:
+YouTube Watch Later is a small extension that adds an "Add to Watch Later" button to videos on various pages and in the notification drawer. Simply install the extension, configure it to your likings inside the popup, and go add those videos to your Watch Later playlist!
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
+## Installation
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
+You can download the extension from the following stores:
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
+| Browser | Link             |
+| ------- | ---------------- |
+| Chrome  | [Visit][Chrome]  |
+| Edge    | [Visit][Edge]    |
+| Firefox | [Visit][Firefox] |
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+Or, if you prefer to install the extension manually, you can download the latest release from [GitHub][GitHub latest].
 
-## Making production build
+## Settings
+The following settings can be configured:
 
-Run the following:
+| Setting                    | Description                                                                                                                                                                           | Default  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist.                                                                                      | disabled |
+| Analytics                  | Allow successful button clicks to be sent to my personal analytics site. It is just a fun little way for me to see if other people find it useful. Feel free to disable this, though! | disabled |
+| Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.                                                                                             | disabled |
 
-```bash
-pnpm build
-# or
-npm run build
-```
+## Changelog
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+Please see the [changelog] for more information about what has changed recently.
 
-## Submit to the webstores
+## License
 
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+The scripts and documentation in this project are released under the [MIT License][license].
 
-## YouTube events
-
-To get a list of all registered window events, execute the following in the console:
-
-```javascript
-getEventListeners(document)
-```
+[Chrome]: https://chrome.google.com/webstore/detail/youtube-watch-later
+[Edge]: https://microsoftedge.microsoft.com/addons/detail/youtube-watch-later
+[Firefox]: https://addons.mozilla.org/en-US/firefox/addon/youtube-watch-later
+[GitHub latest]: https://github.com/dnwjn/youtube-watch-later/releases/latest
+[changelog]: CHANGELOG.md
+[license]: LICENSE.md
