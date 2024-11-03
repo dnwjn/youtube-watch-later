@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
-import { hasSearch } from '~helpers/browser'
+import { hasPath, hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
 import { markNotificationsAsRead, analyticsEnabled } from '~helpers/system'
 import type { YTData } from '~interfaces'
@@ -38,7 +38,7 @@ export const getStyle: PlasmoGetStyle = () => {
 
         .watch-later-btn {
             position: absolute;
-            left: 6px;
+            left: 5px;
             top: 4px;
             background-color: transparent;
             color: #fff;
@@ -52,9 +52,19 @@ export const getStyle: PlasmoGetStyle = () => {
             outline: none;
         }
 
-        .watch-later-btn.inside-thumbnail {
+        .watch-later-btn.inside-thumbnail,
+        .watch-later-btn.inside-playlist {
             background-color: #282828;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .watch-later-btn.inside-playlist {
+            left: unset;
+            top: unset;
+            right: unset;
+            bottom: unset;
+            margin-left: 40px;
+            margin-top: -53px;
         }
 
         .watch-later-btn.inside-notification {
@@ -76,11 +86,13 @@ export const getStyle: PlasmoGetStyle = () => {
             background-color: rgba(0,0,0,0.1);
         }
 
-        .watch-later-btn.dark.inside-thumbnail:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.dark.inside-thumbnail:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.dark.inside-playlist:not(.loading):not(.success):not(.error):hover {
             background-color: #4c4c4c;
         }
 
-        .watch-later-btn.light.inside-thumbnail:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.light.inside-thumbnail:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.light.inside-playlist:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(0,0,0,0.8);
         }
 
@@ -124,7 +136,7 @@ export const getStyle: PlasmoGetStyle = () => {
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(
-    'ytd-rich-item-renderer, ytd-notification-renderer',
+    'ytd-rich-item-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, ytd-notification-renderer',
   )
 
   return (
@@ -223,13 +235,17 @@ const WatchLaterButton = ({ anchor }) => {
   const [hasData, setHasData] = useState(false)
 
   const isInThumbnail = ['YTD-RICH-ITEM-RENDERER', 'YTD-GRID-VIDEO-RENDERER'].includes(element.tagName)
-  const isInNotification = element.tagName === 'YTD-NOTIFICATION-RENDERER'
+  const isInPlaylist = ['YTD-PLAYLIST-VIDEO-RENDERER'].includes(element.tagName)
+  const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(element.tagName)
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
 
     if (isInThumbnail) {
       classes.push('inside-thumbnail')
+    }
+    if (isInPlaylist) {
+      classes.push('inside-playlist')
     }
     if (isInNotification) {
       classes.push('inside-notification')
@@ -459,8 +475,9 @@ const WatchLaterButton = ({ anchor }) => {
 
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
+    const isPlaylists = hasPath(url, '/feed/playlists')
 
-    if (!enabled || (!isInNotification && isWL)) {
+    if (!enabled || (!isInNotification && (isWL || isPlaylists))) {
       setVisible(false)
     } else {
       setVisible(true)
