@@ -13,13 +13,14 @@ const Popup = () => {
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
   const [markNotificationsAsRead, setMarkNotificationsAsRead] =
     useStorage<boolean>('markNotificationsAsRead', false)
+  const [analyticsEnabled, setAnalyticsEnabled] = useStorage<boolean>('analyticsEnabled', false)
 
   const version = useMemo(() => {
-    if (process.env.NODE_ENV === 'development') {
-      return 'DEV'
+    if (process.env.NODE_ENV === 'production') {
+      return `v${packageJson.version}`
     }
 
-    return `v${packageJson.version}`
+    return 'DEV'
   }, [process.env.NODE_ENV, packageJson.version])
 
   const checkIfEnabled = async () => {
@@ -57,21 +58,6 @@ const Popup = () => {
         <p className="instruction">Click a setting to change it.</p>
 
         <div className="setting">
-          <h3 className="title">Logging</h3>
-
-          <button className="button" onClick={() => setIsLogging(!isLogging)}>
-            <div className="default">
-              <span className="status">
-                {isLogging ? 'Enabled' : 'Disabled'}
-              </span>
-            </div>
-            <div className="hover">
-              <span className="status">{isLogging ? 'Disable' : 'Enable'}</span>
-            </div>
-          </button>
-        </div>
-
-        <div className="setting">
           <h3 className="title">Mark notifications as read</h3>
 
           <button
@@ -90,6 +76,55 @@ const Popup = () => {
               </span>
             </div>
           </button>
+
+          <p className="instruction spacing">
+            When enabled, notifications will be marked as read when you add them to Watch Later.
+          </p>
+        </div>
+
+        <div className="setting">
+          <h3 className="title">Analytics</h3>
+
+          <button
+            className="button"
+            onClick={() =>
+              setAnalyticsEnabled(!analyticsEnabled)
+            }>
+            <div className="default">
+              <span className="status">
+                {analyticsEnabled ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                {analyticsEnabled ? 'Disable' : 'Enable'}
+              </span>
+            </div>
+          </button>
+
+          <p className="instruction spacing">
+            When enabled, button clicks will be tracked. This is purely for my own curiosity :).
+            Feel free to disable it though!
+          </p>
+        </div>
+
+        <div className="setting">
+          <h3 className="title">Logging</h3>
+
+          <button className="button" onClick={() => setIsLogging(!isLogging)}>
+            <div className="default">
+              <span className="status">
+                {isLogging ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">{isLogging ? 'Disable' : 'Enable'}</span>
+            </div>
+          </button>
+
+          <p className="instruction spacing">
+            When enabled, logs will be shown in the console.
+          </p>
         </div>
       </div>
 

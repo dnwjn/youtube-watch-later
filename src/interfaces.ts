@@ -9,4 +9,5 @@ export interface YTData {
 export interface Settings {
   loggingEnabled: boolean
   markNotificationsAsRead: boolean
+  analyticsEnabled: boolean
 }

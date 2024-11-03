@@ -10,7 +10,7 @@ import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
 import { hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
-import { markNotificationsAsRead } from '~helpers/system'
+import { markNotificationsAsRead, analyticsEnabled } from '~helpers/system'
 import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 
@@ -222,7 +222,7 @@ const WatchLaterButton = ({ anchor }) => {
   const [visible, setVisible] = useState(false)
   const [hasData, setHasData] = useState(false)
 
-  const isInThumbnail = element.tagName === 'YTD-RICH-ITEM-RENDERER'
+  const isInThumbnail = ['YTD-RICH-ITEM-RENDERER', 'YTD-GRID-VIDEO-RENDERER'].includes(element.tagName)
   const isInNotification = element.tagName === 'YTD-NOTIFICATION-RENDERER'
 
   const buttonClasses = useMemo(() => {
@@ -259,6 +259,34 @@ const WatchLaterButton = ({ anchor }) => {
     return classes.join(' ')
   }, [status, ytData?.clientTheme])
 
+  const trackClick = async () => {
+    if (!(await analyticsEnabled())) {
+      logLine('Analytics is disabled')
+      return
+    }
+
+    const response = await fetch('https://analytics.dnwjn.io/api/event', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        domain: 'yt-watch-later-extension',
+        name: 'buttonclick',
+        url: window.location.href,
+        props: {
+          variation: isInNotification ? 'notification' : 'thumbnail',
+        }
+      }),
+    })
+
+    if (response.ok) {
+      logLine('Click tracked')
+    } else {
+      logError('Failed to track click')
+    }
+  }
+
   const addVideo = async (event) => {
     event.stopPropagation()
 
@@ -278,6 +306,8 @@ const WatchLaterButton = ({ anchor }) => {
             if (isInNotification) {
               markNotificationAsRead()
             }
+
+            trackClick()
           })
           .catch(() => setStatus(4))
           .finally(() => {
@@ -470,7 +500,8 @@ const WatchLaterButton = ({ anchor }) => {
     <button
       className={buttonClasses}
       disabled={status !== 1}
-      onClick={addVideo}>
+      onClick={addVideo}
+    >
       <Icon status={status} />
     </button>
   )

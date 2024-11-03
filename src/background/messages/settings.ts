@@ -19,10 +19,20 @@ const markNotificationsAsRead = async (): Promise<boolean> => {
   return markNotificationsAsRead
 }
 
+const analyticsEnabled = async (): Promise<boolean> => {
+  const storage = new Storage()
+  const analyticsEnabled: boolean = await storage.get(
+    'analyticsEnabled',
+  )
+  
+  return analyticsEnabled
+}
+
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   const settings: Settings = {
     loggingEnabled: await loggingEnabled(),
     markNotificationsAsRead: await markNotificationsAsRead(),
+    analyticsEnabled: await analyticsEnabled(),
   }
 
   res.send(settings)

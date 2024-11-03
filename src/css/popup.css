@@ -75,6 +75,10 @@ a {
   margin-top: 0;
 }
 
+.content .instruction.spacing {
+  margin-top: 5px;
+}
+
 .content .setting:not(:first-child) {
   margin-top: 10px;
 }
