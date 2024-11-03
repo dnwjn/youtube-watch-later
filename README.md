@@ -26,7 +26,6 @@ The following settings can be configured:
 | Setting                    | Description                                                                                                                                                                           | Default  |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist.                                                                                      | disabled |
-| Analytics                  | Allow successful button clicks to be sent to my personal analytics site. It is just a fun little way for me to see if other people find it useful. Feel free to disable this, though! | disabled |
 | Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.                                                                                             | disabled |
 
 ## Changelog
