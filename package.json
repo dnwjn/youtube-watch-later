@@ -14,7 +14,11 @@
     "build:opera": "plasmo build --zip --target=opera-mv3",
     "build:bundle": "plasmo build --source-maps --bundle-buddy",
     "package": "plasmo package",
-    "pretty": "prettier --write ."
+    "pretty": "prettier --write .",
+    "version": "auto-changelog -p && git add CHANGELOG.md",
+    "bump-patch": "npm version patch --no-git-tag-version",
+    "bump-minor": "npm version minor --no-git-tag-version",
+    "bump-major": "npm version major --no-git-tag-version"
   },
   "dependencies": {
     "@plasmohq/messaging": "^0.6.2",
@@ -30,6 +34,7 @@
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
+    "auto-changelog": "^2.5.0",
     "prettier": "3.2.4",
     "typescript": "5.3.3"
   },
