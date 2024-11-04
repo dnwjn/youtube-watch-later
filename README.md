@@ -1,4 +1,6 @@
-# YouTube Watch Later
+<p align="center"><img src="assets/icon.png" width="150" alt="Social card of YouTube Watch Later"></p>
+
+<h1 align="center">YouTube Watch Later</h1>
 
 > Have you ever browsed YouTube and used that "Add to Watch Later" button? Me too.
 > 
@@ -12,11 +14,9 @@ YouTube Watch Later is a small extension that adds an "Add to Watch Later" butto
 
 You can download the extension from the following stores:
 
-| Browser | Link             |
-| ------- | ---------------- |
-| Chrome  | [Visit][Chrome]  |
-| Edge    | [Visit][Edge]    |
-| Firefox | [Visit][Firefox] |
+|                                                     Chromium                                                      |                                                      Edge                                                       |                                                     Firefox                                                      |
+| :---------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------: |
+| [<img src="assets/chrome-web-store.png" width="244" alt="Chrome Web Store">][Chrome] | [<img src="assets/edge-addons.png" width="250" alt="Microsoft Edge Addons">][Edge] | [<img src="assets/firefox-add-ons.svg" width="200" alt="Mozilla Add-ons">][Firefox] |
 
 Or, if you prefer to install the extension manually, you can download the latest release from [GitHub][GitHub latest].
 
