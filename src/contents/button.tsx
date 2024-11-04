@@ -140,7 +140,7 @@ export const getStyle: PlasmoGetStyle = () => {
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(
-    'ytd-rich-item-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, ytd-notification-renderer',
+    'ytd-rich-item-renderer, ytd-playlist-video-renderer, ytd-notification-renderer',
   )
 
   return (
