@@ -106,9 +106,13 @@ export const getStyle: PlasmoGetStyle = () => {
             animation: blink 1s ease-in-out infinite;
         }
 
-        .watch-later-btn.success,
+        .watch-later-btn.success {
+            background-color: #00ff00;
+            color: #000000;
+        }
+
         .watch-later-btn.error {
-            opacity: 0.75;
+            background-color: #ff0000;
         }
 
         .watch-later-btn svg {
