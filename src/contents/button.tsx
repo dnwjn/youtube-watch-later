@@ -447,7 +447,7 @@ const WatchLaterButton = ({ anchor }) => {
   const handleNavigateFinish = (event) => {
     const newUrl = event.detail?.response?.url as string | null
     setUrl(newUrl)
-    setEnabled(true)
+    setEnabled(ytData?.loggedIn === true)
   }
 
   useEffect(() => {
@@ -470,7 +470,7 @@ const WatchLaterButton = ({ anchor }) => {
   }, [visible, hasData])
 
   useEffect(() => {
-    setEnabled(true)
+    setEnabled(ytData?.loggedIn === true)
 
     if (ytData) {
       setHasData(true)

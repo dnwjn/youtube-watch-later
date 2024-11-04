@@ -15,6 +15,7 @@ const getYtData = async () => {
     const clientTheme =
       ytcfg.get('INNERTUBE_CONTEXT')?.client?.userInterfaceTheme
     const clientVersion = ytcfg.get('INNERTUBE_CLIENT_VERSION')
+    const loggedIn = ytcfg.get('LOGGED_IN') === true
     const pageId = ytcfg.get('DELEGATED_SESSION_ID')
     const visitorId = ytcfg.get('VISITOR_DATA')
 
@@ -22,6 +23,7 @@ const getYtData = async () => {
       authUser,
       clientTheme,
       clientVersion,
+      loggedIn,
       pageId,
       visitorId,
     }
