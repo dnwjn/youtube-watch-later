@@ -446,7 +446,7 @@ const WatchLaterButton = ({ anchor }) => {
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
-
+    
     if (!enabled || (!isInNotification && (isWL || isPlaylists))) {
       setVisible(false)
     } else {
@@ -463,6 +463,8 @@ const WatchLaterButton = ({ anchor }) => {
   }, [visible, hasData])
 
   useEffect(() => {
+    setEnabled(true)
+
     if (ytData) {
       setHasData(true)
       return
@@ -475,6 +477,8 @@ const WatchLaterButton = ({ anchor }) => {
     window.dispatchEvent(new CustomEvent('ytwl-yt-req'))
 
     return () => {
+      setEnabled(false)
+
       window.removeEventListener('ytwl-yt', setYtwlYt)
       window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
       window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)

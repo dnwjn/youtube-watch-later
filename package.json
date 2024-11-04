@@ -43,7 +43,9 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
+      "https://www.youtube.com/*",
+      "https://m.youtube.com/*",
+      "https://*.youtube.com/*"
     ],
     "permissions": [
       "cookies",

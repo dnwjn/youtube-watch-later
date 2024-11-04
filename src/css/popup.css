@@ -66,22 +66,6 @@ a {
   margin-bottom: 5px;
 }
 
-.content .extension-status {
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  display: inline-block;
-  margin-left: 5px;
-}
-
-.content .extension-status.enabled {
-  background-color: #00ff00;
-}
-
-.content .extension-status.disabled {
-  background-color: #ff0000;
-}
-
 .content .instruction {
   color: #ccc;
   font-style: italic;

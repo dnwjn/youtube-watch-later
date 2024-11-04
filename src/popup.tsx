@@ -42,16 +42,6 @@ const Popup = () => {
       </div>
 
       <div className="content">
-        <h2 className="title">
-          Status:{' '}
-          <span
-            className={`extension-status ${enabled ? 'enabled' : 'disabled'}`}></span>
-        </h2>
-
-        <p className="instruction">Extension only works on YouTube.com.</p>
-      </div>
-
-      <div className="content">
         <h2 className="title">Settings</h2>
 
         <p className="instruction">Click a setting to change it.</p>
