@@ -16,7 +16,7 @@ You can download the extension from the following stores:
 
 |                                                     Chromium                                                      |                                                      Edge                                                       |                                                     Firefox                                                      |
 | :---------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------: |
-| [<img src="assets/chrome-web-store.png" width="244" alt="Chrome Web Store">][Chrome] | [<img src="assets/edge-addons.png" width="250" alt="Microsoft Edge Addons">][Edge] | [<img src="assets/firefox-add-ons.svg" width="200" alt="Mozilla Add-ons">][Firefox] |
+| <img src="assets/chrome-web-store.png" width="244" alt="Chrome Web Store"> Coming soon... | <img src="assets/edge-addons.png" width="250" alt="Microsoft Edge Addons"> Coming soon... | <img src="assets/firefox-add-ons.svg" width="200" alt="Mozilla Add-ons"> Coming soon... |
 
 Or, if you prefer to install the extension manually, you can download the latest release from [GitHub][GitHub latest].
 
