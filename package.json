@@ -7,7 +7,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "npm run build:brave && npm run build:chrome && npm run build:edge && npm run build:firefox && npm run build:opera",
+    "build": "npm run build:chrome && npm run build:edge && npm run build:firefox",
     "build:brave": "plasmo build --zip --target=brave-mv3",
     "build:chrome": "plasmo build --zip --target=chrome-mv3",
     "build:edge": "plasmo build --zip --target=edge-mv3",
