@@ -4,6 +4,7 @@
   "version": "0.0.8",
   "description": "Add YouTube videos to your Watch Later playlist with a single click.",
   "author": "dnwjn <hello@dnwjn.dev>",
+  "license": "GPL-3.0-only",
   "scripts": {
     "dev": "plasmo dev",
     "build": "npm run build:brave && npm run build:chrome && npm run build:edge && npm run build:firefox && npm run build:opera",

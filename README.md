@@ -34,7 +34,7 @@ Please see the [changelog] for more information about what has changed recently.
 
 ## License
 
-The scripts and documentation in this project are released under the [MIT License][license].
+The scripts and documentation in this project are released under the [GPL-3.0 license][license].
 
 [Chrome]: https://chrome.google.com/webstore/detail/youtube-watch-later
 [Edge]: https://microsoftedge.microsoft.com/addons/detail/youtube-watch-later
