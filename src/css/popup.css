@@ -28,6 +28,36 @@ a {
   text-decoration: none;
 }
 
+.button {
+  border: none;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #3d3d3d;
+  padding: 10px;
+  border: 1px solid #3d3d3d;
+  text-align: center;
+  display: block;
+  width: 100%;
+  transition: all var(--animation-speed);
+}
+
+.button.small {
+  font-size: 9px;
+}
+
+.button:hover {
+  background-color: #4d4d4d;
+}
+
+.button:hover .default {
+  display: none;
+}
+
+.button:hover .hover {
+  display: inline-block;
+}
+
 .bold {
   font-weight: bold;
 }
@@ -80,23 +110,6 @@ a {
   margin-top: 10px;
 }
 
-.content .button {
-  border: none;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  background-color: #3d3d3d;
-  padding: 10px;
-  border: 1px solid #3d3d3d;
-  text-align: center;
-  display: block;
-  transition: all var(--animation-speed);
-}
-
-.content .button {
-  width: 100%;
-}
-
 .content .setting .status {
   font-weight: bold;
 }
@@ -107,18 +120,6 @@ a {
 
 .content .setting .hover {
   display: none;
-}
-
-.content .button:hover {
-  background-color: #4d4d4d;
-}
-
-.content .button:hover .default {
-  display: none;
-}
-
-.content .button:hover .hover {
-  display: inline-block;
 }
 
 .footer {
@@ -134,16 +135,11 @@ a {
   transition: all var(--animation-speed);
 }
 
-.footer a.credits:hover {
-  background-color: #4d4d4d;
-  text-decoration: none;
-}
-
 .footer .credits.small {
   font-size: 9px;
 }
 
-.footer .credits .name {
+.footer .name {
   font-weight: bold;
   font-size: inherit;
 }
