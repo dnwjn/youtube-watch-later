@@ -100,15 +100,19 @@ const Popup = () => {
 
         <button
           className="button bold"
-          onClick={() => openTab('https://github.com/dnwjn/youtube-watch-later')}>
+          onClick={() => openTab('https://github.com/dnwjn/youtube-watch-later')}
+        >
           Go to GitHub
         </button>
       </div>
 
       <div className="footer">
-        <a className="credits" href="https://github.com/dnwjn">
+        <button
+          className="button bold small"
+          onClick={() => openTab('https://dnwjn.dev')}
+        >
           Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
-        </a>
+        </button>
 
         <div className="credits small">
           Version: <span className="name">{version}</span>
