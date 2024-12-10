@@ -94,6 +94,7 @@ const Popup = () => {
       <div className="content">
         <h2 className="title">Issues?</h2>
 
+        {/* TODO: Link to website when it has a form */}
         <p className="instruction">
           If you encounter any issues, please report them on GitHub:
         </p>
