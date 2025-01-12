@@ -8,11 +8,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { hasPath, hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
-import { buttonPosition, markNotificationsAsRead } from '~helpers/system'
-import type { YTData } from '~interfaces'
+import { buttonPosition, buttonOpacity, markNotificationsAsRead } from '~helpers/system'
+import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 import { getAuthorizationHeader } from '~helpers/api'
-import { ButtonPosition } from '~types'
+import { ButtonOpacity, ButtonPosition } from '~types'
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -50,33 +50,33 @@ export const getStyle: PlasmoGetStyle = () => {
             outline: none;
         }
 
-        .watch-later-btn,
-        .watch-later-btn.top-left {
+        .watch-later-btn.inside-thumbnail,
+        .watch-later-btn.inside-playlist,
+        .watch-later-btn.inside-thumbnail.top-left,
+        .watch-later-btn.inside-playlist.top-left {
             left: 5px;
             top: 4px;
             right: unset;
             bottom: unset;
         }
 
-        .watch-later-btn.top-right {
+        .watch-later-btn.inside-thumbnail.top-right,
+        .watch-later-btn.inside-playlist.top-right {
             left: unset;
             top: 4px;
             right: 5px;
             bottom: unset;
         }
 
-        .watch-later-btn.bottom-left {
-            left: 5px;
-            top: unset;
-            right: unset;
-            bottom: 4px;
+        .watch-later-btn.inside-thumbnail,
+        .watch-later-btn.inside-playlist,
+        .watch-later-btn.inside-playlist.opacity-full {
+            opacity: 1;
         }
 
-        .watch-later-btn.bottom-right {
-            left: unset;
-            top: unset;
-            right: 5px;
-            bottom: 4px;
+        .watch-later-btn.inside-thumbnail.opacity-half,
+        .watch-later-btn.inside-playlist.opacity-half {
+            opacity: .5;
         }
 
         .watch-later-btn.inside-thumbnail,
@@ -267,7 +267,10 @@ const WatchLaterButton = ({ anchor }) => {
   const [status, setStatus] = useState<number>(0)
   const [visible, setVisible] = useState<boolean>(false)
   const [hasData, setHasData] = useState<boolean>(false)
-  const [buttonPositionClass, setButtonPositionClass] = useState<string>(ButtonPosition.TopLeft)
+  const [buttonConfig, setButtonConfig] = useState<ButtonConfig>({
+    opacity: ButtonOpacity.Full,
+    position: ButtonPosition.TopLeft,
+  })
 
   const isInThumbnail = ['YTD-RICH-ITEM-RENDERER', 'YTD-GRID-VIDEO-RENDERER', 'YTD-VIDEO-RENDERER'].includes(element.tagName)
   const isInPlaylist = ['YTD-PLAYLIST-VIDEO-RENDERER'].includes(element.tagName)
@@ -276,8 +279,11 @@ const WatchLaterButton = ({ anchor }) => {
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
 
-    if (buttonPositionClass) {
-      classes.push(buttonPositionClass)
+    if (buttonConfig.opacity) {
+      classes.push(buttonConfig.opacity)
+    }
+    if (buttonConfig.position) {
+      classes.push(buttonConfig.position)
     }
 
     if (isInThumbnail) {
@@ -312,13 +318,16 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status, ytData?.clientTheme, buttonPositionClass])
+  }, [status, ytData?.clientTheme, buttonConfig])
 
-  const fetchButtonPosition = async () => {
+  const fetchButtonConfig = async () => {
+    const opacity = await buttonOpacity()
     const position = await buttonPosition()
-    if (position) {
-      setButtonPositionClass(position)
-    }
+
+    setButtonConfig({
+      opacity: opacity || buttonConfig.opacity,
+      position: position || buttonConfig.position,
+    })
   }
 
   const addVideo = async (event) => {
@@ -510,7 +519,7 @@ const WatchLaterButton = ({ anchor }) => {
 
   useEffect(() => {
     setEnabled(ytData?.loggedIn === true)
-    fetchButtonPosition()
+    fetchButtonConfig()
 
     if (ytData) {
       setHasData(true)

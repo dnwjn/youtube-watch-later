@@ -4,16 +4,16 @@ import React, { useMemo } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
-import { ButtonPosition } from '~types'
+import { ButtonOpacity, ButtonPosition } from '~types'
 import { openTab } from '~helpers/browser'
 
 import '~css/popup.css'
 
 const Popup = () => {
-  const [buttonPosition, setButtonPosition] = useStorage<string>('buttonPosition', ButtonPosition.TopLeft)
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
-  const [markNotificationsAsRead, setMarkNotificationsAsRead] =
-    useStorage<boolean>('markNotificationsAsRead', false)
+  const [markNotificationsAsRead, setMarkNotificationsAsRead] = useStorage<boolean>('markNotificationsAsRead', false)
+  const [buttonOpacity, setButtonOpacity] = useStorage<string>('buttonOpacity', ButtonOpacity.Full)
+  const [buttonPosition, setButtonPosition] = useStorage<string>('buttonPosition', ButtonPosition.TopLeft)
 
   const version = useMemo(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -32,47 +32,7 @@ const Popup = () => {
       </div>
 
       <div className="content">
-        <h2 className="title">Settings</h2>
-
-        <div className="setting">
-          <h3 className="title">Button position</h3>
-
-          <button
-            className="button w-half"
-            disabled={buttonPosition === ButtonPosition.TopLeft}
-            onClick={() =>
-              setButtonPosition(ButtonPosition.TopLeft)
-            }>
-            <div className="default">
-              <span className="status">
-                Top left
-              </span>
-            </div>
-            <div className="hover">
-              <span className="status">
-                Move to top left
-              </span>
-            </div>
-          </button>
-
-          <button
-            className="button w-half"
-            disabled={buttonPosition === ButtonPosition.TopRight}
-            onClick={() =>
-              setButtonPosition(ButtonPosition.TopRight)
-            }>
-            <div className="default">
-              <span className="status">
-                Top right
-              </span>
-            </div>
-            <div className="hover">
-              <span className="status">
-                Move to top right
-              </span>
-            </div>
-          </button>
-        </div>
+        <h2 className="title">General settings</h2>
 
         <div className="setting">
           <h3 className="title">Mark notifications as read</h3>
@@ -116,6 +76,92 @@ const Popup = () => {
           <p className="instruction spacing">
             When enabled, logs will be shown in the console.
           </p>
+        </div>
+      </div>
+
+      <div className="content">
+        <h2 className="title">Button settings</h2>
+
+        <p className="instruction">A page reload is required for these settings to take effect.</p>
+
+        <div className="setting">
+          <h3 className="title">Button opacity</h3>
+
+          <button
+            className="button w-half"
+            disabled={buttonOpacity === ButtonOpacity.Full}
+            onClick={() =>
+              setButtonOpacity(ButtonOpacity.Full)
+            }>
+            <div className="default">
+              <span className="status">
+                Full
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Change to full
+              </span>
+            </div>
+          </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonOpacity === ButtonOpacity.Half}
+            onClick={() =>
+              setButtonOpacity(ButtonOpacity.Half)
+            }>
+            <div className="default">
+              <span className="status">
+                Half
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Change to half
+              </span>
+            </div>
+          </button>
+        </div>
+
+        <div className="setting">
+          <h3 className="title">Button position</h3>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.TopLeft}
+            onClick={() =>
+              setButtonPosition(ButtonPosition.TopLeft)
+            }>
+            <div className="default">
+              <span className="status">
+                Top left
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Move to top left
+              </span>
+            </div>
+          </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.TopRight}
+            onClick={() =>
+              setButtonPosition(ButtonPosition.TopRight)
+            }>
+            <div className="default">
+              <span className="status">
+                Top right
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Move to top right
+              </span>
+            </div>
+          </button>
         </div>
       </div>
 
