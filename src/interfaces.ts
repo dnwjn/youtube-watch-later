@@ -8,7 +8,13 @@ export interface YTData {
 }
 
 export interface Settings {
+  buttonOpacity: string
   buttonPosition: string
   loggingEnabled: boolean
   markNotificationsAsRead: boolean
+}
+
+export interface ButtonConfig {
+  opacity: string
+  position: string
 }
