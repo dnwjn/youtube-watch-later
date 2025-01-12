@@ -37,7 +37,7 @@ a {
   padding: 10px;
   border: 1px solid #3d3d3d;
   text-align: center;
-  display: block;
+  display: inline-block;
   width: 100%;
   transition: all var(--animation-speed);
 }
@@ -46,16 +46,25 @@ a {
   font-size: 9px;
 }
 
-.button:hover {
+.button:not(:disabled):hover {
   background-color: #4d4d4d;
 }
 
-.button:hover .default {
-  display: none;
+.button:not(:disabled):hover .default {
+  display: none !important;
 }
 
-.button:hover .hover {
-  display: inline-block;
+.button:not(:disabled):hover .hover {
+  display: inline-block !important;
+}
+
+.button.w-half {
+  width: 50%;
+}
+
+.button:disabled {
+  background-color: #4d4d4d;
+  cursor: not-allowed;
 }
 
 .bold {

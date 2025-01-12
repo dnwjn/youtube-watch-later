@@ -3,6 +3,13 @@ import { Storage } from '@plasmohq/storage'
 
 import type { Settings } from '~interfaces'
 
+const buttonPosition = async (): Promise<string> => {
+  const storage = new Storage()
+  const buttonPosition: string = await storage.get('buttonPosition')
+
+  return buttonPosition
+}
+
 const loggingEnabled = async (): Promise<boolean> => {
   const storage = new Storage()
   const isLogging: boolean = await storage.get('isLogging')
@@ -21,6 +28,7 @@ const markNotificationsAsRead = async (): Promise<boolean> => {
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   const settings: Settings = {
+    buttonPosition: await buttonPosition(),
     loggingEnabled: await loggingEnabled(),
     markNotificationsAsRead: await markNotificationsAsRead(),
   }

@@ -4,10 +4,13 @@ import React, { useMemo } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
+import { ButtonPosition } from '~types'
+import { openTab } from '~helpers/browser'
 
 import '~css/popup.css'
 
 const Popup = () => {
+  const [buttonPosition, setButtonPosition] = useStorage<string>('buttonPosition', ButtonPosition.TopLeft)
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
   const [markNotificationsAsRead, setMarkNotificationsAsRead] =
     useStorage<boolean>('markNotificationsAsRead', false)
@@ -31,7 +34,45 @@ const Popup = () => {
       <div className="content">
         <h2 className="title">Settings</h2>
 
-        <p className="instruction">Click a setting to change it.</p>
+        <div className="setting">
+          <h3 className="title">Button position</h3>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.TopLeft}
+            onClick={() =>
+              setButtonPosition(ButtonPosition.TopLeft)
+            }>
+            <div className="default">
+              <span className="status">
+                Top left
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Move to top left
+              </span>
+            </div>
+          </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.TopRight}
+            onClick={() =>
+              setButtonPosition(ButtonPosition.TopRight)
+            }>
+            <div className="default">
+              <span className="status">
+                Top right
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Move to top right
+              </span>
+            </div>
+          </button>
+        </div>
 
         <div className="setting">
           <h3 className="title">Mark notifications as read</h3>
