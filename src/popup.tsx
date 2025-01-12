@@ -1,15 +1,16 @@
 import packageJson from '@root/package.json'
 import logo from 'data-base64:@root/assets/icon.png'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
-import { getActiveTab, openTab } from '~helpers/browser'
+import { ButtonPosition } from '~types'
+import { openTab } from '~helpers/browser'
 
 import '~css/popup.css'
 
 const Popup = () => {
-  const [enabled, setEnabled] = useState<boolean>(false)
+  const [buttonPosition, setButtonPosition] = useStorage<string>('buttonPosition', ButtonPosition.TopLeft)
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
   const [markNotificationsAsRead, setMarkNotificationsAsRead] =
     useStorage<boolean>('markNotificationsAsRead', false)
@@ -22,17 +23,6 @@ const Popup = () => {
     return 'DEV'
   }, [process.env.NODE_ENV, packageJson.version])
 
-  const checkIfEnabled = async () => {
-    const activeTab = await getActiveTab()
-    const url = activeTab?.url
-    const _enabled = url?.match(/youtube\.com/) !== null
-    setEnabled(_enabled)
-  }
-
-  useEffect(() => {
-    checkIfEnabled()
-  }, [])
-
   return (
     <div className="root">
       <div className="header">
@@ -44,7 +34,45 @@ const Popup = () => {
       <div className="content">
         <h2 className="title">Settings</h2>
 
-        <p className="instruction">Click a setting to change it.</p>
+        <div className="setting">
+          <h3 className="title">Button position</h3>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.TopLeft}
+            onClick={() =>
+              setButtonPosition(ButtonPosition.TopLeft)
+            }>
+            <div className="default">
+              <span className="status">
+                Top left
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Move to top left
+              </span>
+            </div>
+          </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.TopRight}
+            onClick={() =>
+              setButtonPosition(ButtonPosition.TopRight)
+            }>
+            <div className="default">
+              <span className="status">
+                Top right
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                Move to top right
+              </span>
+            </div>
+          </button>
+        </div>
 
         <div className="setting">
           <h3 className="title">Mark notifications as read</h3>

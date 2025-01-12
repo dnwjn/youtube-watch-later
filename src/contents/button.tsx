@@ -6,13 +6,13 @@ import type {
 } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
-
 import { hasPath, hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
-import { markNotificationsAsRead } from '~helpers/system'
+import { buttonPosition, markNotificationsAsRead } from '~helpers/system'
 import type { YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
+import { getAuthorizationHeader } from '~helpers/api'
+import { ButtonPosition } from '~types'
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -38,8 +38,6 @@ export const getStyle: PlasmoGetStyle = () => {
 
         .watch-later-btn {
             position: absolute;
-            left: 5px;
-            top: 4px;
             background-color: transparent;
             color: #fff;
             padding: 5px;
@@ -50,6 +48,35 @@ export const getStyle: PlasmoGetStyle = () => {
             border-radius: 8px;
             transition: background-color .5s cubic-bezier(.05,0,0,1);
             outline: none;
+        }
+
+        .watch-later-btn,
+        .watch-later-btn.top-left {
+            left: 5px;
+            top: 4px;
+            right: unset;
+            bottom: unset;
+        }
+
+        .watch-later-btn.top-right {
+            left: unset;
+            top: 4px;
+            right: 5px;
+            bottom: unset;
+        }
+
+        .watch-later-btn.bottom-left {
+            left: 5px;
+            top: unset;
+            right: unset;
+            bottom: 4px;
+        }
+
+        .watch-later-btn.bottom-right {
+            left: unset;
+            top: unset;
+            right: 5px;
+            bottom: 4px;
         }
 
         .watch-later-btn.inside-thumbnail,
@@ -237,9 +264,10 @@ const WatchLaterButton = ({ anchor }) => {
    * 3: Success
    * 4: Error
    */
-  const [status, setStatus] = useState(0)
-  const [visible, setVisible] = useState(false)
-  const [hasData, setHasData] = useState(false)
+  const [status, setStatus] = useState<number>(0)
+  const [visible, setVisible] = useState<boolean>(false)
+  const [hasData, setHasData] = useState<boolean>(false)
+  const [buttonPositionClass, setButtonPositionClass] = useState<string>(ButtonPosition.TopLeft)
 
   const isInThumbnail = ['YTD-RICH-ITEM-RENDERER', 'YTD-GRID-VIDEO-RENDERER', 'YTD-VIDEO-RENDERER'].includes(element.tagName)
   const isInPlaylist = ['YTD-PLAYLIST-VIDEO-RENDERER'].includes(element.tagName)
@@ -247,6 +275,10 @@ const WatchLaterButton = ({ anchor }) => {
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
+
+    if (buttonPositionClass) {
+      classes.push(buttonPositionClass)
+    }
 
     if (isInThumbnail) {
       classes.push('inside-thumbnail')
@@ -280,7 +312,14 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status, ytData?.clientTheme])
+  }, [status, ytData?.clientTheme, buttonPositionClass])
+
+  const fetchButtonPosition = async () => {
+    const position = await buttonPosition()
+    if (position) {
+      setButtonPositionClass(position)
+    }
+  }
 
   const addVideo = async (event) => {
     event.stopPropagation()
@@ -471,6 +510,7 @@ const WatchLaterButton = ({ anchor }) => {
 
   useEffect(() => {
     setEnabled(ytData?.loggedIn === true)
+    fetchButtonPosition()
 
     if (ytData) {
       setHasData(true)
@@ -506,36 +546,3 @@ const WatchLaterButton = ({ anchor }) => {
 }
 
 export default WatchLaterButton
-
-const sha1 = async (message: string) => {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(message)
-  const hashBuffer = await crypto.subtle.digest('SHA-1', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-
-  return hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-const getAuthorizationHeader = async () => {
-  let sapisidCookie: string | null
-
-  try {
-    sapisidCookie = await sendToBackgroundViaRelay<string | null>({
-      name: 'visitor-cookie',
-    })
-  } catch (error) {
-    throw new Error('Visitor cookie not found. Reason: ' + error)
-  }
-
-  if (!sapisidCookie) {
-    throw new Error('Visitor cookie not found. Reason: no value')
-  }
-
-  const sapisid = sapisidCookie
-  const origin = 'https://www.youtube.com'
-  const time = Math.floor(Date.now() / 1000)
-  const hash = await sha1(`${time} ${sapisid} ${origin}`)
-  const authorizationHeader = `${time}_${hash}`
-
-  return authorizationHeader
-}

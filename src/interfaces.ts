@@ -8,6 +8,7 @@ export interface YTData {
 }
 
 export interface Settings {
+  buttonPosition: string
   loggingEnabled: boolean
   markNotificationsAsRead: boolean
 }

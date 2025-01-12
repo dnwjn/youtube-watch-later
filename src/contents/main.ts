@@ -12,8 +12,8 @@ relay(
     name: 'settings' as const,
   },
   async (req) => {
-    const openResult = await sendToBackground(req)
-    return openResult
+    const result = await sendToBackground(req)
+    return result
   },
 )
 
@@ -22,7 +22,7 @@ relay(
     name: 'visitor-cookie' as const,
   },
   async (req) => {
-    const openResult = await sendToBackground(req)
-    return openResult
+    const result = await sendToBackground(req)
+    return result
   },
 )
