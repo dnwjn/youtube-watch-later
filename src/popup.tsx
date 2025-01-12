@@ -1,15 +1,13 @@
 import packageJson from '@root/package.json'
 import logo from 'data-base64:@root/assets/icon.png'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
-import { getActiveTab, openTab } from '~helpers/browser'
 
 import '~css/popup.css'
 
 const Popup = () => {
-  const [enabled, setEnabled] = useState<boolean>(false)
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
   const [markNotificationsAsRead, setMarkNotificationsAsRead] =
     useStorage<boolean>('markNotificationsAsRead', false)
@@ -21,17 +19,6 @@ const Popup = () => {
 
     return 'DEV'
   }, [process.env.NODE_ENV, packageJson.version])
-
-  const checkIfEnabled = async () => {
-    const activeTab = await getActiveTab()
-    const url = activeTab?.url
-    const _enabled = url?.match(/youtube\.com/) !== null
-    setEnabled(_enabled)
-  }
-
-  useEffect(() => {
-    checkIfEnabled()
-  }, [])
 
   return (
     <div className="root">
