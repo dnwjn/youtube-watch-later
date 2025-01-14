@@ -21,12 +21,26 @@ You can download the extension from the following stores:
 Or, if you prefer to install the extension manually, you can download the latest release from [GitHub][GitHub latest].
 
 ## Settings
-The following settings can be configured:
+
+### General
+
+The following general settings can be configured:
 
 | Setting                    | Description                                                                                                                                                                           | Default  |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist.                                                                                      | disabled |
 | Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.                                                                                             | disabled |
+
+### Button
+
+The following button settings can be configured:
+
+| Setting  | Description                                                         | Default    |
+| -------- | ------------------------------------------------------------------- | ---------- |
+| Opacity  | Set the opacity of the button to either `full` or `half`.           | `full`     |
+| Position | Set the position of the button to either `top left` or `top right`. | `top left` |
+
+> Please note that a page reload is required for these settings to take effect.
 
 ## Changelog
 
