@@ -13,6 +13,7 @@
     "build:edge": "plasmo build --zip --target=edge-mv3",
     "build:firefox": "plasmo build --zip --target=firefox-mv2",
     "build:opera": "plasmo build --zip --target=opera-mv3",
+    "build:source": "./bin/build-source.sh",
     "build:bundle": "plasmo build --source-maps --bundle-buddy",
     "package": "plasmo package",
     "pretty": "prettier --write .",

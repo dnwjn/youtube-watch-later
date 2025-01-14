@@ -31,3 +31,7 @@ dist/
 
 # typescript
 .tsbuildinfo
+
+# keys
+key.json
+keys.json
