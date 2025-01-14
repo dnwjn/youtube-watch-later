@@ -29,7 +29,7 @@ const markNotificationsAsRead = async (): Promise<boolean> => {
   const markNotificationsAsRead: boolean = await storage.get(
     'markNotificationsAsRead',
   )
-  
+
   return markNotificationsAsRead
 }
 

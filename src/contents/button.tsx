@@ -6,12 +6,16 @@ import type {
 } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { getAuthorizationHeader } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
-import { buttonPosition, buttonOpacity, markNotificationsAsRead } from '~helpers/system'
+import {
+  buttonOpacity,
+  buttonPosition,
+  markNotificationsAsRead,
+} from '~helpers/system'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
-import { getAuthorizationHeader } from '~helpers/api'
 import { ButtonOpacity, ButtonPosition } from '~types'
 
 export const config: PlasmoCSConfig = {
@@ -170,7 +174,7 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
     'ytd-rich-item-renderer, \
     ytd-playlist-video-renderer, \
     ytd-notification-renderer, \
-    ytd-search ytd-video-renderer'
+    ytd-search ytd-video-renderer',
   )
 
   return (
@@ -272,9 +276,15 @@ const WatchLaterButton = ({ anchor }) => {
     position: ButtonPosition.TopLeft,
   })
 
-  const isInThumbnail = ['YTD-RICH-ITEM-RENDERER', 'YTD-GRID-VIDEO-RENDERER', 'YTD-VIDEO-RENDERER'].includes(element.tagName)
+  const isInThumbnail = [
+    'YTD-RICH-ITEM-RENDERER',
+    'YTD-GRID-VIDEO-RENDERER',
+    'YTD-VIDEO-RENDERER',
+  ].includes(element.tagName)
   const isInPlaylist = ['YTD-PLAYLIST-VIDEO-RENDERER'].includes(element.tagName)
-  const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(element.tagName)
+  const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(
+    element.tagName,
+  )
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -501,7 +511,7 @@ const WatchLaterButton = ({ anchor }) => {
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
-    
+
     if (!enabled || (!isInNotification && (isWL || isPlaylists))) {
       setVisible(false)
     } else {
@@ -547,8 +557,7 @@ const WatchLaterButton = ({ anchor }) => {
     <button
       className={buttonClasses}
       disabled={status !== 1}
-      onClick={addVideo}
-    >
+      onClick={addVideo}>
       <Icon status={status} />
     </button>
   )

@@ -1,4 +1,4 @@
-import { sendToBackgroundViaRelay } from "@plasmohq/messaging"
+import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
 const sha1 = async (message: string) => {
   const encoder = new TextEncoder()

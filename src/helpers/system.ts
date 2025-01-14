@@ -30,6 +30,6 @@ export const markNotificationsAsRead = async (): Promise<boolean> => {
   const settings: Settings = await sendToBackgroundViaRelay<Settings>({
     name: 'settings',
   })
-  
+
   return settings.markNotificationsAsRead
 }

@@ -22,10 +22,7 @@ export const hasSearch = (
   return new URLSearchParams(searchParams).get(search) === value
 }
 
-export const hasPath = (
-  url: string | null,
-  search: string,
-): boolean => {
+export const hasPath = (url: string | null, search: string): boolean => {
   if (!url) return false
 
   try {
