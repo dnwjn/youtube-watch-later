@@ -33,4 +33,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: 'build/*-prod.zip'
-          generateReleaseNotes: true
+          allowUpdates: true
+          omitBodyDuringUpdate: true
+          updateOnlyUnreleased: true
