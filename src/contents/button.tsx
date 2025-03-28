@@ -15,10 +15,10 @@ import {
   buttonVisibility,
   markNotificationsAsRead,
 } from '~helpers/system'
+import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
-import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
