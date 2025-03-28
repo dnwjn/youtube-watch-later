@@ -12,11 +12,13 @@ import { logError, logLine } from '~helpers/logging'
 import {
   buttonOpacity,
   buttonPosition,
+  buttonVisibility,
   markNotificationsAsRead,
 } from '~helpers/system'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
-import { ButtonOpacity, ButtonPosition } from '~types'
+import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
+import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -258,8 +260,19 @@ const Icon = ({ status }: { status: number }) => {
 const WatchLaterButton = ({ anchor }) => {
   const { element } = anchor
 
-  const { ytData, url, enabled, setYtData, setUrl, setEnabled } =
-    useWatchLaterStore()
+  useVideoPreviewListener()
+
+  const {
+    ytData,
+    url,
+    enabled,
+    latestElementRef,
+    videoPreviewIsHovered,
+    setYtData,
+    setUrl,
+    setEnabled,
+    setLatestElementRef,
+  } = useWatchLaterStore()
 
   /**
    * 0: Hidden
@@ -274,7 +287,9 @@ const WatchLaterButton = ({ anchor }) => {
   const [buttonConfig, setButtonConfig] = useState<ButtonConfig>({
     opacity: ButtonOpacity.Full,
     position: ButtonPosition.TopLeft,
+    visibility: ButtonVisibility.Always,
   })
+  const [isHovered, setIsHovered] = useState(false)
 
   const isInThumbnail = [
     'YTD-RICH-ITEM-RENDERER',
@@ -330,13 +345,23 @@ const WatchLaterButton = ({ anchor }) => {
     return classes.join(' ')
   }, [status, ytData?.clientTheme, buttonConfig])
 
+  const shouldShow = useMemo(() => {
+    if (status === 0) return false
+    if (buttonConfig.visibility === ButtonVisibility.Always) return true
+    if (isHovered) return true
+    if (videoPreviewIsHovered && latestElementRef === element) return true
+    return false
+  }, [status, buttonConfig, isHovered, videoPreviewIsHovered, latestElementRef])
+
   const fetchButtonConfig = async () => {
     const opacity = await buttonOpacity()
     const position = await buttonPosition()
+    const visibility = await buttonVisibility()
 
     setButtonConfig({
       opacity: opacity || buttonConfig.opacity,
       position: position || buttonConfig.position,
+      visibility: visibility || buttonConfig.visibility,
     })
   }
 
@@ -484,6 +509,13 @@ const WatchLaterButton = ({ anchor }) => {
     })
   }
 
+  const onElementMouseEnter = () => {
+    setIsHovered(true)
+    setLatestElementRef(element)
+  }
+
+  const onElementMouseLeave = () => setIsHovered(false)
+
   const setYtwlYt = (event) => {
     if (ytData) return
 
@@ -528,6 +560,9 @@ const WatchLaterButton = ({ anchor }) => {
   }, [visible, hasData])
 
   useEffect(() => {
+    element.addEventListener('mouseenter', onElementMouseEnter)
+    element.addEventListener('mouseleave', onElementMouseLeave)
+
     setEnabled(ytData?.loggedIn === true)
     fetchButtonConfig()
 
@@ -545,13 +580,16 @@ const WatchLaterButton = ({ anchor }) => {
     return () => {
       setEnabled(false)
 
+      element.removeEventListener('mouseenter', onElementMouseEnter)
+      element.removeEventListener('mouseleave', onElementMouseLeave)
+
       window.removeEventListener('ytwl-yt', setYtwlYt)
       window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
       window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
     }
   }, [])
 
-  if (status === 0) return null
+  if (!shouldShow) return null
 
   return (
     <button

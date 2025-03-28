@@ -18,6 +18,14 @@ export const buttonPosition = async (): Promise<string> => {
   return settings.buttonPosition
 }
 
+export const buttonVisibility = async (): Promise<string> => {
+  const settings: Settings = await sendToBackgroundViaRelay<Settings>({
+    name: 'settings',
+  })
+
+  return settings.buttonVisibility
+}
+
 export const loggingEnabled = async (): Promise<boolean> => {
   const settings: Settings = await sendToBackgroundViaRelay<Settings>({
     name: 'settings',

@@ -5,7 +5,7 @@ import React, { useMemo } from 'react'
 import { useStorage } from '@plasmohq/storage/hook'
 
 import { openTab } from '~helpers/browser'
-import { ButtonOpacity, ButtonPosition } from '~types'
+import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
 
 import '~css/popup.css'
 
@@ -13,6 +13,10 @@ const Popup = () => {
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
   const [markNotificationsAsRead, setMarkNotificationsAsRead] =
     useStorage<boolean>('markNotificationsAsRead', false)
+  const [buttonVisibility, setButtonVisibility] = useStorage<string>(
+    'buttonVisibility',
+    ButtonVisibility.Always,
+  )
   const [buttonOpacity, setButtonOpacity] = useStorage<string>(
     'buttonOpacity',
     ButtonOpacity.Full,
@@ -93,6 +97,34 @@ const Popup = () => {
         <p className="instruction">
           A page reload is required for these settings to take effect.
         </p>
+
+        <div className="setting">
+          <h3 className="title">Button visibility</h3>
+
+          <button
+            className="button w-half"
+            disabled={buttonVisibility === ButtonVisibility.Always}
+            onClick={() => setButtonVisibility(ButtonVisibility.Always)}>
+            <div className="default">
+              <span className="status">Always</span>
+            </div>
+            <div className="hover">
+              <span className="status">Change to always</span>
+            </div>
+          </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonVisibility === ButtonVisibility.Hover}
+            onClick={() => setButtonVisibility(ButtonVisibility.Hover)}>
+            <div className="default">
+              <span className="status">Hover</span>
+            </div>
+            <div className="hover">
+              <span className="status">Change to hover</span>
+            </div>
+          </button>
+        </div>
 
         <div className="setting">
           <h3 className="title">Button opacity</h3>

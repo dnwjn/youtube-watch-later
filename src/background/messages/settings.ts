@@ -17,6 +17,13 @@ const buttonPosition = async (): Promise<string> => {
   return buttonPosition
 }
 
+const buttonVisibility = async (): Promise<string> => {
+  const storage = new Storage()
+  const buttonVisibility: string = await storage.get('buttonVisibility')
+
+  return buttonVisibility
+}
+
 const loggingEnabled = async (): Promise<boolean> => {
   const storage = new Storage()
   const isLogging: boolean = await storage.get('isLogging')
@@ -37,6 +44,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   const settings: Settings = {
     buttonOpacity: await buttonOpacity(),
     buttonPosition: await buttonPosition(),
+    buttonVisibility: await buttonVisibility(),
     loggingEnabled: await loggingEnabled(),
     markNotificationsAsRead: await markNotificationsAsRead(),
   }
