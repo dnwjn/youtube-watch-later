@@ -15,7 +15,7 @@ YouTube Watch Later is a small extension that adds an "Add to Watch Later" butto
 You can download the extension from the following stores:
 
 |                                                                                        Chromium                                                                                        |                                                                                           Edge                                                                                            |                                                                          Firefox                                                                           |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | <a href="https://chromewebstore.google.com/detail/youtube-watch-later/nmpfhocciajonacicdelpbhipglapgaa"><img src="assets/chrome-web-store.png" width="244" alt="Chrome Web Store"></a> | <a href="https://microsoftedge.microsoft.com/addons/detail/youtube-watch-later/hbceknmmffnemncljbkccfgcgnccbale"><img src="assets/edge-addons.png" width="244" alt="Microsoft Store"></a> | <a href="https://addons.mozilla.org/en-US/firefox/addon/youtube-watch-later/"><img src="assets/firefox-add-ons.svg" width="200" alt="Mozilla Add-ons"></a> |
 
 Or, if you prefer to install the extension manually, you can download the latest release from [GitHub][GitHub latest].
@@ -27,7 +27,7 @@ Or, if you prefer to install the extension manually, you can download the latest
 The following general settings can be configured:
 
 | Setting                    | Description                                                                                      | Default  |
-| -------------------------- | ------------------------------------------------------------------------------------------------ | -------- |
+|----------------------------|--------------------------------------------------------------------------------------------------|----------|
 | Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist. | disabled |
 | Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.        | disabled |
 
@@ -35,10 +35,11 @@ The following general settings can be configured:
 
 The following button settings can be configured:
 
-| Setting  | Description                                                         | Default    |
-| -------- | ------------------------------------------------------------------- | ---------- |
-| Opacity  | Set the opacity of the button to either `full` or `half`.           | `full`     |
-| Position | Set the position of the button to either `top left` or `top right`. | `top left` |
+| Setting    | Description                                                         | Default    |
+|------------|---------------------------------------------------------------------|------------|
+| Visibility | Set the visibility of the button to either `always` or `hover`.     | `always`   |
+| Opacity    | Set the opacity of the button to either `full` or `half`.           | `full`     |
+| Position   | Set the position of the button to either `top left` or `top right`. | `top left` |
 
 > Please note that a page reload is required for these settings to take effect.
 
