@@ -15,6 +15,7 @@ The following general settings can be configured:
 
 The following button settings can be configured:
 
+- "Visibility" allows you to set the visibility of the button to either "always" or "hover".
 - "Opacity" allows you to set the opacity of the button to either "full" or "half".
 - "Position" allows you to set the position of the button to either "top left" or "top right".
 

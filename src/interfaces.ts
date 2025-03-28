@@ -10,6 +10,7 @@ export interface YTData {
 export interface Settings {
   buttonOpacity: string
   buttonPosition: string
+  buttonVisibility: string
   loggingEnabled: boolean
   markNotificationsAsRead: boolean
 }
@@ -17,4 +18,5 @@ export interface Settings {
 export interface ButtonConfig {
   opacity: string
   position: string
+  visibility: string
 }
