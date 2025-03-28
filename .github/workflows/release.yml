@@ -25,7 +25,9 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install npm dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm install --force --os=linux --cpu=x64 sharp
 
       - name: Build and zip extension
         run: npm run build
