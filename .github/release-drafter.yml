@@ -4,7 +4,7 @@ categories:
   - title: '🚀 Features'
     labels:
       - 'enhancement'
-  - title: '🐛 Bug Fixes'
+  - title: '🐛 Bug fixes'
     labels:
       - 'bug'
   - title: '🛠 Changes'
@@ -25,6 +25,6 @@ version-resolver:
       - 'patch'
   default: patch
 template: |
-  ## What's changed
+  # What's changed
 
   $CHANGES
