@@ -365,7 +365,7 @@ const WatchLaterButton = ({ anchor }) => {
     })
   }
 
-  const addVideo = async (event) => {
+  const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
 
     if (status !== 1) return
@@ -540,6 +540,36 @@ const WatchLaterButton = ({ anchor }) => {
     setEnabled(ytData?.loggedIn === true)
   }
 
+  const init = () => {
+    element.addEventListener('mouseenter', onElementMouseEnter)
+    element.addEventListener('mouseleave', onElementMouseLeave)
+
+    setEnabled(ytData?.loggedIn === true)
+    fetchButtonConfig()
+
+    if (ytData) {
+      setHasData(true)
+      return
+    }
+
+    window.addEventListener('ytwl-yt', setYtwlYt)
+    window.addEventListener('ytwl-yt-nav-start', handleNavigateStart)
+    window.addEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+
+    window.dispatchEvent(new CustomEvent('ytwl-yt-req'))
+  }
+
+  const cleanup = () => {
+    setEnabled(false)
+
+    element.removeEventListener('mouseenter', onElementMouseEnter)
+    element.removeEventListener('mouseleave', onElementMouseLeave)
+
+    window.removeEventListener('ytwl-yt', setYtwlYt)
+    window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
+    window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+  }
+
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
@@ -560,32 +590,17 @@ const WatchLaterButton = ({ anchor }) => {
   }, [visible, hasData])
 
   useEffect(() => {
-    element.addEventListener('mouseenter', onElementMouseEnter)
-    element.addEventListener('mouseleave', onElementMouseLeave)
-
-    setEnabled(ytData?.loggedIn === true)
-    fetchButtonConfig()
-
-    if (ytData) {
-      setHasData(true)
-      return
+    const handlePopState = () => {
+      cleanup()
+      setTimeout(() => init(), 100)
     }
 
-    window.addEventListener('ytwl-yt', setYtwlYt)
-    window.addEventListener('ytwl-yt-nav-start', handleNavigateStart)
-    window.addEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
-
-    window.dispatchEvent(new CustomEvent('ytwl-yt-req'))
+    init()
+    window.addEventListener('popstate', handlePopState)
 
     return () => {
-      setEnabled(false)
-
-      element.removeEventListener('mouseenter', onElementMouseEnter)
-      element.removeEventListener('mouseleave', onElementMouseLeave)
-
-      window.removeEventListener('ytwl-yt', setYtwlYt)
-      window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
-      window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+      cleanup()
+      window.removeEventListener('popstate', handlePopState)
     }
   }, [])
 
