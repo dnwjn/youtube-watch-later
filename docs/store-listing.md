@@ -23,4 +23,4 @@ Please note that a page reload is required for the button settings to take effec
 
 ---
 
-This extension is open source! Links to the source code, and more detailed specifications, can be found on the website: https://youtube-watch-later.netlify.app.
+This extension is open source! Links to the source code, and more detailed specifications, can be found on the website: https://youtube-watch-later.com.
