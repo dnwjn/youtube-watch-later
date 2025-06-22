@@ -19,6 +19,9 @@ import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
+import { elementIsAnchor } from '~helpers/dom'
+
+let inlineAnchorListInterval: NodeJS.Timeout | null = null
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -73,20 +76,38 @@ export const getStyle: PlasmoGetStyle = () => {
             right: 5px;
             bottom: unset;
         }
+        
+        .watch-later-btn.inside-endscreen-suggested {
+            left: 5px;
+            top: unset;
+            right: unset;
+            bottom: 4px;
+        }
+        
+        .watch-later-btn.inside-endscreen-suggested.top-right {
+            left: unset;
+            top: unset;
+            right: 5px;
+            bottom: 4px;
+        }
 
         .watch-later-btn.inside-thumbnail,
         .watch-later-btn.inside-playlist,
-        .watch-later-btn.inside-playlist.opacity-full {
+        .watch-later-btn.inside-playlist.opacity-full,
+        .watch-later-btn.inside-endscreen-suggested,
+        .watch-later-btn.inside-endscreen-suggested.opacity-full {
             opacity: 1;
         }
 
         .watch-later-btn.inside-thumbnail.opacity-half,
-        .watch-later-btn.inside-playlist.opacity-half {
+        .watch-later-btn.inside-playlist.opacity-half,
+        .watch-later-btn.inside-endscreen-suggested.opacity-half {
             opacity: .5;
         }
 
         .watch-later-btn.inside-thumbnail,
-        .watch-later-btn.inside-playlist {
+        .watch-later-btn.inside-playlist,
+        .watch-later-btn.inside-endscreen-suggested {
             background-color: #282828;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
@@ -120,12 +141,14 @@ export const getStyle: PlasmoGetStyle = () => {
         }
 
         .watch-later-btn.dark.inside-thumbnail:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.dark.inside-playlist:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.dark.inside-playlist:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.dark.inside-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
             background-color: #4c4c4c;
         }
 
         .watch-later-btn.light.inside-thumbnail:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.light.inside-playlist:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.light.inside-playlist:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.light.inside-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(0,0,0,0.8);
         }
 
@@ -176,7 +199,8 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
     'ytd-rich-item-renderer, \
     ytd-playlist-video-renderer, \
     ytd-notification-renderer, \
-    ytd-search ytd-video-renderer',
+    ytd-search ytd-video-renderer, \
+    .ytp-endscreen-content .ytp-videowall-still'
   )
 
   return (
@@ -184,11 +208,15 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
       // Filter out elements that already have the button.
       .filter((element) => !element.querySelector('.watch-later-btn'))
       // Filter out elements that are not a video.
-      .filter((element) =>
-        Array.from(element.querySelectorAll('a')).some((a) =>
+      .filter((element) => {
+        if (elementIsAnchor(element)) {
+          return (element as HTMLAnchorElement).href.includes('?v=')
+        }
+
+        return Array.from(element.querySelectorAll('a')).some((a) =>
           a.href.includes('?v='),
-        ),
-      )
+        )
+      })
       .map((element) => ({
         element,
         insertPosition: 'beforebegin',
@@ -204,6 +232,17 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
   // Insert the shadow host as the first child of the anchor element.
   anchor.element.insertBefore(shadowHost, anchor.element.firstChild)
   mountState.observer.disconnect()
+}
+
+const startIntervals = () => {
+  inlineAnchorListInterval = setInterval(getInlineAnchorList, 2000)
+}
+
+const clearIntervals = () => {
+  if (inlineAnchorListInterval) {
+    clearInterval(inlineAnchorListInterval)
+    inlineAnchorListInterval = null
+  }
 }
 
 const Icon = ({ status }: { status: number }) => {
@@ -300,6 +339,7 @@ const WatchLaterButton = ({ anchor }) => {
   const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(
     element.tagName,
   )
+  const isInEndscreenSuggested = element.classList.contains('ytp-videowall-still')
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -323,6 +363,9 @@ const WatchLaterButton = ({ anchor }) => {
       if (element.offsetHeight < 100) {
         classes.push('spaced')
       }
+    }
+    if (isInEndscreenSuggested) {
+      classes.push('inside-endscreen-suggested')
     }
 
     if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
@@ -366,11 +409,12 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
     event.stopPropagation()
 
     if (status !== 1) return
 
-    const videoUrl = element.querySelector('a')?.href
+    const videoUrl = elementIsAnchor(element) ? element.href : element.querySelector('a')?.href
     if (videoUrl) {
       const videoId = new URL(videoUrl).searchParams.get('v')
 
@@ -561,6 +605,7 @@ const WatchLaterButton = ({ anchor }) => {
 
   const cleanup = () => {
     setEnabled(false)
+    clearIntervals()
 
     element.removeEventListener('mouseenter', onElementMouseEnter)
     element.removeEventListener('mouseleave', onElementMouseLeave)
@@ -615,5 +660,7 @@ const WatchLaterButton = ({ anchor }) => {
     </button>
   )
 }
+
+startIntervals()
 
 export default WatchLaterButton
