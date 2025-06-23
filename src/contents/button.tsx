@@ -41,7 +41,7 @@ export const getStyle: PlasmoGetStyle = () => {
             position: unset !important;
         }
 
-        #plasmo-shadow-container:has(.watch-later-btn.inside-notification.spaced) {
+        #plasmo-shadow-container:has(.watch-later-btn.in-notification.spaced) {
             margin-top: 60px;
         }
 
@@ -59,60 +59,53 @@ export const getStyle: PlasmoGetStyle = () => {
             outline: none;
         }
 
-        .watch-later-btn.inside-thumbnail,
-        .watch-later-btn.inside-playlist,
-        .watch-later-btn.inside-thumbnail.top-left,
-        .watch-later-btn.inside-playlist.top-left {
+        .watch-later-btn.in-thumbnail,
+        .watch-later-btn.in-playlist,
+        .watch-later-btn.in-thumbnail.top-left,
+        .watch-later-btn.in-playlist.top-left {
             left: 5px;
             top: 4px;
             right: unset;
             bottom: unset;
         }
 
-        .watch-later-btn.inside-thumbnail.top-right,
-        .watch-later-btn.inside-playlist.top-right {
+        .watch-later-btn.in-thumbnail.top-right,
+        .watch-later-btn.in-playlist.top-right {
             left: unset;
             top: 4px;
             right: 5px;
             bottom: unset;
         }
         
-        .watch-later-btn.inside-endscreen-suggested {
+        .watch-later-btn.in-endscreen-suggested {
             left: 5px;
             top: unset;
             right: unset;
             bottom: 4px;
         }
-        
-        .watch-later-btn.inside-endscreen-suggested.top-right {
-            left: unset;
-            top: unset;
-            right: 5px;
-            bottom: 4px;
-        }
 
-        .watch-later-btn.inside-thumbnail,
-        .watch-later-btn.inside-playlist,
-        .watch-later-btn.inside-playlist.opacity-full,
-        .watch-later-btn.inside-endscreen-suggested,
-        .watch-later-btn.inside-endscreen-suggested.opacity-full {
+        .watch-later-btn.in-thumbnail,
+        .watch-later-btn.in-playlist,
+        .watch-later-btn.in-playlist.opacity-full,
+        .watch-later-btn.in-endscreen-suggested,
+        .watch-later-btn.in-endscreen-suggested.opacity-full {
             opacity: 1;
         }
 
-        .watch-later-btn.inside-thumbnail.opacity-half,
-        .watch-later-btn.inside-playlist.opacity-half,
-        .watch-later-btn.inside-endscreen-suggested.opacity-half {
+        .watch-later-btn.in-thumbnail.opacity-half,
+        .watch-later-btn.in-playlist.opacity-half,
+        .watch-later-btn.in-endscreen-suggested.opacity-half {
             opacity: .5;
         }
 
-        .watch-later-btn.inside-thumbnail,
-        .watch-later-btn.inside-playlist,
-        .watch-later-btn.inside-endscreen-suggested {
+        .watch-later-btn.in-thumbnail,
+        .watch-later-btn.in-playlist,
+        .watch-later-btn.in-endscreen-suggested {
             background-color: #282828;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .watch-later-btn.inside-playlist {
+        .watch-later-btn.in-playlist {
             left: unset;
             top: unset;
             right: unset;
@@ -121,34 +114,34 @@ export const getStyle: PlasmoGetStyle = () => {
             margin-top: -53px;
         }
 
-        .watch-later-btn.inside-notification {
+        .watch-later-btn.in-notification {
             left: unset;
             top: unset;
             right: 10px;
             bottom: 8px;
         }
 
-        .watch-later-btn.light.inside-notification {
+        .watch-later-btn.light.in-notification {
             color: #030303;
         }
 
-        .watch-later-btn.dark.inside-notification:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.dark.in-notification:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(255,255,255,0.2);
         }
 
-        .watch-later-btn.light.inside-notification:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.light.in-notification:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(0,0,0,0.1);
         }
 
-        .watch-later-btn.dark.inside-thumbnail:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.dark.inside-playlist:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.dark.inside-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.dark.in-thumbnail:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.dark.in-playlist:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.dark.in-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
             background-color: #4c4c4c;
         }
 
-        .watch-later-btn.light.inside-thumbnail:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.light.inside-playlist:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.light.inside-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.light.in-thumbnail:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.light.in-playlist:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.light.in-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(0,0,0,0.8);
         }
 
@@ -352,20 +345,20 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     if (isInThumbnail) {
-      classes.push('inside-thumbnail')
+      classes.push('in-thumbnail')
     }
     if (isInPlaylist) {
-      classes.push('inside-playlist')
+      classes.push('in-playlist')
     }
     if (isInNotification) {
-      classes.push('inside-notification')
+      classes.push('in-notification')
 
       if (element.offsetHeight < 100) {
         classes.push('spaced')
       }
     }
     if (isInEndscreenSuggested) {
-      classes.push('inside-endscreen-suggested')
+      classes.push('in-endscreen-suggested')
     }
 
     if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
