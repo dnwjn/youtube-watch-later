@@ -36,4 +36,3 @@ jobs:
           artifacts: 'build/*-prod.zip'
           allowUpdates: true
           omitBodyDuringUpdate: true
-          updateOnlyUnreleased: true
