@@ -1,0 +1,1 @@
+export const elementIsAnchor = (element: Element) => element.tagName === 'A'
