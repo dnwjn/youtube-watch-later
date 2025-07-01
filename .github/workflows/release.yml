@@ -33,6 +33,7 @@ jobs:
       - name: Create new release
         uses: ncipollo/release-action@v1
         with:
+          token: ${{ secrets.GH_TOKEN }}
           artifacts: 'build/*-prod.zip'
           allowUpdates: true
           omitBodyDuringUpdate: true
