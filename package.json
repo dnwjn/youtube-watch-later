@@ -23,7 +23,7 @@
     "bump-major": "npm version major --no-git-tag-version"
   },
   "dependencies": {
-    "@plasmohq/messaging": "0.7.1",
+    "@plasmohq/messaging": "0.7.2",
     "@plasmohq/storage": "1.15.0",
     "plasmo": "0.90.5",
     "react": "18.3.1",
