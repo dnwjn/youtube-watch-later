@@ -184,19 +184,18 @@ const Popup = () => {
       </div>
 
       <div className="content">
-        <h2 className="title">Issues?</h2>
+        <h2 className="title">Contact</h2>
 
-        {/* TODO: Link to website when it has a form */}
         <p className="instruction">
-          If you encounter any issues, please report them on GitHub:
+          Do you have a suggestion, an issue, or do you just want to say thank you?
         </p>
 
         <button
           className="button bold"
           onClick={() =>
-            openTab('https://github.com/dnwjn/youtube-watch-later')
+            openTab('https://youtube-watch-later.com')
           }>
-          Go to GitHub
+          Visit website
         </button>
       </div>
 
