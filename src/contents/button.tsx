@@ -48,14 +48,13 @@ export const getStyle: PlasmoGetStyle = () => {
         .watch-later-btn {
             position: absolute;
             background-color: transparent;
-            color: #fff;
+            color: #f1f1f1;
             padding: 5px;
             border: none;
             z-index: 10;
             cursor: pointer;
             font-size: 12px;
             border-radius: 8px;
-            transition: background-color .5s cubic-bezier(.05,0,0,1);
             outline: none;
         }
 
@@ -98,11 +97,22 @@ export const getStyle: PlasmoGetStyle = () => {
             opacity: .5;
         }
 
-        .watch-later-btn.in-thumbnail,
-        .watch-later-btn.in-playlist,
-        .watch-later-btn.in-endscreen-suggested {
+        .watch-later-btn.dark.in-thumbnail,
+        .watch-later-btn.dark.in-playlist,
+        .watch-later-btn.dark.in-endscreen-suggested {
             background-color: #282828;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .watch-later-btn.dark.in-video-detail {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .watch-later-btn.light.in-thumbnail,
+        .watch-later-btn.light.in-playlist,
+        .watch-later-btn.light.in-endscreen-suggested,
+        .watch-later-btn.light.in-video-detail {
+            background-color: rgba(0,0,0,0.05);
         }
 
         .watch-later-btn.in-playlist {
@@ -121,6 +131,20 @@ export const getStyle: PlasmoGetStyle = () => {
             bottom: 8px;
         }
 
+        .watch-later-btn.in-video-detail {
+            position: relative;
+            margin-left: 8px;
+            margin-right: 8px;
+            border-radius: 18px;
+            color: #f1f1f1;
+            width: 36px;
+            height: 36px;
+        }
+
+        .watch-later-btn.light.in-video-detail {
+            color: #0f0f0f;
+        }
+
         .watch-later-btn.light.in-notification {
             color: #030303;
         }
@@ -130,6 +154,14 @@ export const getStyle: PlasmoGetStyle = () => {
         }
 
         .watch-later-btn.light.in-notification:not(.loading):not(.success):not(.error):hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .watch-later-btn.dark.in-video-detail:not(.loading):not(.success):not(.error):hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .watch-later-btn.light.in-video-detail:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(0,0,0,0.1);
         }
 
@@ -156,12 +188,13 @@ export const getStyle: PlasmoGetStyle = () => {
         }
 
         .watch-later-btn.success {
-            background-color: #00ff00;
-            color: #000000;
+            background-color: #4ade80 !important;
+            color: #0f0f0f;
         }
 
         .watch-later-btn.error {
-            background-color: #ff0000;
+            background-color: #f87171 !important;
+            color: #0f0f0f;
         }
 
         .watch-later-btn svg {
@@ -193,7 +226,8 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
     ytd-playlist-video-renderer, \
     ytd-notification-renderer, \
     ytd-search ytd-video-renderer, \
-    .ytp-endscreen-content .ytp-videowall-still'
+    .ytp-endscreen-content .ytp-videowall-still, \
+    ytd-watch-metadata #top-level-buttons-computed'
   )
 
   return (
@@ -204,6 +238,11 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
       .filter((element) => {
         if (elementIsAnchor(element)) {
           return (element as HTMLAnchorElement).href.includes('?v=')
+        }
+
+        // For video detail page, check if we're on a watch page.
+        if (element.id === 'top-level-buttons-computed') {
+          return window.location.pathname === '/watch'
         }
 
         return Array.from(element.querySelectorAll('a')).some((a) =>
@@ -333,6 +372,7 @@ const WatchLaterButton = ({ anchor }) => {
     element.tagName,
   )
   const isInEndscreenSuggested = element.classList.contains('ytp-videowall-still')
+  const isInVideoDetail = element.id === 'top-level-buttons-computed'
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -360,6 +400,9 @@ const WatchLaterButton = ({ anchor }) => {
     if (isInEndscreenSuggested) {
       classes.push('in-endscreen-suggested')
     }
+    if (isInVideoDetail) {
+      classes.push('in-video-detail')
+    }
 
     if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
       classes.push('dark')
@@ -383,11 +426,12 @@ const WatchLaterButton = ({ anchor }) => {
 
   const shouldShow = useMemo(() => {
     if (status === 0) return false
+    if (isInVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
     if (isHovered) return true
     if (videoPreviewIsHovered && latestElementRef === element) return true
     return false
-  }, [status, buttonConfig, isHovered, videoPreviewIsHovered, latestElementRef])
+  }, [status, buttonConfig, isHovered, videoPreviewIsHovered, latestElementRef, isInVideoDetail])
 
   const fetchButtonConfig = async () => {
     const opacity = await buttonOpacity()
@@ -407,26 +451,34 @@ const WatchLaterButton = ({ anchor }) => {
 
     if (status !== 1) return
 
-    const videoUrl = elementIsAnchor(element) ? element.href : element.querySelector('a')?.href
-    if (videoUrl) {
-      const videoId = new URL(videoUrl).searchParams.get('v')
+    let videoId: string | null = null
 
-      if (videoId && ytData) {
-        setStatus(2)
-
-        addToWatchLater(videoId)
-          .then(() => {
-            setStatus(3)
-
-            if (isInNotification) {
-              markNotificationAsRead()
-            }
-          })
-          .catch(() => setStatus(4))
-          .finally(() => {
-            setTimeout(() => setStatus(1), 2000)
-          })
+    if (isInVideoDetail) {
+      // For video detail page, get video ID from current URL
+      videoId = new URLSearchParams(window.location.search).get('v')
+    } else {
+      // For other pages, get video ID from element
+      const videoUrl = elementIsAnchor(element) ? element.href : element.querySelector('a')?.href
+      if (videoUrl) {
+        videoId = new URL(videoUrl).searchParams.get('v')
       }
+    }
+
+    if (videoId && ytData) {
+      setStatus(2)
+
+      addToWatchLater(videoId)
+        .then(() => {
+          setStatus(3)
+
+          if (isInNotification) {
+            markNotificationAsRead()
+          }
+        })
+        .catch(() => setStatus(4))
+        .finally(() => {
+          setTimeout(() => setStatus(1), 2000)
+        })
     }
   }
 
@@ -567,6 +619,12 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }
 
+  const setEnabledFromYtData = () => {
+    if (ytData) {
+      setEnabled(ytData?.loggedIn === true)
+    }
+  }
+
   const handleNavigateStart = () => {
     setEnabled(false)
   }
@@ -574,14 +632,14 @@ const WatchLaterButton = ({ anchor }) => {
   const handleNavigateFinish = (event) => {
     const newUrl = event.detail?.response?.url as string | null
     setUrl(newUrl)
-    setEnabled(ytData?.loggedIn === true)
+    setEnabledFromYtData()
   }
 
   const init = () => {
     element.addEventListener('mouseenter', onElementMouseEnter)
     element.addEventListener('mouseleave', onElementMouseLeave)
 
-    setEnabled(ytData?.loggedIn === true)
+    setEnabledFromYtData()
     fetchButtonConfig()
 
     if (ytData) {
@@ -609,15 +667,19 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   useEffect(() => {
+    setEnabledFromYtData()
+  }, [ytData]);
+
+  useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
 
-    if (!enabled || (!isInNotification && (isWL || isPlaylists))) {
+    if (!enabled || (!isInNotification && !isInVideoDetail && (isWL || isPlaylists))) {
       setVisible(false)
     } else {
       setVisible(true)
     }
-  }, [enabled, isInNotification, url])
+  }, [enabled, isInNotification, isInVideoDetail, url])
 
   useEffect(() => {
     if (visible && hasData) {
