@@ -48,7 +48,7 @@ export const getStyle: PlasmoGetStyle = () => {
         .watch-later-btn {
             position: absolute;
             background-color: transparent;
-            color: #fff;
+            color: #f1f1f1;
             padding: 5px;
             border: none;
             z-index: 10;
@@ -188,12 +188,13 @@ export const getStyle: PlasmoGetStyle = () => {
         }
 
         .watch-later-btn.success {
-            background-color: #00ff00 !important;
+            background-color: #4ade80 !important;
             color: #0f0f0f;
         }
 
         .watch-later-btn.error {
-            background-color: #ff0000 !important;
+            background-color: #f87171 !important;
+            color: #0f0f0f;
         }
 
         .watch-later-btn svg {
