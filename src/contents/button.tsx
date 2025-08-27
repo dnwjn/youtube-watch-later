@@ -55,7 +55,6 @@ export const getStyle: PlasmoGetStyle = () => {
             cursor: pointer;
             font-size: 12px;
             border-radius: 8px;
-            transition: background-color .5s cubic-bezier(.05,0,0,1);
             outline: none;
         }
 
