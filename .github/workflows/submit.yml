@@ -6,7 +6,7 @@ on:
     types: [released]
 
 jobs:
-  build:
+  submit:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,86 +34,8 @@ jobs:
       - name: Build and zip source
         run: pnpm run build:source
 
-      - name: Upload Chrome artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: chrome-mv3-prod
-          path: build/chrome-mv3-prod.zip
-
-      - name: Upload Edge artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: edge-mv3-prod
-          path: build/edge-mv3-prod.zip
-
-      - name: Upload Firefox artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: firefox-mv2-prod
-          path: build/firefox-mv2-prod.zip
-
-      - name: Upload source artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: source
-          path: build/source.zip
-
-  submit-chrome:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v6
-
-      - name: Download Chrome artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: chrome-mv3-prod
-
-      - name: Publish to Chrome Web Store
+      - name: Publish to stores
         uses: PlasmoHQ/bpp@v3
         with:
           keys: ${{ secrets.SUBMIT_KEYS }}
-          chrome-file: chrome-mv3-prod.zip
-          verbose: true
-
-  submit-edge:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v6
-
-      - name: Download Edge artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: edge-mv3-prod
-
-      - name: Publish to Edge Add-ons
-        uses: PlasmoHQ/bpp@v3
-        with:
-          keys: ${{ secrets.SUBMIT_KEYS }}
-          edge-file: edge-mv3-prod.zip
-          verbose: true
-
-  submit-firefox:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v6
-
-      - name: Download Firefox artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: firefox-mv2-prod
-
-      - name: Publish to Firefox Add-ons
-        uses: PlasmoHQ/bpp@v3
-        with:
-          keys: ${{ secrets.SUBMIT_KEYS }}
-          firefox-file: firefox-mv2-prod.zip
           verbose: true
