@@ -61,7 +61,8 @@ export const getStyle: PlasmoGetStyle = () => {
         .watch-later-btn.in-thumbnail,
         .watch-later-btn.in-playlist,
         .watch-later-btn.in-thumbnail.top-left,
-        .watch-later-btn.in-playlist.top-left {
+        .watch-later-btn.in-playlist.top-left,
+        .watch-later-btn.in-mod-endscreen-suggested {
             left: 5px;
             top: 4px;
             right: unset;
@@ -87,19 +88,23 @@ export const getStyle: PlasmoGetStyle = () => {
         .watch-later-btn.in-playlist,
         .watch-later-btn.in-playlist.opacity-full,
         .watch-later-btn.in-endscreen-suggested,
-        .watch-later-btn.in-endscreen-suggested.opacity-full {
+        .watch-later-btn.in-endscreen-suggested.opacity-full,
+        .watch-later-btn.in-mod-endscreen-suggested,
+        .watch-later-btn.in-mod-endscreen-suggested.opacity-full {
             opacity: 1;
         }
 
         .watch-later-btn.in-thumbnail.opacity-half,
         .watch-later-btn.in-playlist.opacity-half,
-        .watch-later-btn.in-endscreen-suggested.opacity-half {
+        .watch-later-btn.in-endscreen-suggested.opacity-half,
+        .watch-later-btn.in-mod-endscreen-suggested.opacity-half {
             opacity: .5;
         }
 
         .watch-later-btn.dark.in-thumbnail,
         .watch-later-btn.dark.in-playlist,
-        .watch-later-btn.dark.in-endscreen-suggested {
+        .watch-later-btn.dark.in-endscreen-suggested,
+        .watch-later-btn.dark.in-mod-endscreen-suggested {
             background-color: #282828;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
@@ -111,6 +116,7 @@ export const getStyle: PlasmoGetStyle = () => {
         .watch-later-btn.light.in-thumbnail,
         .watch-later-btn.light.in-playlist,
         .watch-later-btn.light.in-endscreen-suggested,
+        .watch-later-btn.light.in-mod-endscreen-suggested,
         .watch-later-btn.light.in-video-detail {
             background-color: rgba(0,0,0,0.05);
         }
@@ -167,13 +173,15 @@ export const getStyle: PlasmoGetStyle = () => {
 
         .watch-later-btn.dark.in-thumbnail:not(.loading):not(.success):not(.error):hover,
         .watch-later-btn.dark.in-playlist:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.dark.in-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.dark.in-endscreen-suggested:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.dark.in-mod-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
             background-color: #4c4c4c;
         }
 
         .watch-later-btn.light.in-thumbnail:not(.loading):not(.success):not(.error):hover,
         .watch-later-btn.light.in-playlist:not(.loading):not(.success):not(.error):hover,
-        .watch-later-btn.light.in-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
+        .watch-later-btn.light.in-endscreen-suggested:not(.loading):not(.success):not(.error):hover,
+        .watch-later-btn.light.in-mod-endscreen-suggested:not(.loading):not(.success):not(.error):hover {
             background-color: rgba(0,0,0,0.8);
         }
 
@@ -227,6 +235,7 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
     ytd-notification-renderer, \
     ytd-search ytd-video-renderer, \
     .ytp-endscreen-content .ytp-videowall-still, \
+    .ytp-fullscreen-grid .ytp-modern-videowall-still, \
     ytd-watch-metadata #top-level-buttons-computed'
   )
 
@@ -372,6 +381,7 @@ const WatchLaterButton = ({ anchor }) => {
     element.tagName,
   )
   const isInEndscreenSuggested = element.classList.contains('ytp-videowall-still')
+  const isInModernEndscreenSuggested = element.classList.contains('ytp-modern-videowall-still')
   const isInVideoDetail = element.id === 'top-level-buttons-computed'
 
   const buttonClasses = useMemo(() => {
@@ -399,6 +409,9 @@ const WatchLaterButton = ({ anchor }) => {
     }
     if (isInEndscreenSuggested) {
       classes.push('in-endscreen-suggested')
+    }
+    if (isInModernEndscreenSuggested) {
+      classes.push('in-mod-endscreen-suggested')
     }
     if (isInVideoDetail) {
       classes.push('in-video-detail')
