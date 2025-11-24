@@ -7,7 +7,7 @@ import type {
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { getAuthorizationHeader } from '~helpers/api'
-import { hasPath, hasSearch } from '~helpers/browser'
+import { hasPath, hasSearch, isVideoUrl, extractVideoId } from '~helpers/browser'
 import { logError, logLine } from '~helpers/logging'
 import {
   buttonOpacity,
@@ -237,16 +237,16 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
       // Filter out elements that are not a video.
       .filter((element) => {
         if (elementIsAnchor(element)) {
-          return (element as HTMLAnchorElement).href.includes('?v=')
+          return isVideoUrl((element as HTMLAnchorElement).href)
         }
 
-        // For video detail page, check if we're on a watch page.
+        // For video detail page, check if we're on a watch page or shorts page.
         if (element.id === 'top-level-buttons-computed') {
-          return window.location.pathname === '/watch'
+          return window.location.pathname.match(/^\/(watch|shorts)/)
         }
 
         return Array.from(element.querySelectorAll('a')).some((a) =>
-          a.href.includes('?v='),
+          isVideoUrl(a.href),
         )
       })
       .map((element) => ({
@@ -455,12 +455,12 @@ const WatchLaterButton = ({ anchor }) => {
 
     if (isInVideoDetail) {
       // For video detail page, get video ID from current URL
-      videoId = new URLSearchParams(window.location.search).get('v')
+      videoId = extractVideoId(window.location.href)
     } else {
       // For other pages, get video ID from element
       const videoUrl = elementIsAnchor(element) ? element.href : element.querySelector('a')?.href
       if (videoUrl) {
-        videoId = new URL(videoUrl).searchParams.get('v')
+        videoId = extractVideoId(videoUrl)
       }
     }
 
