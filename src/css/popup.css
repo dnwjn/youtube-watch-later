@@ -152,3 +152,27 @@ a {
   font-weight: bold;
   font-size: inherit;
 }
+
+.footer .bmac {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 8px;
+    padding: 8px;
+    background: linear-gradient(to top left, rgba(0, 123, 255, 0.5) 10%, transparent);
+    font-size: 0.875rem;
+    opacity: 0.5;
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+.footer .bmac:hover {
+    opacity: 1;
+}
+
+.footer .bmac-link {
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+.footer .bmac-link:hover {
+    opacity: 0.75;
+}

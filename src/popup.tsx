@@ -206,6 +206,24 @@ const Popup = () => {
           Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
         </button>
 
+        <div className="bmac">
+          <div>Enjoying this little creation?</div>
+          <div className="bold">It's free&mdash;always will be.</div>
+          <div>But if you'd like to say thanks...</div>
+          <a
+            className="bmac-link"
+            href="https://coff.ee/dnwjn"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+              alt="Buy Me a Coffee"
+              style={{ height: 35 }}
+            />
+          </a>
+        </div>
+
         <div className="credits small">
           Version: <span className="name">{version}</span>
         </div>
