@@ -69,6 +69,10 @@ const Popup = () => {
             When enabled, notifications will be marked as read when you add them
             to Watch Later.
           </p>
+
+          <p className="instruction spacing">
+            Only affects the button inside the notification drawer.
+          </p>
         </div>
 
         <div className="setting">
@@ -124,6 +128,10 @@ const Popup = () => {
               <span className="status">Change to hover</span>
             </div>
           </button>
+
+          <p className="instruction spacing">
+            Does not affect the button inside the video player controls.
+          </p>
         </div>
 
         <div className="setting">
@@ -152,6 +160,10 @@ const Popup = () => {
               <span className="status">Change to half</span>
             </div>
           </button>
+
+          <p className="instruction spacing">
+            Does not affect the button inside the video player controls.
+          </p>
         </div>
 
         <div className="setting">
@@ -180,6 +192,10 @@ const Popup = () => {
               <span className="status">Move to top right</span>
             </div>
           </button>
+
+          <p className="instruction spacing">
+            Does not affect the button inside the video player controls.
+          </p>
         </div>
       </div>
 
