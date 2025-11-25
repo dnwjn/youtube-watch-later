@@ -6,7 +6,7 @@ on:
     types: [released]
 
 jobs:
-  submit:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,8 +34,121 @@ jobs:
       - name: Build and zip source
         run: pnpm run build:source
 
-      - name: Publish to stores
+      - name: Upload Chrome artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-mv3-prod
+          path: build/chrome-mv3-prod.zip
+
+      - name: Upload Edge artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-mv3-prod
+          path: build/edge-mv3-prod.zip
+
+      - name: Upload Firefox artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-mv2-prod
+          path: build/firefox-mv2-prod.zip
+
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: build/source.zip
+
+  submit-chrome:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Download Chrome artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: chrome-mv3-prod
+          path: build
+
+      - name: Create Chrome keys.json
+        run: |
+          # Replace placeholders with secret values using jq (properly escapes JSON)
+          cat .github/submit/keys-chrome.json | \
+            jq --arg clientId '${{ secrets.CHROME_CLIENT_ID }}' \
+               --arg clientSecret '${{ secrets.CHROME_CLIENT_SECRET }}' \
+               --arg refreshToken '${{ secrets.CHROME_REFRESH_TOKEN }}' \
+               '.chrome.clientId = $clientId |
+                .chrome.clientSecret = $clientSecret |
+                .chrome.refreshToken = $refreshToken' > keys-chrome.json
+
+      - name: Publish to Chrome Web Store
         uses: PlasmoHQ/bpp@v3
         with:
-          keys: ${{ secrets.SUBMIT_KEYS }}
+          keys: keys-chrome.json
+          verbose: true
+
+  submit-edge:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Download Edge artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: edge-mv3-prod
+          path: build
+
+      - name: Create Edge keys.json
+        run: |
+          # Replace placeholders with secret values using jq (properly escapes JSON)
+          cat .github/submit/keys-edge.json | \
+            jq --arg clientId '${{ secrets.EDGE_CLIENT_ID }}' \
+               --arg apiKey '${{ secrets.EDGE_API_KEY }}' \
+               '.edge.clientId = $clientId |
+                .edge.apiKey = $apiKey' > keys-edge.json
+
+      - name: Publish to Edge Add-ons
+        uses: PlasmoHQ/bpp@v3
+        with:
+          keys: keys-edge.json
+          verbose: true
+
+  submit-firefox:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Download Firefox artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: firefox-mv2-prod
+          path: build
+
+      - name: Download source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: source
+          path: build
+
+      - name: Create Firefox keys.json
+        run: |
+          # Replace placeholders with secret values using jq (properly escapes JSON)
+          cat .github/submit/keys-firefox.json | \
+            jq --arg apiKey '${{ secrets.FIREFOX_API_KEY }}' \
+               --arg apiSecret '${{ secrets.FIREFOX_API_SECRET }}' \
+               '.firefox.apiKey = $apiKey |
+                .firefox.apiSecret = $apiSecret' > keys-firefox.json
+
+      - name: Publish to Firefox Add-ons
+        uses: PlasmoHQ/bpp@v3
+        with:
+          keys: keys-firefox.json
           verbose: true

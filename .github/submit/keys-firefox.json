@@ -1,0 +1,10 @@
+{
+  "$schema": "https://github.com/PlasmoHQ/bpp/raw/main/keys.schema.json",
+  "firefox": {
+    "zip": "build/firefox-mv2-prod.zip",
+    "sourceFile": "build/source.zip",
+    "extId": "youtube-watch-later",
+    "apiKey": "__FIREFOX_API_KEY__",
+    "apiSecret": "__FIREFOX_API_SECRET__"
+  }
+}

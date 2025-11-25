@@ -1,0 +1,10 @@
+{
+  "$schema": "https://github.com/PlasmoHQ/bpp/raw/main/keys.schema.json",
+  "edge": {
+    "zip": "build/edge-mv3-prod.zip",
+    "productId": "174f024a-d422-46bd-a9e5-8f62bb76ae21",
+    "clientId": "__EDGE_CLIENT_ID__",
+    "apiKey": "__EDGE_API_KEY__",
+    "notes": "To use this addon:\n1. Install and activate the addon\n2. Go to www.youtube.com\n3. Log in to your account\n4. Find a button with clock icon on every video\n5. Click the button to instantly add the video to your Watch Later playlist"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://github.com/PlasmoHQ/bpp/raw/main/keys.schema.json",
+  "chrome": {
+    "zip": "build/chrome-mv3-prod.zip",
+    "extId": "nmpfhocciajonacicdelpbhipglapgaa",
+    "clientId": "__CHROME_CLIENT_ID__",
+    "clientSecret": "__CHROME_CLIENT_SECRET__",
+    "refreshToken": "__CHROME_REFRESH_TOKEN__"
+  }
+}
