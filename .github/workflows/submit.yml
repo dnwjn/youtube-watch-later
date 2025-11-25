@@ -73,20 +73,24 @@ jobs:
           path: build
 
       - name: Create Chrome keys.json
+        id: chrome-keys
         run: |
           # Replace placeholders with secret values using jq (properly escapes JSON)
-          cat .github/submit/keys-chrome.json | \
+          KEYS_JSON=$(cat .github/submit/keys-chrome.json | \
             jq --arg clientId '${{ secrets.CHROME_CLIENT_ID }}' \
                --arg clientSecret '${{ secrets.CHROME_CLIENT_SECRET }}' \
                --arg refreshToken '${{ secrets.CHROME_REFRESH_TOKEN }}' \
                '.chrome.clientId = $clientId |
                 .chrome.clientSecret = $clientSecret |
-                .chrome.refreshToken = $refreshToken' > keys-chrome.json
+                .chrome.refreshToken = $refreshToken')
+          echo "keys<<EOF" >> $GITHUB_OUTPUT
+          echo "$KEYS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Chrome Web Store
         uses: PlasmoHQ/bpp@v3
         with:
-          keys: keys-chrome.json
+          keys: ${{ steps.chrome-keys.outputs.keys }}
           verbose: true
 
   submit-edge:
@@ -104,18 +108,22 @@ jobs:
           path: build
 
       - name: Create Edge keys.json
+        id: edge-keys
         run: |
           # Replace placeholders with secret values using jq (properly escapes JSON)
-          cat .github/submit/keys-edge.json | \
+          KEYS_JSON=$(cat .github/submit/keys-edge.json | \
             jq --arg clientId '${{ secrets.EDGE_CLIENT_ID }}' \
                --arg apiKey '${{ secrets.EDGE_API_KEY }}' \
                '.edge.clientId = $clientId |
-                .edge.apiKey = $apiKey' > keys-edge.json
+                .edge.apiKey = $apiKey')
+          echo "keys<<EOF" >> $GITHUB_OUTPUT
+          echo "$KEYS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Edge Add-ons
         uses: PlasmoHQ/bpp@v3
         with:
-          keys: keys-edge.json
+          keys: ${{ steps.edge-keys.outputs.keys }}
           verbose: true
 
   submit-firefox:
@@ -139,16 +147,20 @@ jobs:
           path: build
 
       - name: Create Firefox keys.json
+        id: firefox-keys
         run: |
           # Replace placeholders with secret values using jq (properly escapes JSON)
-          cat .github/submit/keys-firefox.json | \
+          KEYS_JSON=$(cat .github/submit/keys-firefox.json | \
             jq --arg apiKey '${{ secrets.FIREFOX_API_KEY }}' \
                --arg apiSecret '${{ secrets.FIREFOX_API_SECRET }}' \
                '.firefox.apiKey = $apiKey |
-                .firefox.apiSecret = $apiSecret' > keys-firefox.json
+                .firefox.apiSecret = $apiSecret')
+          echo "keys<<EOF" >> $GITHUB_OUTPUT
+          echo "$KEYS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Firefox Add-ons
         uses: PlasmoHQ/bpp@v3
         with:
-          keys: keys-firefox.json
+          keys: ${{ steps.firefox-keys.outputs.keys }}
           verbose: true
