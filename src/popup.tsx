@@ -219,7 +219,7 @@ const Popup = () => {
             <img
               src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
               alt="Buy Me a Coffee"
-              style={{ height: 35 }}
+              style={{ height: 30 }}
             />
           </a>
         </div>

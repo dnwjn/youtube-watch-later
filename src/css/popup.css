@@ -159,10 +159,14 @@ a {
     align-items: center;
     row-gap: 8px;
     padding: 8px;
-    background: linear-gradient(to top left, rgba(0, 123, 255, 0.5) 10%, transparent);
-    font-size: 0.875rem;
+    background: linear-gradient(to top left, rgba(255, 0, 0, 0.3) 10%, transparent);
+    font-size: 10px;
     opacity: 0.5;
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.footer .bmac * {
+    font-size: inherit;
 }
 
 .footer .bmac:hover {
