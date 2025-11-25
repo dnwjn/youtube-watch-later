@@ -20,26 +20,37 @@ You can download the extension from the following stores:
 
 Or, if you prefer to install the extension manually, you can download the latest release from [GitHub][GitHub latest].
 
+## Locations
+
+The button is available in the following locations:
+
+| Location                   | Description                                                                             |
+|----------------------------|-----------------------------------------------------------------------------------------|
+| Video thumbnails           | Video thumbnails on the homepage, search results, channel pages, and other video lists. |
+| Notification drawer        | Video notifications in the notification drawer.                                         |
+| Video player controls      | Inside the video player controls, next to the like/dislike buttons.                     |
+| Suggested video thumbnails | Suggested video thumbnails at the end of a video.                                       |
+
 ## Settings
 
 ### General
 
 The following general settings can be configured:
 
-| Setting                    | Description                                                                                      | Default  |
-|----------------------------|--------------------------------------------------------------------------------------------------|----------|
-| Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist. | disabled |
-| Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.        | disabled |
+| Setting                    | Description                                                                                      | Default  | Notes                                                   |
+|----------------------------|--------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------|
+| Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist. | disabled | Only affects the button inside the notification drawer. |
+| Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.        | disabled |                                                         |
 
 ### Button
 
 The following button settings can be configured:
 
-| Setting    | Description                                                         | Default    |
-|------------|---------------------------------------------------------------------|------------|
-| Visibility | Set the visibility of the button to either `always` or `hover`.     | `always`   |
-| Opacity    | Set the opacity of the button to either `full` or `half`.           | `full`     |
-| Position   | Set the position of the button to either `top left` or `top right`. | `top left` |
+| Setting    | Description                                                         | Default    | Notes                                                        |
+|------------|---------------------------------------------------------------------|------------|--------------------------------------------------------------|
+| Visibility | Set the visibility of the button to either `always` or `hover`.     | `always`   | Does not affect the button inside the video player controls. |
+| Opacity    | Set the opacity of the button to either `full` or `half`.           | `full`     | Does not affect the button inside the video player controls. |
+| Position   | Set the position of the button to either `top left` or `top right`. | `top left` | Does not affect the button inside the video player controls. |
 
 > Please note that a page reload is required for these settings to take effect.
 
