@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download Chrome artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: chrome-mv3-prod
           path: build
@@ -102,7 +102,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download Edge artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: edge-mv3-prod
           path: build
@@ -135,13 +135,13 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download Firefox artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: firefox-mv2-prod
           path: build
 
       - name: Download source artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: source
           path: build
