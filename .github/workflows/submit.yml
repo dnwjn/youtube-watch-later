@@ -35,25 +35,25 @@ jobs:
         run: pnpm run build:source
 
       - name: Upload Chrome artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: chrome-mv3-prod
           path: build/chrome-mv3-prod.zip
 
       - name: Upload Edge artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: edge-mv3-prod
           path: build/edge-mv3-prod.zip
 
       - name: Upload Firefox artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: firefox-mv2-prod
           path: build/firefox-mv2-prod.zip
 
       - name: Upload source artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: source
           path: build/source.zip
