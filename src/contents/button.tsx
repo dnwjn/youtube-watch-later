@@ -441,8 +441,9 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   const setEnabledFromYtData = () => {
-    if (ytData) {
-      setEnabled(ytData?.loggedIn === true)
+    const currentYtData = useWatchLaterStore.getState().ytData
+    if (currentYtData) {
+      setEnabled(currentYtData.loggedIn === true)
     }
   }
 
