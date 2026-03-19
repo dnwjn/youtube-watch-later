@@ -477,7 +477,6 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   const cleanup = () => {
-    setEnabled(false)
     clearIntervals()
 
     element.removeEventListener('mouseenter', onElementMouseEnter)
