@@ -16,7 +16,7 @@
     "build:source": "./bin/build-source.sh",
     "build:bundle": "plasmo build --source-maps --bundle-buddy",
     "package": "plasmo package",
-    "pretty": "prettier --write .",
+    "pretty": "prettier --write src/**/*.{ts,tsx}",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "bump-patch": "npm version patch --no-git-tag-version",
     "bump-minor": "npm version minor --no-git-tag-version",

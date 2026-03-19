@@ -7,7 +7,13 @@ import type {
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { getAuthorizationHeader } from '~helpers/api'
-import { hasPath, hasSearch, isVideoUrl, extractVideoId } from '~helpers/browser'
+import {
+  extractVideoId,
+  hasPath,
+  hasSearch,
+  isVideoUrl,
+} from '~helpers/browser'
+import { elementIsAnchor } from '~helpers/dom'
 import { logError, logLine } from '~helpers/logging'
 import {
   buttonOpacity,
@@ -19,7 +25,7 @@ import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
-import { elementIsAnchor } from '~helpers/dom'
+
 import { buttonStyles } from './button.styles'
 
 let inlineAnchorListInterval: NodeJS.Timeout | null = null
@@ -44,7 +50,7 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
     ytd-search ytd-video-renderer, \
     .ytp-endscreen-content .ytp-videowall-still, \
     .ytp-fullscreen-grid .ytp-modern-videowall-still, \
-    ytd-watch-metadata #top-level-buttons-computed'
+    ytd-watch-metadata #top-level-buttons-computed',
   )
 
   return (
@@ -188,8 +194,12 @@ const WatchLaterButton = ({ anchor }) => {
   const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(
     element.tagName,
   )
-  const isInEndscreenSuggested = element.classList.contains('ytp-videowall-still')
-  const isInModernEndscreenSuggested = element.classList.contains('ytp-modern-videowall-still')
+  const isInEndscreenSuggested = element.classList.contains(
+    'ytp-videowall-still',
+  )
+  const isInModernEndscreenSuggested = element.classList.contains(
+    'ytp-modern-videowall-still',
+  )
   const isInVideoDetail = element.id === 'top-level-buttons-computed'
 
   const buttonClasses = useMemo(() => {
@@ -252,7 +262,14 @@ const WatchLaterButton = ({ anchor }) => {
     if (isHovered) return true
     if (videoPreviewIsHovered && latestElementRef === element) return true
     return false
-  }, [status, buttonConfig, isHovered, videoPreviewIsHovered, latestElementRef, isInVideoDetail])
+  }, [
+    status,
+    buttonConfig,
+    isHovered,
+    videoPreviewIsHovered,
+    latestElementRef,
+    isInVideoDetail,
+  ])
 
   const fetchButtonConfig = async () => {
     const opacity = await buttonOpacity()
@@ -279,7 +296,9 @@ const WatchLaterButton = ({ anchor }) => {
       videoId = extractVideoId(window.location.href)
     } else {
       // For other pages, get video ID from element
-      const videoUrl = elementIsAnchor(element) ? element.href : element.querySelector('a')?.href
+      const videoUrl = elementIsAnchor(element)
+        ? element.href
+        : element.querySelector('a')?.href
       if (videoUrl) {
         videoId = extractVideoId(videoUrl)
       }
@@ -489,13 +508,16 @@ const WatchLaterButton = ({ anchor }) => {
 
   useEffect(() => {
     setEnabledFromYtData()
-  }, [ytData]);
+  }, [ytData])
 
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
 
-    if (!enabled || (!isInNotification && !isInVideoDetail && (isWL || isPlaylists))) {
+    if (
+      !enabled ||
+      (!isInNotification && !isInVideoDetail && (isWL || isPlaylists))
+    ) {
       setVisible(false)
     } else {
       setVisible(true)
