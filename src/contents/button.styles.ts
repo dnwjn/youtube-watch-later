@@ -21,7 +21,7 @@ export const buttonStyles = `
     z-index: 10;
     cursor: pointer;
     font-size: 12px;
-    border-radius: 8px;
+    border-radius: 18px;
     outline: none;
 }
 
@@ -108,7 +108,6 @@ export const buttonStyles = `
     position: relative;
     margin-left: 8px;
     margin-right: 8px;
-    border-radius: 18px;
     color: #f1f1f1;
     width: 36px;
     height: 36px;
