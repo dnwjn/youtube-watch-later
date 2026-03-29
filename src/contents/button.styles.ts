@@ -104,6 +104,13 @@ export const buttonStyles = `
     bottom: 8px;
 }
 
+.watch-later-btn.in-player-suggested {
+    left: unset;
+    top: unset;
+    right: -10px;
+    bottom: 8px;
+}
+
 .watch-later-btn.in-video-detail {
     position: relative;
     margin-left: 8px;
@@ -117,15 +124,18 @@ export const buttonStyles = `
     color: #0f0f0f;
 }
 
-.watch-later-btn.light.in-notification {
+.watch-later-btn.light.in-notification,
+.watch-later-btn.light.in-player-suggested {
     color: #030303;
 }
 
-.watch-later-btn.dark.in-notification:not(.loading):not(.success):not(.error):hover {
+.watch-later-btn.dark.in-notification:not(.loading):not(.success):not(.error):hover,
+.watch-later-btn.dark.in-player-suggested:not(.loading):not(.success):not(.error):hover {
     background-color: rgba(255,255,255,0.2);
 }
 
-.watch-later-btn.light.in-notification:not(.loading):not(.success):not(.error):hover {
+.watch-later-btn.light.in-notification:not(.loading):not(.success):not(.error):hover,
+.watch-later-btn.light.in-player-suggested:not(.loading):not(.success):not(.error):hover {
     background-color: rgba(0,0,0,0.1);
 }
 

@@ -1,26 +1,11 @@
-import type {
-  PlasmoCSConfig,
-  PlasmoGetInlineAnchorList,
-  PlasmoGetStyle,
-  PlasmoMountShadowHost,
-} from 'plasmo'
+import type { PlasmoCSConfig, PlasmoGetInlineAnchorList, PlasmoGetStyle, PlasmoMountShadowHost } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { getAuthorizationHeader } from '~helpers/api'
-import {
-  extractVideoId,
-  hasPath,
-  hasSearch,
-  isVideoUrl,
-} from '~helpers/browser'
+import { extractVideoId, hasPath, hasSearch, isVideoUrl } from '~helpers/browser'
 import { elementIsAnchor } from '~helpers/dom'
 import { logError, logLine } from '~helpers/logging'
-import {
-  buttonOpacity,
-  buttonPosition,
-  buttonVisibility,
-  markNotificationsAsRead,
-} from '~helpers/system'
+import { buttonOpacity, buttonPosition, buttonVisibility, markNotificationsAsRead } from '~helpers/system'
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
@@ -42,16 +27,28 @@ export const getStyle: PlasmoGetStyle = () => {
   return style
 }
 
+const anchorListSelectors = [
+  // General videos
+  'ytd-rich-item-renderer',
+  // Videos on playlist page
+  'ytd-playlist-video-renderer',
+  // Videos in notification drawer
+  'ytd-notification-renderer',
+  // Videos on search page
+  'ytd-search ytd-video-renderer',
+  // Suggested videos in video player when finished
+  '.ytp-endscreen-content .ytp-videowall-still',
+  '.ytp-fullscreen-grid .ytp-modern-videowall-still',
+  // Buttons below video player
+  'ytd-watch-metadata #top-level-buttons-computed',
+  // Suggested videos next to video player
+  'yt-lockup-view-model.ytd-item-section-renderer > .yt-lockup-view-model',
+  // Suggested videos below video player on mobile
+  'ytm-media-item .media-item-menu',
+]
+
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
-  const elements = document.querySelectorAll(
-    'ytd-rich-item-renderer, \
-    ytd-playlist-video-renderer, \
-    ytd-notification-renderer, \
-    ytd-search ytd-video-renderer, \
-    .ytp-endscreen-content .ytp-videowall-still, \
-    .ytp-fullscreen-grid .ytp-modern-videowall-still, \
-    ytd-watch-metadata #top-level-buttons-computed',
-  )
+  const elements = document.querySelectorAll(anchorListSelectors.join(','))
 
   return (
     Array.from(elements)
@@ -185,11 +182,12 @@ const WatchLaterButton = ({ anchor }) => {
   })
   const [isHovered, setIsHovered] = useState(false)
 
-  const isInThumbnail = [
-    'YTD-RICH-ITEM-RENDERER',
-    'YTD-GRID-VIDEO-RENDERER',
-    'YTD-VIDEO-RENDERER',
-  ].includes(element.tagName)
+  const isInThumbnail =
+    [
+      'YTD-RICH-ITEM-RENDERER',
+      'YTD-GRID-VIDEO-RENDERER',
+      'YTD-VIDEO-RENDERER',
+    ].includes(element.tagName)
   const isInPlaylist = ['YTD-PLAYLIST-VIDEO-RENDERER'].includes(element.tagName)
   const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(
     element.tagName,
@@ -201,6 +199,7 @@ const WatchLaterButton = ({ anchor }) => {
     'ytp-modern-videowall-still',
   )
   const isInVideoDetail = element.id === 'top-level-buttons-computed'
+  const isInPlayerSuggested = element.classList.contains('yt-lockup-view-model')
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -233,6 +232,9 @@ const WatchLaterButton = ({ anchor }) => {
     }
     if (isInVideoDetail) {
       classes.push('in-video-detail')
+    }
+    if (isInPlayerSuggested) {
+      classes.push('in-player-suggested')
     }
 
     if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
