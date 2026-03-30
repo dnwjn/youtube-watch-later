@@ -28,7 +28,11 @@ export const getAuthorizationHeader = async () => {
   const origin = 'https://www.youtube.com'
   const time = Math.floor(Date.now() / 1000)
   const hash = await sha1(`${time} ${sapisid} ${origin}`)
-  const authorizationHeader = `${time}_${hash}`
 
-  return authorizationHeader
+  return `${time}_${hash}`
+}
+
+export const getHostname = () => {
+  const hostname = window.location.hostname
+  return hostname.includes('youtube.com') ? hostname : 'www.youtube.com'
 }
