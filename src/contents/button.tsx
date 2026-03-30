@@ -6,15 +6,21 @@ import type {
 } from 'plasmo'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { getAuthorizationHeader } from '~helpers/api'
-import {
-  extractVideoId,
-  hasPath,
-  hasSearch,
-  isVideoUrl,
-} from '~helpers/browser'
-import { elementIsAnchor } from '~helpers/dom'
+import { getAuthorizationHeader, getHostname } from '~helpers/api'
+import { hasPath, hasSearch } from '~helpers/browser'
+import { getVideoId } from '~helpers/extracting'
 import { logError, logLine } from '~helpers/logging'
+import {
+  elementIsInEndscreenSuggested,
+  elementIsInMobilePlayerSuggested,
+  elementIsInModernEndscreenSuggested,
+  elementIsInNotification,
+  elementIsInPlayerSuggested,
+  elementIsInPlaylist,
+  elementIsInThumbnail,
+  elementIsOnVideoDetailPage,
+  elementNeedsButton,
+} from '~helpers/matching'
 import {
   buttonOpacity,
   buttonPosition,
@@ -42,36 +48,35 @@ export const getStyle: PlasmoGetStyle = () => {
   return style
 }
 
+const anchorListSelectors = [
+  // General videos
+  'ytd-rich-item-renderer',
+  // Videos on playlist page
+  'ytd-playlist-video-renderer',
+  // Videos in notification drawer
+  'ytd-notification-renderer',
+  // Videos on search page
+  'ytd-search ytd-video-renderer',
+  // Suggested videos in video player when finished
+  '.ytp-endscreen-content .ytp-videowall-still',
+  '.ytp-fullscreen-grid .ytp-modern-videowall-still',
+  // Buttons below video player
+  'ytd-watch-metadata #top-level-buttons-computed',
+  // Suggested videos next to video player
+  'yt-lockup-view-model.ytd-item-section-renderer > .yt-lockup-view-model',
+  // Suggested videos below video player on mobile
+  'ytm-media-item .media-item-menu',
+]
+
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
-  const elements = document.querySelectorAll(
-    'ytd-rich-item-renderer, \
-    ytd-playlist-video-renderer, \
-    ytd-notification-renderer, \
-    ytd-search ytd-video-renderer, \
-    .ytp-endscreen-content .ytp-videowall-still, \
-    .ytp-fullscreen-grid .ytp-modern-videowall-still, \
-    ytd-watch-metadata #top-level-buttons-computed',
-  )
+  const elements = document.querySelectorAll(anchorListSelectors.join(','))
 
   return (
     Array.from(elements)
       // Filter out elements that already have the button.
       .filter((element) => !element.querySelector('.watch-later-btn'))
       // Filter out elements that are not a video.
-      .filter((element) => {
-        if (elementIsAnchor(element)) {
-          return isVideoUrl((element as HTMLAnchorElement).href)
-        }
-
-        // For video detail page, check if we're on a watch page or shorts page.
-        if (element.id === 'top-level-buttons-computed') {
-          return window.location.pathname.match(/^\/(watch|shorts)/)
-        }
-
-        return Array.from(element.querySelectorAll('a')).some((a) =>
-          isVideoUrl(a.href),
-        )
-      })
+      .filter((element) => elementNeedsButton(element))
       .map((element) => ({
         element,
         insertPosition: 'beforebegin',
@@ -84,8 +89,14 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
   anchor,
   mountState,
 }) => {
-  // Insert the shadow host as the first child of the anchor element.
-  anchor.element.insertBefore(shadowHost, anchor.element.firstChild)
+  const element = anchor.element
+
+  if (elementIsInMobilePlayerSuggested(element)) {
+    element.appendChild(shadowHost)
+  } else {
+    element.insertBefore(shadowHost, element.firstChild)
+  }
+
   mountState.observer.disconnect()
 }
 
@@ -185,22 +196,15 @@ const WatchLaterButton = ({ anchor }) => {
   })
   const [isHovered, setIsHovered] = useState(false)
 
-  const isInThumbnail = [
-    'YTD-RICH-ITEM-RENDERER',
-    'YTD-GRID-VIDEO-RENDERER',
-    'YTD-VIDEO-RENDERER',
-  ].includes(element.tagName)
-  const isInPlaylist = ['YTD-PLAYLIST-VIDEO-RENDERER'].includes(element.tagName)
-  const isInNotification = ['YTD-NOTIFICATION-RENDERER'].includes(
-    element.tagName,
-  )
-  const isInEndscreenSuggested = element.classList.contains(
-    'ytp-videowall-still',
-  )
-  const isInModernEndscreenSuggested = element.classList.contains(
-    'ytp-modern-videowall-still',
-  )
-  const isInVideoDetail = element.id === 'top-level-buttons-computed'
+  const isInThumbnail = elementIsInThumbnail(element)
+  const isInPlaylist = elementIsInPlaylist(element)
+  const isInNotification = elementIsInNotification(element)
+  const isInEndscreenSuggested = elementIsInEndscreenSuggested(element)
+  const isInModernEndscreenSuggested =
+    elementIsInModernEndscreenSuggested(element)
+  const isOnVideoDetail = elementIsOnVideoDetailPage(element)
+  const isInPlayerSuggested = elementIsInPlayerSuggested(element)
+  const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -231,8 +235,14 @@ const WatchLaterButton = ({ anchor }) => {
     if (isInModernEndscreenSuggested) {
       classes.push('in-mod-endscreen-suggested')
     }
-    if (isInVideoDetail) {
-      classes.push('in-video-detail')
+    if (isOnVideoDetail) {
+      classes.push('on-video-detail')
+    }
+    if (isInPlayerSuggested) {
+      classes.push('in-player-suggested')
+    }
+    if (isInPlayerSuggestedMobile) {
+      classes.push('in-player-suggested-mobile')
     }
 
     if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
@@ -257,7 +267,7 @@ const WatchLaterButton = ({ anchor }) => {
 
   const shouldShow = useMemo(() => {
     if (status === 0) return false
-    if (isInVideoDetail) return true // Always show on video detail page
+    if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
     if (isHovered) return true
     if (videoPreviewIsHovered && latestElementRef === element) return true
@@ -268,7 +278,7 @@ const WatchLaterButton = ({ anchor }) => {
     isHovered,
     videoPreviewIsHovered,
     latestElementRef,
-    isInVideoDetail,
+    isOnVideoDetail,
   ])
 
   const fetchButtonConfig = async () => {
@@ -289,20 +299,7 @@ const WatchLaterButton = ({ anchor }) => {
 
     if (status !== 1) return
 
-    let videoId: string | null = null
-
-    if (isInVideoDetail) {
-      // For video detail page, get video ID from current URL
-      videoId = extractVideoId(window.location.href)
-    } else {
-      // For other pages, get video ID from element
-      const videoUrl = elementIsAnchor(element)
-        ? element.href
-        : element.querySelector('a')?.href
-      if (videoUrl) {
-        videoId = extractVideoId(videoUrl)
-      }
-    }
+    const videoId: string | null = getVideoId(element)
 
     if (videoId && ytData) {
       setStatus(2)
@@ -336,7 +333,7 @@ const WatchLaterButton = ({ anchor }) => {
         }
 
         const response = await _apiPost(
-          'https://www.youtube.com/youtubei/v1/browse/edit_playlist?prettyPrint=false',
+          'browse/edit_playlist?prettyPrint=false',
           payload,
         )
         const responseJson = await response.json()
@@ -379,7 +376,7 @@ const WatchLaterButton = ({ anchor }) => {
       }
 
       const response = await _apiPost(
-        'https://www.youtube.com/youtubei/v1/notification/record_interactions?prettyPrint=false',
+        'notification/record_interactions?prettyPrint=false',
         payload,
       )
       const responseJson = await response.json()
@@ -395,7 +392,7 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   const _apiPost = async (
-    url: string,
+    path: string,
     payload: object,
   ): Promise<Response | null> => {
     return new Promise(async (resolve, reject) => {
@@ -407,6 +404,7 @@ const WatchLaterButton = ({ anchor }) => {
         return
       }
 
+      const url = `https://${getHostname()}/youtubei/v1/${path}`
       const finalPayload = {
         ...payload,
         context: {
@@ -516,13 +514,13 @@ const WatchLaterButton = ({ anchor }) => {
 
     if (
       !enabled ||
-      (!isInNotification && !isInVideoDetail && (isWL || isPlaylists))
+      (!isInNotification && !isOnVideoDetail && (isWL || isPlaylists))
     ) {
       setVisible(false)
     } else {
       setVisible(true)
     }
-  }, [enabled, isInNotification, isInVideoDetail, url])
+  }, [enabled, isInNotification, isOnVideoDetail, url])
 
   useEffect(() => {
     if (visible && hasData) {

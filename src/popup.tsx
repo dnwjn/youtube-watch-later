@@ -71,7 +71,7 @@ const Popup = () => {
           </p>
 
           <p className="instruction spacing">
-            Only affects the button inside the notification drawer.
+            This setting only affects the button inside the notification drawer.
           </p>
         </div>
 
@@ -102,6 +102,11 @@ const Popup = () => {
           A page reload is required for these settings to take effect.
         </p>
 
+        <p className="instruction spacing">
+          These settings do not affect the button inside the video player
+          controls and in the suggested videos.
+        </p>
+
         <div className="setting">
           <h3 className="title">Button visibility</h3>
 
@@ -128,10 +133,6 @@ const Popup = () => {
               <span className="status">Change to hover</span>
             </div>
           </button>
-
-          <p className="instruction spacing">
-            Does not affect the button inside the video player controls.
-          </p>
         </div>
 
         <div className="setting">
@@ -160,10 +161,6 @@ const Popup = () => {
               <span className="status">Change to half</span>
             </div>
           </button>
-
-          <p className="instruction spacing">
-            Does not affect the button inside the video player controls.
-          </p>
         </div>
 
         <div className="setting">
@@ -192,10 +189,6 @@ const Popup = () => {
               <span className="status">Move to top right</span>
             </div>
           </button>
-
-          <p className="instruction spacing">
-            Does not affect the button inside the video player controls.
-          </p>
         </div>
       </div>
 
@@ -203,14 +196,13 @@ const Popup = () => {
         <h2 className="title">Contact</h2>
 
         <p className="instruction">
-          Do you have a suggestion, an issue, or do you just want to say thank you?
+          Do you have a suggestion, an issue, or do you just want to say thank
+          you?
         </p>
 
         <button
           className="button bold"
-          onClick={() =>
-            openTab('https://youtube-watch-later.com')
-          }>
+          onClick={() => openTab('https://youtube-watch-later.com')}>
           Visit website
         </button>
       </div>
@@ -230,8 +222,7 @@ const Popup = () => {
             className="bmac-link"
             href="https://coff.ee/dnwjn"
             rel="noopener noreferrer"
-            target="_blank"
-          >
+            target="_blank">
             <img
               src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
               alt="Buy Me a Coffee"

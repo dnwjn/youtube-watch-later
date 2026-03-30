@@ -52,7 +52,7 @@ export const isVideoUrl = (url: string): boolean => {
   }
 }
 
-export const extractVideoId = (url: string): string | null => {
+export const extractVideoId = (url: string | null): string | null => {
   if (!url) return null
 
   try {
