@@ -36,18 +36,19 @@ const WhatsNew = () => {
             </div>
 
             {TYPE_ORDER.map((type) => {
-              const entries = version.entries[type]
+              const entries = version.entries[type] || []
               if (entries.length === 0) return null
 
               return (
                 <div key={type} className="whats-new-group">
                   <h3 className="whats-new-group-label">{TYPE_LABELS[type]}</h3>
                   <ul className="whats-new-list">
-                    {entries.map((entry) => (
+                    {entries.map((entry, index) => (
                       <li
-                        key={entry.description}
-                        className="whats-new-list-item">
-                        {entry.description}
+                        key={`${type}-${index}`}
+                        className="whats-new-list-item"
+                      >
+                        {entry}
                       </li>
                     ))}
                   </ul>
