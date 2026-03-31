@@ -34,6 +34,10 @@ body {
   margin-bottom: 0;
 }
 
+.whats-new-explanation {
+  background-color: #3d3d3d;
+}
+
 .whats-new-version {
   background-color: #3d3d3d;
   padding: 15px 20px;
@@ -91,7 +95,6 @@ a {
 }
 
 .button {
-  border: none;
   color: #fff;
   text-decoration: none;
   cursor: pointer;
