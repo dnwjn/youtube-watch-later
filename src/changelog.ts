@@ -1,14 +1,10 @@
-export interface ChangelogEntry {
-  description: string
-}
-
 export interface ChangelogVersion {
   version: string
   date: string // ISO format, e.g. '2026-03-30'
   entries: {
-    new: ChangelogEntry[]
-    improved: ChangelogEntry[]
-    fixed: ChangelogEntry[]
+    new?: string[]
+    improved?: string[]
+    fixed?: string[]
   }
 }
 
@@ -21,16 +17,47 @@ export const changelog: ChangelogVersion[] = [
     date: '2026-03-30',
     entries: {
       new: [
-        {
-          description: 'Added button to suggested videos on the player page',
-        },
+        'Added the button to suggested videos on the player page, next to (desktop) and below (mobile) the player',
       ],
-      improved: [
-        {
-          description: "Button is now round to match YouTube's design",
-        },
+      improved: ["The button is now round to match YouTube's design"],
+    },
+  },
+  {
+    version: '0.4.2',
+    date: '2026-03-19',
+    entries: {
+      fixed: [
+        'Fixed an issue where the button would not always be visible',
+        'Fixed an issue where the colors would not match custom themes',
       ],
-      fixed: [],
+    },
+  },
+  {
+    version: '0.4.0',
+    date: '2025-11-24',
+    entries: {
+      new: [
+        'Added the button to the suggested videos in the modern video endscreen',
+        'Added the button to shorts',
+      ],
+    },
+  },
+  {
+    version: '0.3.0',
+    date: '2025-08-27',
+    entries: {
+      new: [
+        'Added the button to the video player controls, next to the like/dislike buttons',
+      ],
+    },
+  },
+  {
+    version: '0.2.0',
+    date: '2025-06-26',
+    entries: {
+      new: [
+        'Added the button to the suggested videos in the classic video endscreen',
+      ],
     },
   },
 ]
