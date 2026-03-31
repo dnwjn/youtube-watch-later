@@ -25,6 +25,9 @@ const WhatsNew = () => {
       <div className="whats-new-header">
         <img className="whats-new-logo" src={logo} alt="logo" />
         <h1 className="whats-new-title">What's New in YouTube Watch Later</h1>
+        <p className="whats-new-explanation">
+          The noteworthy changes are listed below.
+        </p>
       </div>
 
       <div>
