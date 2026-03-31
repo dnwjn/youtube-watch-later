@@ -1,0 +1,169 @@
+* {
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #2d2d2d;
+  color: #fff;
+}
+
+.whats-new-root {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.whats-new-header {
+  text-align: center;
+  background-color: #3d3d3d;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.whats-new-logo {
+  width: 60px;
+}
+
+.whats-new-title {
+  font-size: 24px;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.whats-new-version {
+  background-color: #3d3d3d;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+}
+
+.whats-new-version-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.whats-new-version-number {
+  font-size: 18px;
+  margin: 0;
+}
+
+.whats-new-version-date {
+  color: #ccc;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.whats-new-group {
+  margin-top: 12px;
+}
+
+.whats-new-group-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ccc;
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.whats-new-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.whats-new-list-item {
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+:root {
+  --animation-speed: 0.2s;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.button {
+  border: none;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #3d3d3d;
+  padding: 10px;
+  border: 1px solid #3d3d3d;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  transition: all var(--animation-speed);
+}
+
+.button:not(:disabled):hover {
+  background-color: #4d4d4d;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.small {
+  font-size: 9px;
+}
+
+.name {
+  font-weight: bold;
+  font-size: inherit;
+}
+
+.whats-new-footer {
+  margin-top: 20px;
+}
+
+.credits {
+  padding: 10px;
+  text-align: center;
+  background-color: #3d3d3d;
+  display: block;
+  transition: all var(--animation-speed);
+}
+
+.credits.small {
+  font-size: 9px;
+}
+
+.bmac {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
+  padding: 8px;
+  background: linear-gradient(
+    to top left,
+    rgba(255, 0, 0, 0.3) 10%,
+    transparent
+  );
+  opacity: 0.5;
+  transition: all var(--animation-speed) ease-in-out;
+}
+
+.bmac * {
+  font-size: inherit;
+}
+
+.bmac:hover {
+  opacity: 1;
+}
+
+.bmac-link {
+  transition: all var(--animation-speed) ease-in-out;
+}
+
+.bmac-link:hover {
+  opacity: 0.75;
+}

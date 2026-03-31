@@ -207,6 +207,20 @@ const Popup = () => {
         </button>
       </div>
 
+      {process.env.NODE_ENV !== 'production' && (
+        <div className="content">
+          <h2 className="title">Dev tools</h2>
+
+          <button
+            className="button"
+            onClick={() =>
+              openTab(chrome.runtime.getURL('tabs/whats-new.html'))
+            }>
+            Preview What's New tab
+          </button>
+        </div>
+      )}
+
       <div className="footer">
         <button
           className="button bold small"

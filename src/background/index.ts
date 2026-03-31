@@ -1,1 +1,5 @@
-export {}
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === 'update') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('tabs/whats-new.html') })
+  }
+})
