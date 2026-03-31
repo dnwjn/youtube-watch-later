@@ -10,8 +10,9 @@ The button is available in the following locations:
 
 - Video/short thumbnails on the homepage, search results, channel pages, and other video lists.
 - Videos/short notifications in the notification drawer.
-- Video player controls, next to the like/dislike buttons.
-- Suggested videos at the end of a video.
+- (v0.3.0+) Video player controls, next to the like/dislike buttons.
+- (v0.4.0+) Suggested videos at the end of a video.
+- (v0.5.0+) Suggested videos on the player page, next to the video (desktop) and below (mobile).
 
 The following general settings can be configured:
 
@@ -23,8 +24,6 @@ The following button settings can be configured:
 - 'Visibility' allows you to set the visibility of the button to either 'always' or 'hover'.
 - 'Opacity' allows you to set the opacity of the button to either 'full' or 'half'.
 - 'Position' allows you to set the position of the button to either 'top left' or 'top right'.
-
-Please note that a page reload is required for the button settings to take effect.
 
 ---
 

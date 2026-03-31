@@ -24,12 +24,13 @@ Or, if you prefer to install the extension manually, you can download the latest
 
 The button is available in the following locations:
 
-| Location                   | Description                                                                             |
-|----------------------------|-----------------------------------------------------------------------------------------|
-| Video thumbnails           | Video thumbnails on the homepage, search results, channel pages, and other video lists. |
-| Notification drawer        | Video notifications in the notification drawer.                                         |
-| Video player controls      | Inside the video player controls, next to the like/dislike buttons.                     |
-| Suggested video thumbnails | Suggested video thumbnails at the end of a video.                                       |
+| Location                                          | Description                                                                             | Since  |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------|--------|
+| Video thumbnails                                  | Video thumbnails on the homepage, search results, channel pages, and other video lists. |        |
+| Notification drawer                               | Video notifications in the notification drawer.                                         |        |
+| Video player controls                             | Inside the video player controls, next to the like/dislike buttons.                     | v0.3.0 |
+| Suggested video thumbnails (after video ends)     | Suggested video thumbnails at the end of a video.                                       | v0.4.0 |
+| Suggested video thumbnails (next to/below player) | Suggested videos on the player page, next to the video (desktop) and below (mobile).    | v0.5.0 |
 
 ## Settings
 
@@ -46,13 +47,14 @@ The following general settings can be configured:
 
 The following button settings can be configured:
 
-| Setting    | Description                                                         | Default    | Notes                                                        |
-|------------|---------------------------------------------------------------------|------------|--------------------------------------------------------------|
-| Visibility | Set the visibility of the button to either `always` or `hover`.     | `always`   | Does not affect the button inside the video player controls. |
-| Opacity    | Set the opacity of the button to either `full` or `half`.           | `full`     | Does not affect the button inside the video player controls. |
-| Position   | Set the position of the button to either `top left` or `top right`. | `top left` | Does not affect the button inside the video player controls. |
+| Setting    | Description                                                         | Default    |
+|------------|---------------------------------------------------------------------|------------|
+| Visibility | Set the visibility of the button to either `always` or `hover`.     | `always`   |
+| Opacity    | Set the opacity of the button to either `full` or `half`.           | `full`     |
+| Position   | Set the position of the button to either `top left` or `top right`. | `top left` |
 
-> Please note that a page reload is required for these settings to take effect.
+Please note that a page reload is required for these settings to take effect.
+These settings do not affect the button inside the video player controls and in the suggested videos next to/below the player.
 
 ## Changelog
 

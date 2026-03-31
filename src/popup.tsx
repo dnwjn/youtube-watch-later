@@ -104,7 +104,7 @@ const Popup = () => {
 
         <p className="instruction spacing">
           These settings do not affect the button inside the video player
-          controls and in the suggested videos.
+          controls and in the suggested videos next to/below the player.
         </p>
 
         <div className="setting">
