@@ -40,9 +40,6 @@
     "prettier": "3.6.2",
     "typescript": "5.9.3"
   },
-  "overrides": {
-    "@parcel/watcher": "2.1.0"
-  },
   "manifest": {
     "host_permissions": [
       "https://www.youtube.com/*",
