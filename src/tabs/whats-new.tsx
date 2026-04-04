@@ -22,7 +22,7 @@ const WhatsNew = () => {
   return (
     <div className="whats-new-root">
       <ExtensionHeader
-        title="What's New in YouTube Watch Later"
+        title="What's new in YouTube Watch Later"
         subtitle="The noteworthy changes are listed below."
       />
 

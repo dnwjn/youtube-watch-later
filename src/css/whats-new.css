@@ -9,7 +9,7 @@
   padding: 20px;
 }
 
-/* Shared component overrides for wider tab layout */
+/* Shared component overrides */
 .whats-new-root .header {
   padding: 20px;
   margin-bottom: 20px;
@@ -26,6 +26,12 @@
 
 .whats-new-root .footer {
   margin-top: 20px;
+}
+
+.whats-new-root .small,
+.whats-new-root .bmac,
+.whats-new-root .credits {
+  font-size: 12px !important;
 }
 
 /* Changelog content */
