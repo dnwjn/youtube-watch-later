@@ -1,53 +1,9 @@
-:root {
-  --animation-speed: 0.2s;
-}
-
-* {
-  font-family: 'Roboto', system-ui, sans-serif;
-  font-size: 12px;
-}
-
 body {
-  padding: 0;
-  margin: 0;
-  background-color: #2d2d2d;
-  color: #fff;
   width: 300px;
-}
-
-h1 {
-  font-size: 24px;
-}
-
-h2 {
-  font-size: 18px;
-}
-
-a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.button {
-  border: none;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  background-color: #3d3d3d;
-  padding: 10px;
-  border: 1px solid #3d3d3d;
-  text-align: center;
-  display: inline-block;
-  width: 100%;
-  transition: all var(--animation-speed);
 }
 
 .button.small {
   font-size: 9px;
-}
-
-.button:not(:disabled):hover {
-  background-color: #4d4d4d;
 }
 
 .button:not(:disabled):hover .default {
@@ -60,30 +16,6 @@ a {
 
 .button.w-half {
   width: 50%;
-}
-
-.button:disabled {
-  background-color: #4d4d4d;
-  cursor: not-allowed;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.header {
-  text-align: center;
-  background-color: #3d3d3d;
-  padding: 10px;
-}
-
-.header .logo {
-  width: 50px;
-}
-
-.header .title {
-  margin-top: 5px;
-  margin-bottom: 0;
 }
 
 .content {
@@ -129,54 +61,4 @@ a {
 
 .content .setting .hover {
   display: none;
-}
-
-.footer {
-  margin-top: 10px;
-}
-
-.footer .credits {
-  padding: 10px;
-  font-size: 10px;
-  text-align: center;
-  background-color: #3d3d3d;
-  display: block;
-  transition: all var(--animation-speed);
-}
-
-.footer .credits.small {
-  font-size: 9px;
-}
-
-.footer .name {
-  font-weight: bold;
-  font-size: inherit;
-}
-
-.footer .bmac {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 8px;
-    padding: 8px;
-    background: linear-gradient(to top left, rgba(255, 0, 0, 0.3) 10%, transparent);
-    font-size: 10px;
-    opacity: 0.5;
-    transition: all var(--animation-speed) ease-in-out;
-}
-
-.footer .bmac * {
-    font-size: inherit;
-}
-
-.footer .bmac:hover {
-    opacity: 1;
-}
-
-.footer .bmac-link {
-    transition: all var(--animation-speed) ease-in-out;
-}
-
-.footer .bmac-link:hover {
-    opacity: 0.75;
 }
