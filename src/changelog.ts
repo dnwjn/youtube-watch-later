@@ -17,9 +17,11 @@ export const changelog: ChangelogVersion[] = [
     date: '2026-03-30',
     entries: {
       new: [
-        'Added the button to suggested videos on the player page, next to (desktop) and below (mobile) the player',
+        'Added the button to the suggested videos on the player page, next to (desktop) and below (mobile) the player.',
       ],
-      improved: ["The button is now round to match YouTube's design"],
+      improved: [
+        'The button is now round to better match YouTube\'s design.',
+      ],
     },
   },
   {
@@ -27,8 +29,8 @@ export const changelog: ChangelogVersion[] = [
     date: '2026-03-19',
     entries: {
       fixed: [
-        'Fixed an issue where the button would not always be visible',
-        'Fixed an issue where the colors would not match custom themes',
+        'Fixed an issue where the button would not always be visible.',
+        'Fixed an issue where the colors would not match custom themes.',
       ],
     },
   },
@@ -37,8 +39,8 @@ export const changelog: ChangelogVersion[] = [
     date: '2025-11-24',
     entries: {
       new: [
-        'Added the button to the suggested videos in the modern video endscreen',
-        'Added the button to shorts',
+        'Added the button to the suggested videos in the modern video endscreen.',
+        'Added the button to shorts.',
       ],
     },
   },
@@ -47,7 +49,7 @@ export const changelog: ChangelogVersion[] = [
     date: '2025-08-27',
     entries: {
       new: [
-        'Added the button to the video player controls, next to the like/dislike buttons',
+        'Added the button to the video player controls, next to the like/dislike buttons.',
       ],
     },
   },
@@ -56,7 +58,7 @@ export const changelog: ChangelogVersion[] = [
     date: '2025-06-26',
     entries: {
       new: [
-        'Added the button to the suggested videos in the classic video endscreen',
+        'Added the button to the suggested videos in the classic video endscreen.',
       ],
     },
   },
