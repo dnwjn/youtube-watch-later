@@ -1,7 +1,7 @@
 {
   "name": "youtube-watch-later",
   "displayName": "YouTube Watch Later",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Add YouTube videos to your Watch Later playlist with a single click.",
   "author": "dnwjn <hello@dnwjn.dev>",
   "license": "GPL-3.0-only",
@@ -18,9 +18,9 @@
     "package": "plasmo package",
     "pretty": "prettier --write src/*.{ts,tsx} src/**/*.{ts,tsx}",
     "version": "auto-changelog -p && git add CHANGELOG.md",
-    "bump-patch": "npm version patch --no-git-tag-version",
-    "bump-minor": "npm version minor --no-git-tag-version",
-    "bump-major": "npm version major --no-git-tag-version"
+    "bump:patch": "npm version patch --no-git-tag-version",
+    "bump:minor": "npm version minor --no-git-tag-version",
+    "bump:major": "npm version major --no-git-tag-version"
   },
   "dependencies": {
     "@plasmohq/messaging": "0.7.1",
