@@ -1,9 +1,8 @@
-import packageJson from '@root/package.json'
-import logo from 'data-base64:@root/assets/icon.png'
 import React from 'react'
 
 import { changelog } from '~changelog'
-import { openTab } from '~helpers/browser'
+import ExtensionFooter from '~components/ExtensionFooter'
+import ExtensionHeader from '~components/ExtensionHeader'
 
 import '~css/whats-new.css'
 
@@ -22,13 +21,10 @@ const TYPE_ORDER: Array<'new' | 'improved' | 'fixed'> = [
 const WhatsNew = () => {
   return (
     <div className="whats-new-root">
-      <div className="whats-new-header">
-        <img className="whats-new-logo" src={logo} alt="logo" />
-        <h1 className="whats-new-title">What's New in YouTube Watch Later</h1>
-        <p className="whats-new-explanation">
-          The noteworthy changes are listed below.
-        </p>
-      </div>
+      <ExtensionHeader
+        title="What's New in YouTube Watch Later"
+        subtitle="The noteworthy changes are listed below."
+      />
 
       <div>
         {changelog.map((version) => (
@@ -46,11 +42,8 @@ const WhatsNew = () => {
                 <div key={type} className="whats-new-group">
                   <h3 className="whats-new-group-label">{TYPE_LABELS[type]}</h3>
                   <ul className="whats-new-list">
-                    {entries.map((entry, index) => (
-                      <li
-                        key={`${type}-${index}`}
-                        className="whats-new-list-item"
-                      >
+                    {entries.map((entry) => (
+                      <li key={entry} className="whats-new-list-item">
                         {entry}
                       </li>
                     ))}
@@ -62,34 +55,7 @@ const WhatsNew = () => {
         ))}
       </div>
 
-      <div className="whats-new-footer">
-        <button
-          className="button bold"
-          onClick={() => openTab('https://dnwjn.dev')}>
-          Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
-        </button>
-
-        <div className="bmac">
-          <div>Enjoying this little creation?</div>
-          <div className="bold">It's free&mdash;always will be.</div>
-          <div>But if you'd like to say thanks...</div>
-          <a
-            className="bmac-link"
-            href="https://coff.ee/dnwjn"
-            rel="noopener noreferrer"
-            target="_blank">
-            <img
-              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-              alt="Buy Me a Coffee"
-              style={{ height: 30 }}
-            />
-          </a>
-        </div>
-
-        <div className="credits">
-          Version: <span className="name">v{packageJson.version}</span>
-        </div>
-      </div>
+      <ExtensionFooter />
     </div>
   )
 }

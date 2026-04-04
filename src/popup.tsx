@@ -1,9 +1,9 @@
-import packageJson from '@root/package.json'
-import logo from 'data-base64:@root/assets/icon.png'
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
+import ExtensionFooter from '~components/ExtensionFooter'
+import ExtensionHeader from '~components/ExtensionHeader'
 import { openTab } from '~helpers/browser'
 import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
 
@@ -26,21 +26,9 @@ const Popup = () => {
     ButtonPosition.TopLeft,
   )
 
-  const version = useMemo(() => {
-    if (process.env.NODE_ENV === 'production') {
-      return `v${packageJson.version}`
-    }
-
-    return 'DEV'
-  }, [process.env.NODE_ENV, packageJson.version])
-
   return (
     <div className="root">
-      <div className="header">
-        <img className="logo" src={logo} alt="logo" />
-
-        <h1 className="title">YouTube Watch Later</h1>
-      </div>
+      <ExtensionHeader title="YouTube Watch Later" />
 
       <div className="content">
         <h2 className="title">General settings</h2>
@@ -221,34 +209,7 @@ const Popup = () => {
         </div>
       )}
 
-      <div className="footer">
-        <button
-          className="button bold small"
-          onClick={() => openTab('https://dnwjn.dev')}>
-          Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
-        </button>
-
-        <div className="bmac">
-          <div>Enjoying this little creation?</div>
-          <div className="bold">It's free&mdash;always will be.</div>
-          <div>But if you'd like to say thanks...</div>
-          <a
-            className="bmac-link"
-            href="https://coff.ee/dnwjn"
-            rel="noopener noreferrer"
-            target="_blank">
-            <img
-              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-              alt="Buy Me a Coffee"
-              style={{ height: 30 }}
-            />
-          </a>
-        </div>
-
-        <div className="credits small">
-          Version: <span className="name">{version}</span>
-        </div>
-      </div>
+      <ExtensionFooter />
     </div>
   )
 }
