@@ -19,9 +19,7 @@ export const changelog: ChangelogVersion[] = [
       new: [
         'Added the button to the suggested videos on the player page, next to (desktop) and below (mobile) the player.',
       ],
-      improved: [
-        'The button is now round to better match YouTube\'s design.',
-      ],
+      improved: ["The button is now round to better match YouTube's design."],
     },
   },
   {
