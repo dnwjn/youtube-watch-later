@@ -418,7 +418,7 @@ const WatchLaterButton = ({ anchor }) => {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          Authorization: `SAPISIDHASH ${authorizationHeader}`,
+          Authorization: authorizationHeader,
           'Content-Type': 'application/json',
           'X-Origin': 'https://www.youtube.com',
           'X-Goog-Authuser': authUser,
