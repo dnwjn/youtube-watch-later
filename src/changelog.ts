@@ -13,6 +13,15 @@ export interface ChangelogVersion {
 // 2. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '0.5.2',
+    date: '2026-04-07',
+    entries: {
+      fixed: [
+        'Fixed an issue on Firefox, where the button would not work in combination with the Multi-Account Containers extension.',
+      ],
+    },
+  },
+  {
     version: '0.5.1',
     date: '2026-04-04',
     entries: {
