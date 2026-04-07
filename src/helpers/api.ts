@@ -1,10 +1,6 @@
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
-interface VisitorCookies {
-  sapisid: string
-  sapisid1p: string | null
-  sapisid3p: string | null
-}
+import type { VisitorCookies } from '~interfaces'
 
 const sha1 = async (message: string) => {
   const encoder = new TextEncoder()
