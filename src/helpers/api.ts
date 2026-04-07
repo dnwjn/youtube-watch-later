@@ -1,5 +1,7 @@
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
 
+import type { VisitorCookies } from '~interfaces'
+
 const sha1 = async (message: string) => {
   const encoder = new TextEncoder()
   const data = encoder.encode(message)
@@ -10,26 +12,36 @@ const sha1 = async (message: string) => {
 }
 
 export const getAuthorizationHeader = async () => {
-  let sapisidCookie: string | null
+  let cookies: VisitorCookies
 
   try {
-    sapisidCookie = await sendToBackgroundViaRelay<string | null>({
+    cookies = await sendToBackgroundViaRelay<VisitorCookies>({
       name: 'visitor-cookie',
     })
   } catch (error) {
     throw new Error('Visitor cookie not found. Reason: ' + error)
   }
 
-  if (!sapisidCookie) {
+  if (!cookies?.sapisid) {
     throw new Error('Visitor cookie not found. Reason: no value')
   }
 
-  const sapisid = sapisidCookie
   const origin = 'https://www.youtube.com'
   const time = Math.floor(Date.now() / 1000)
-  const hash = await sha1(`${time} ${sapisid} ${origin}`)
 
-  return `${time}_${hash}`
+  const computeHash = async (cookieValue: string) =>
+    `${time}_${await sha1(`${time} ${cookieValue} ${origin}`)}`
+
+  const parts = [`SAPISIDHASH ${await computeHash(cookies.sapisid)}`]
+
+  if (cookies.sapisid1p) {
+    parts.push(`SAPISID1PHASH ${await computeHash(cookies.sapisid1p)}`)
+  }
+  if (cookies.sapisid3p) {
+    parts.push(`SAPISID3PHASH ${await computeHash(cookies.sapisid3p)}`)
+  }
+
+  return parts.join(' ')
 }
 
 export const getHostname = () => {

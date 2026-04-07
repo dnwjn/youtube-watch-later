@@ -20,3 +20,9 @@ export interface ButtonConfig {
   position: string
   visibility: string
 }
+
+export interface VisitorCookies {
+  sapisid: string
+  sapisid1p: string | null
+  sapisid3p: string | null
+}
