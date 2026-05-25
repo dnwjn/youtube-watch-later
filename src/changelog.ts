@@ -13,6 +13,15 @@ export interface ChangelogVersion {
 // 2. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '0.5.3',
+    date: '2026-05-25',
+    entries: {
+      fixed: [
+        'Fixed an issue where the button would not show up in the suggested videos on the right side of the video player.',
+      ],
+    },
+  },
+  {
     version: '0.5.2',
     date: '2026-04-07',
     entries: {
