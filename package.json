@@ -7,7 +7,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "npm run build:chrome && npm run build:edge && npm run build:firefox",
+    "build": "pnpm run build:chrome && pnpm run build:edge && pnpm run build:firefox",
     "build:brave": "plasmo build --zip --target=brave-mv3",
     "build:chrome": "plasmo build --zip --target=chrome-mv3",
     "build:edge": "plasmo build --zip --target=edge-mv3",
@@ -18,9 +18,9 @@
     "package": "plasmo package",
     "pretty": "prettier --write src/*.{ts,tsx} src/**/*.{ts,tsx}",
     "version": "auto-changelog -p && git add CHANGELOG.md",
-    "bump:patch": "npm version patch --no-git-tag-version",
-    "bump:minor": "npm version minor --no-git-tag-version",
-    "bump:major": "npm version major --no-git-tag-version"
+    "bump:patch": "pnpm version patch --no-git-tag-version",
+    "bump:minor": "pnpm version minor --no-git-tag-version",
+    "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
     "@plasmohq/messaging": "0.7.1",
