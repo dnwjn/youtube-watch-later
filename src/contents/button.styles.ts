@@ -77,7 +77,7 @@ export const buttonStyles = `
 }
 
 .watch-later-btn.dark.on-video-detail {
-    background-color: var(--yt-spec-menu-background);
+    background-color: var(--yt-spec-menu-background, rgba(255,255,255,0.1));
 }
 
 .watch-later-btn.light.in-thumbnail,
@@ -150,7 +150,7 @@ export const buttonStyles = `
 }
 
 .watch-later-btn.dark.on-video-detail:not(.loading):not(.success):not(.error):hover {
-    background-color: var(--yt-spec-outline);
+    background-color: var(--yt-spec-outline, rgba(255,255,255,0.2));
 }
 
 .watch-later-btn.light.on-video-detail:not(.loading):not(.success):not(.error):hover {
