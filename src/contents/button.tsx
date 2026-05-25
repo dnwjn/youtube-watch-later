@@ -64,6 +64,8 @@ const anchorListSelectors = [
   'ytd-watch-metadata #top-level-buttons-computed',
   // Suggested videos next to video player
   'yt-lockup-view-model.ytd-item-section-renderer > .yt-lockup-view-model',
+  // Suggested videos next to video player (new classname since May 2026)
+  'yt-lockup-view-model.ytd-item-section-renderer > .ytLockupViewModelHost',
   // Suggested videos below video player on mobile
   'ytm-media-item .media-item-menu',
 ]
