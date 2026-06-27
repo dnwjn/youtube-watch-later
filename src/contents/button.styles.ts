@@ -212,6 +212,12 @@ export const buttonStyles = `
 .watch-later-btn.floating-preview,
 .watch-later-btn.floating-preview.top-left,
 .watch-later-btn.floating-preview.top-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 34px;
+    height: 34px;
     left: 5px;
     top: 4px;
     right: unset;
