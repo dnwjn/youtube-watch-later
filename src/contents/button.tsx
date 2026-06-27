@@ -53,6 +53,11 @@ export const getStyle: PlasmoGetStyle = () => {
 const anchorListSelectors = [
   // General videos
   'ytd-rich-item-renderer',
+  'ytd-rich-grid-media',
+  'ytd-grid-video-renderer',
+  'ytd-video-renderer',
+  'ytd-compact-video-renderer',
+  'ytd-reel-item-renderer',
   // Videos on playlist page
   'ytd-playlist-video-renderer',
   // Videos in notification drawer
@@ -73,10 +78,30 @@ const anchorListSelectors = [
 ]
 
 const previewOverlayAnchorSelectors = [
+  // General thumbnail cards and rows
   'ytd-rich-item-renderer',
+  'ytd-rich-grid-media',
+  'ytd-grid-video-renderer',
+  'ytd-video-renderer',
+  'ytd-compact-video-renderer',
+  'ytd-reel-item-renderer',
+  // Videos on playlist page
   'ytd-playlist-video-renderer',
-  'ytd-search ytd-video-renderer',
+  // Suggested videos next to video player
+  'yt-lockup-view-model',
+  '.ytLockupViewModelHost',
 ]
+
+const previewOverlayAnchorSelector = previewOverlayAnchorSelectors.join(',')
+
+const removeNestedOverlayAnchors = (elements: Element[]) =>
+  elements.filter((element) => {
+    const closestOverlayParent = element.parentElement?.closest(
+      previewOverlayAnchorSelector,
+    )
+
+    return !closestOverlayParent || !elements.includes(closestOverlayParent)
+  })
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(anchorListSelectors.join(','))
@@ -89,7 +114,9 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
       // above YouTube's global hover-preview player.
       .filter(
         (element) =>
-          !elementIsInThumbnail(element) && !elementIsInPlaylist(element),
+          !element.matches(previewOverlayAnchorSelector) &&
+          !elementIsInThumbnail(element) &&
+          !elementIsInPlaylist(element),
       )
       // Filter out elements that are not a video.
       .filter((element) => elementNeedsButton(element))
@@ -101,11 +128,9 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
 }
 
 export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
-  const elements = document.querySelectorAll(
-    previewOverlayAnchorSelectors.join(','),
-  )
+  const elements = document.querySelectorAll(previewOverlayAnchorSelector)
 
-  return Array.from(elements)
+  return removeNestedOverlayAnchors(Array.from(elements))
     .filter((element) => elementNeedsButton(element))
     .filter(
       (element) => !element.querySelector('.watch-later-btn'),
@@ -249,6 +274,7 @@ const WatchLaterButton = ({ anchor }) => {
   const isOnVideoDetail = elementIsOnVideoDetailPage(element)
   const isInPlayerSuggested = elementIsInPlayerSuggested(element)
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
+  const usesThumbnailButtonStyle = isInThumbnail || (isOverlay && !isInPlaylist)
   const videoId = useMemo(() => getVideoId(element), [element])
 
   const buttonClasses = useMemo(() => {
@@ -261,7 +287,7 @@ const WatchLaterButton = ({ anchor }) => {
       classes.push(buttonConfig.position)
     }
 
-    if (isInThumbnail) {
+    if (usesThumbnailButtonStyle) {
       classes.push('in-thumbnail')
     }
     if (isInPlaylist) {
@@ -311,7 +337,13 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status, ytData?.clientTheme, buttonConfig, isOverlay])
+  }, [
+    status,
+    ytData?.clientTheme,
+    buttonConfig,
+    isOverlay,
+    usesThumbnailButtonStyle,
+  ])
 
   const shouldShow = useMemo(() => {
     if (status === 0) return false

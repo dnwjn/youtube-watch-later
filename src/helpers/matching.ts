@@ -5,8 +5,12 @@ export const elementIsAnchor = (element: Element) => element.tagName === 'A'
 
 export const elementIsInThumbnail = (element: Element) =>
   [
-    'YTD-RICH-ITEM-RENDERER',
+    'YT-LOCKUP-VIEW-MODEL',
+    'YTD-COMPACT-VIDEO-RENDERER',
     'YTD-GRID-VIDEO-RENDERER',
+    'YTD-RICH-ITEM-RENDERER',
+    'YTD-RICH-GRID-MEDIA',
+    'YTD-REEL-ITEM-RENDERER',
     'YTD-VIDEO-RENDERER',
   ].includes(element.tagName)
 
@@ -23,8 +27,8 @@ export const elementIsInModernEndscreenSuggested = (element: Element) =>
   element.classList.contains('ytp-modern-videowall-still')
 
 export const elementIsInPlayerSuggested = (element: Element) =>
-  element.classList.contains('yt-lockup-view-model')
-  || element.classList.contains('ytLockupViewModelHost')
+  element.classList.contains('yt-lockup-view-model') ||
+  element.classList.contains('ytLockupViewModelHost')
 
 export const elementIsInMobilePlayerSuggested = (element: Element) =>
   element.classList.contains('media-item-menu')
