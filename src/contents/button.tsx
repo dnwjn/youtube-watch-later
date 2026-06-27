@@ -92,6 +92,13 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
   mountState,
 }) => {
   const element = anchor.element
+  const shouldStackAbovePreview =
+    elementIsInThumbnail(element) || elementIsInPlaylist(element)
+
+  shadowHost.classList.toggle(
+    'ytwl-preview-overlay-host',
+    shouldStackAbovePreview,
+  )
 
   if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)

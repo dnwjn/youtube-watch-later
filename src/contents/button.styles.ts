@@ -8,6 +8,12 @@ export const buttonStyles = `
     position: unset !important;
 }
 
+:host(.ytwl-preview-overlay-host),
+#plasmo-shadow-container.ytwl-preview-overlay-host {
+    position: relative !important;
+    z-index: 2147483647 !important;
+}
+
 #plasmo-shadow-container:has(.watch-later-btn.in-notification.spaced) {
     margin-top: 60px;
 }
