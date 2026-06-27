@@ -8,10 +8,12 @@ export const buttonStyles = `
     position: unset !important;
 }
 
-:host(.ytwl-preview-overlay-host),
-#plasmo-shadow-container.ytwl-preview-overlay-host {
-    position: relative !important;
+:host(.ytwl-preview-overlay-host) {
+    position: fixed !important;
+    width: 34px !important;
+    height: 34px !important;
     z-index: 2147483647 !important;
+    pointer-events: auto !important;
 }
 
 #plasmo-shadow-container:has(.watch-later-btn.in-notification.spaced) {
@@ -101,6 +103,16 @@ export const buttonStyles = `
     bottom: unset;
     margin-left: 40px;
     margin-top: -53px;
+}
+
+.watch-later-btn.floating-preview,
+.watch-later-btn.floating-preview.top-left,
+.watch-later-btn.floating-preview.top-right {
+    left: 0;
+    top: 0;
+    right: unset;
+    bottom: unset;
+    margin: 0;
 }
 
 .watch-later-btn.in-notification {

@@ -4,7 +4,14 @@ import type {
   PlasmoGetStyle,
   PlasmoMountShadowHost,
 } from 'plasmo'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { getAuthorizationHeader, getHostname } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
@@ -35,6 +42,10 @@ import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
 import { buttonStyles } from './button.styles'
 
 let inlineAnchorListInterval: NodeJS.Timeout | null = null
+
+const floatingButtonSize = 34
+const floatingButtonInlineOffset = 5
+const floatingButtonBlockOffset = 4
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -70,6 +81,12 @@ const anchorListSelectors = [
   'ytm-media-item .media-item-menu',
 ]
 
+const getThumbnailElement = (element: Element): HTMLElement =>
+  (element.querySelector('ytd-thumbnail #thumbnail') as HTMLElement | null) ||
+  (element.querySelector('a#thumbnail') as HTMLElement | null) ||
+  (element.querySelector('ytd-thumbnail') as HTMLElement | null) ||
+  (element as HTMLElement)
+
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(anchorListSelectors.join(','))
 
@@ -100,7 +117,13 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
     shouldStackAbovePreview,
   )
 
-  if (elementIsInMobilePlayerSuggested(element)) {
+  if (shouldStackAbovePreview) {
+    const overlayRoot = document.body || document.documentElement
+    const shadowHostElement = shadowHost as HTMLElement
+
+    shadowHostElement.style.display = 'none'
+    overlayRoot.appendChild(shadowHost)
+  } else if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)
   } else {
     element.insertBefore(shadowHost, element.firstChild)
@@ -204,6 +227,8 @@ const WatchLaterButton = ({ anchor }) => {
     visibility: ButtonVisibility.Always,
   })
   const [isHovered, setIsHovered] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const floatingHostRef = useRef<HTMLElement | null>(null)
 
   const isInThumbnail = elementIsInThumbnail(element)
   const isInPlaylist = elementIsInPlaylist(element)
@@ -214,6 +239,7 @@ const WatchLaterButton = ({ anchor }) => {
   const isOnVideoDetail = elementIsOnVideoDetailPage(element)
   const isInPlayerSuggested = elementIsInPlayerSuggested(element)
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
+  const usesPreviewOverlayHost = isInThumbnail || isInPlaylist
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -253,6 +279,9 @@ const WatchLaterButton = ({ anchor }) => {
     if (isInPlayerSuggestedMobile) {
       classes.push('in-player-suggested-mobile')
     }
+    if (usesPreviewOverlayHost) {
+      classes.push('floating-preview')
+    }
 
     if (ytData?.clientTheme === 'USER_INTERFACE_THEME_DARK') {
       classes.push('dark')
@@ -272,7 +301,7 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status, ytData?.clientTheme, buttonConfig])
+  }, [status, ytData?.clientTheme, buttonConfig, usesPreviewOverlayHost])
 
   const shouldShow = useMemo(() => {
     if (status === 0) return false
@@ -301,6 +330,62 @@ const WatchLaterButton = ({ anchor }) => {
       visibility: visibility || buttonConfig.visibility,
     })
   }
+
+  const getFloatingHost = useCallback((): HTMLElement | null => {
+    if (floatingHostRef.current) return floatingHostRef.current
+
+    const rootNode = buttonRef.current?.getRootNode()
+
+    if (rootNode instanceof ShadowRoot) {
+      floatingHostRef.current = rootNode.host as HTMLElement
+    }
+
+    return floatingHostRef.current
+  }, [])
+
+  const syncFloatingHostPosition = useCallback(() => {
+    if (!usesPreviewOverlayHost) return
+
+    const host = getFloatingHost()
+    if (!host) return
+
+    if (!shouldShow) {
+      host.style.display = 'none'
+      return
+    }
+
+    const thumbnailElement = getThumbnailElement(element)
+    const rect = thumbnailElement.getBoundingClientRect()
+
+    if (
+      rect.width === 0 ||
+      rect.height === 0 ||
+      rect.bottom < 0 ||
+      rect.right < 0 ||
+      rect.top > window.innerHeight ||
+      rect.left > window.innerWidth
+    ) {
+      host.style.display = 'none'
+      return
+    }
+
+    const hostWidth = host.getBoundingClientRect().width || floatingButtonSize
+    const left =
+      buttonConfig.position === ButtonPosition.TopRight
+        ? rect.right - hostWidth - floatingButtonInlineOffset
+        : rect.left + floatingButtonInlineOffset
+    const top = rect.top + floatingButtonBlockOffset
+
+    host.style.left = `${Math.round(left)}px`
+    host.style.top = `${Math.round(top)}px`
+    host.style.display = 'block'
+  }, [
+    buttonConfig.position,
+    element,
+    getFloatingHost,
+    shouldShow,
+    usesPreviewOverlayHost,
+  ])
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -448,9 +533,13 @@ const WatchLaterButton = ({ anchor }) => {
   const onElementMouseEnter = () => {
     setIsHovered(true)
     setLatestElementRef(element)
+    requestAnimationFrame(syncFloatingHostPosition)
   }
 
-  const onElementMouseLeave = () => setIsHovered(false)
+  const onElementMouseLeave = () => {
+    setIsHovered(false)
+    requestAnimationFrame(syncFloatingHostPosition)
+  }
 
   const setYtwlYt = (event) => {
     if (ytData) return
@@ -539,6 +628,32 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }, [visible, hasData])
 
+  useLayoutEffect(() => {
+    syncFloatingHostPosition()
+  }, [syncFloatingHostPosition])
+
+  useEffect(() => {
+    if (!usesPreviewOverlayHost) return
+
+    const thumbnailElement = getThumbnailElement(element)
+    const resizeObserver = new ResizeObserver(syncFloatingHostPosition)
+
+    resizeObserver.observe(element)
+
+    if (thumbnailElement !== element) {
+      resizeObserver.observe(thumbnailElement)
+    }
+
+    window.addEventListener('scroll', syncFloatingHostPosition, true)
+    window.addEventListener('resize', syncFloatingHostPosition)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('scroll', syncFloatingHostPosition, true)
+      window.removeEventListener('resize', syncFloatingHostPosition)
+    }
+  }, [element, syncFloatingHostPosition, usesPreviewOverlayHost])
+
   useEffect(() => {
     const handlePopState = () => {
       cleanup()
@@ -558,6 +673,7 @@ const WatchLaterButton = ({ anchor }) => {
 
   return (
     <button
+      ref={buttonRef}
       className={buttonClasses}
       disabled={status !== 1}
       onClick={addVideo}>
