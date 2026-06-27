@@ -1,18 +1,12 @@
 import type {
   PlasmoCSConfig,
   PlasmoGetInlineAnchorList,
+  PlasmoGetOverlayAnchorList,
   PlasmoGetStyle,
   PlasmoMountShadowHost,
+  PlasmoWatchOverlayAnchor,
 } from 'plasmo'
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { createPortal } from 'react-dom'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { getAuthorizationHeader, getHostname } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
@@ -42,11 +36,7 @@ import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
 
 import { buttonStyles } from './button.styles'
 
-let inlineAnchorListInterval: NodeJS.Timeout | null = null
-
-const floatingButtonSize = 34
-const floatingButtonInlineOffset = 5
-const floatingButtonBlockOffset = 4
+let inlineAnchorListInterval: ReturnType<typeof setInterval> | null = null
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -82,19 +72,11 @@ const anchorListSelectors = [
   'ytm-media-item .media-item-menu',
 ]
 
-const getThumbnailElement = (element: Element): HTMLElement =>
-  (element.querySelector('ytd-thumbnail #thumbnail') as HTMLElement | null) ||
-  (element.querySelector('a#thumbnail') as HTMLElement | null) ||
-  (element.querySelector('ytd-thumbnail') as HTMLElement | null) ||
-  (element as HTMLElement)
-
-const rectCanPositionButton = (rect: DOMRect | DOMRectReadOnly) =>
-  rect.width > 0 &&
-  rect.height > 0 &&
-  rect.bottom >= 0 &&
-  rect.right >= 0 &&
-  rect.top <= window.innerHeight &&
-  rect.left <= window.innerWidth
+const previewOverlayAnchorSelectors = [
+  'ytd-rich-item-renderer',
+  'ytd-playlist-video-renderer',
+  'ytd-search ytd-video-renderer',
+]
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(anchorListSelectors.join(','))
@@ -103,6 +85,12 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
     Array.from(elements)
       // Filter out elements that already have the button.
       .filter((element) => !element.querySelector('.watch-later-btn'))
+      // Thumbnail cards are mounted through the overlay API so they can sit
+      // above YouTube's global hover-preview player.
+      .filter(
+        (element) =>
+          !elementIsInThumbnail(element) && !elementIsInPlaylist(element),
+      )
       // Filter out elements that are not a video.
       .filter((element) => elementNeedsButton(element))
       .map((element) => ({
@@ -112,6 +100,26 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   )
 }
 
+export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
+  const elements = document.querySelectorAll(
+    previewOverlayAnchorSelectors.join(','),
+  )
+
+  return Array.from(elements)
+    .filter((element) => elementNeedsButton(element))
+    .filter(
+      (element) => !element.querySelector('.watch-later-btn'),
+    ) as unknown as NodeList
+}
+
+export const watchOverlayAnchor: PlasmoWatchOverlayAnchor = (
+  updatePosition,
+) => {
+  const interval = setInterval(updatePosition, 250)
+
+  return () => clearInterval(interval)
+}
+
 export const mountShadowHost: PlasmoMountShadowHost = ({
   shadowHost,
   anchor,
@@ -119,7 +127,11 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
 }) => {
   const element = anchor.element
 
-  if (elementIsInMobilePlayerSuggested(element)) {
+  if (anchor.type === 'overlay') {
+    shadowHost.classList.add('ytwl-overlay-root')
+    const overlayRoot = document.body || document.documentElement
+    overlayRoot.appendChild(shadowHost)
+  } else if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)
   } else {
     element.insertBefore(shadowHost, element.firstChild)
@@ -193,6 +205,7 @@ const Icon = ({ status }: { status: number }) => {
 
 const WatchLaterButton = ({ anchor }) => {
   const { element } = anchor
+  const isOverlay = anchor.type === 'overlay'
 
   useVideoPreviewListener()
 
@@ -224,13 +237,6 @@ const WatchLaterButton = ({ anchor }) => {
     visibility: ButtonVisibility.Always,
   })
   const [isHovered, setIsHovered] = useState(false)
-  const [floatingButtonPosition, setFloatingButtonPosition] =
-    useState<React.CSSProperties>({
-      display: 'none',
-    })
-  const lastFloatingAnchorRectRef = useRef<DOMRect | DOMRectReadOnly | null>(
-    null,
-  )
 
   const isInThumbnail = elementIsInThumbnail(element)
   const isInPlaylist = elementIsInPlaylist(element)
@@ -241,7 +247,6 @@ const WatchLaterButton = ({ anchor }) => {
   const isOnVideoDetail = elementIsOnVideoDetailPage(element)
   const isInPlayerSuggested = elementIsInPlayerSuggested(element)
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
-  const usesPreviewOverlayHost = isInThumbnail || isInPlaylist
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -281,7 +286,7 @@ const WatchLaterButton = ({ anchor }) => {
     if (isInPlayerSuggestedMobile) {
       classes.push('in-player-suggested-mobile')
     }
-    if (usesPreviewOverlayHost) {
+    if (isOverlay) {
       classes.push('floating-preview')
     }
 
@@ -303,7 +308,7 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status, ytData?.clientTheme, buttonConfig, usesPreviewOverlayHost])
+  }, [status, ytData?.clientTheme, buttonConfig, isOverlay])
 
   const shouldShow = useMemo(() => {
     if (status === 0) return false
@@ -333,82 +338,22 @@ const WatchLaterButton = ({ anchor }) => {
     })
   }
 
-  const syncFloatingHostPosition = useCallback(() => {
-    if (!usesPreviewOverlayHost) return
-
-    if (!shouldShow) {
-      setFloatingButtonPosition({ display: 'none' })
-      return
+  const overlayButtonStyle = useMemo<React.CSSProperties | undefined>(() => {
+    if (!isOverlay || buttonConfig.position !== ButtonPosition.TopRight) {
+      return undefined
     }
 
-    const thumbnailElement = getThumbnailElement(element)
-    const thumbnailRect = thumbnailElement.getBoundingClientRect()
-    const elementRect = element.getBoundingClientRect()
-    const rect = rectCanPositionButton(thumbnailRect)
-      ? thumbnailRect
-      : rectCanPositionButton(elementRect)
-        ? elementRect
-        : lastFloatingAnchorRectRef.current
+    const width = element.getBoundingClientRect().width
 
-    if (!rect) {
-      setFloatingButtonPosition({ display: 'none' })
-      return
+    if (width <= 0) {
+      return undefined
     }
-
-    lastFloatingAnchorRectRef.current = rect
-
-    const left =
-      buttonConfig.position === ButtonPosition.TopRight
-        ? rect.right - floatingButtonSize - floatingButtonInlineOffset
-        : rect.left + floatingButtonInlineOffset
-    const top = rect.top + floatingButtonBlockOffset
-
-    setFloatingButtonPosition({
-      display: 'flex',
-      left: Math.round(left),
-      top: Math.round(top),
-    })
-  }, [buttonConfig.position, element, shouldShow, usesPreviewOverlayHost])
-
-  const floatingButtonStyle = useMemo<React.CSSProperties>(() => {
-    const isCompleteStatus = status === 3 || status === 4
-    const backgroundColor =
-      status === 3
-        ? '#4ade80'
-        : status === 4
-          ? '#f87171'
-          : ytData?.clientTheme === 'USER_INTERFACE_THEME_LIGHT'
-            ? 'rgba(0,0,0,0.05)'
-            : '#282828'
 
     return {
-      position: 'fixed',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      appearance: 'none',
-      boxSizing: 'border-box',
-      width: floatingButtonSize,
-      height: floatingButtonSize,
-      padding: 5,
-      border: 'none',
-      borderRadius: 18,
-      fontSize: 12,
-      outline: 'none',
-      zIndex: 2147483647,
-      cursor: status === 1 ? 'pointer' : 'not-allowed',
-      backgroundColor,
-      color: isCompleteStatus ? '#0f0f0f' : '#f1f1f1',
-      opacity: buttonConfig.opacity === ButtonOpacity.Half ? 0.5 : 1,
-      pointerEvents: 'auto',
-      ...floatingButtonPosition,
+      left: `${Math.max(5, Math.round(width - 39))}px`,
+      right: 'unset',
     }
-  }, [
-    buttonConfig.opacity,
-    floatingButtonPosition,
-    status,
-    ytData?.clientTheme,
-  ])
+  }, [buttonConfig.position, element, isOverlay])
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -556,12 +501,10 @@ const WatchLaterButton = ({ anchor }) => {
   const onElementMouseEnter = () => {
     setIsHovered(true)
     setLatestElementRef(element)
-    requestAnimationFrame(syncFloatingHostPosition)
   }
 
   const onElementMouseLeave = () => {
     setIsHovered(false)
-    requestAnimationFrame(syncFloatingHostPosition)
   }
 
   const setYtwlYt = (event) => {
@@ -651,32 +594,6 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }, [visible, hasData])
 
-  useLayoutEffect(() => {
-    syncFloatingHostPosition()
-  }, [syncFloatingHostPosition])
-
-  useEffect(() => {
-    if (!usesPreviewOverlayHost) return
-
-    const thumbnailElement = getThumbnailElement(element)
-    const resizeObserver = new ResizeObserver(syncFloatingHostPosition)
-
-    resizeObserver.observe(element)
-
-    if (thumbnailElement !== element) {
-      resizeObserver.observe(thumbnailElement)
-    }
-
-    window.addEventListener('scroll', syncFloatingHostPosition, true)
-    window.addEventListener('resize', syncFloatingHostPosition)
-
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener('scroll', syncFloatingHostPosition, true)
-      window.removeEventListener('resize', syncFloatingHostPosition)
-    }
-  }, [element, syncFloatingHostPosition, usesPreviewOverlayHost])
-
   useEffect(() => {
     const handlePopState = () => {
       cleanup()
@@ -694,28 +611,12 @@ const WatchLaterButton = ({ anchor }) => {
 
   if (!shouldShow) return null
 
-  if (usesPreviewOverlayHost) {
-    const portalRoot = document.body || document.documentElement
-
-    return createPortal(
-      <button
-        className={`${buttonClasses} floating-preview-portal`}
-        disabled={status !== 1}
-        onClick={addVideo}
-        onMouseEnter={onElementMouseEnter}
-        onMouseLeave={onElementMouseLeave}
-        style={floatingButtonStyle}>
-        <Icon status={status} />
-      </button>,
-      portalRoot,
-    )
-  }
-
   return (
     <button
       className={buttonClasses}
       disabled={status !== 1}
-      onClick={addVideo}>
+      onClick={addVideo}
+      style={overlayButtonStyle}>
       <Icon status={status} />
     </button>
   )

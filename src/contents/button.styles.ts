@@ -191,6 +191,36 @@ export const buttonStyles = `
     color: #0f0f0f;
 }
 
+:host(.ytwl-overlay-root) {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    z-index: 2147483647 !important;
+    pointer-events: none !important;
+}
+
+:host(.ytwl-overlay-root) #plasmo-shadow-container {
+    position: relative !important;
+    z-index: 2147483647 !important;
+    pointer-events: none !important;
+}
+
+:host(.ytwl-overlay-root) #plasmo-shadow-container .plasmo-csui-container {
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+.watch-later-btn.floating-preview,
+.watch-later-btn.floating-preview.top-left,
+.watch-later-btn.floating-preview.top-right {
+    left: 5px;
+    top: 4px;
+    right: unset;
+    bottom: unset;
+    margin: 0;
+    pointer-events: auto !important;
+    z-index: 2147483647;
+}
+
 .watch-later-btn svg {
     pointer-events: none;
     display: inherit;
