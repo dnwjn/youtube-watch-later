@@ -9,9 +9,9 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 
 import { getAuthorizationHeader, getHostname } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
@@ -109,21 +109,8 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
   mountState,
 }) => {
   const element = anchor.element
-  const shouldStackAbovePreview =
-    elementIsInThumbnail(element) || elementIsInPlaylist(element)
 
-  shadowHost.classList.toggle(
-    'ytwl-preview-overlay-host',
-    shouldStackAbovePreview,
-  )
-
-  if (shouldStackAbovePreview) {
-    const overlayRoot = document.body || document.documentElement
-    const shadowHostElement = shadowHost as HTMLElement
-
-    shadowHostElement.style.display = 'none'
-    overlayRoot.appendChild(shadowHost)
-  } else if (elementIsInMobilePlayerSuggested(element)) {
+  if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)
   } else {
     element.insertBefore(shadowHost, element.firstChild)
@@ -188,6 +175,7 @@ const Icon = ({ status }: { status: number }) => {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      fill="currentColor"
       className="with-fill">
       <path d="M14.97 16.95 10 13.87V7h2v5.76l4.03 2.49-1.06 1.7zM12 3c-4.96 0-9 4.04-9 9s4.04 9 9 9 9-4.04 9-9-4.04-9-9-9m0-1c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"></path>
     </svg>
@@ -227,8 +215,10 @@ const WatchLaterButton = ({ anchor }) => {
     visibility: ButtonVisibility.Always,
   })
   const [isHovered, setIsHovered] = useState(false)
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
-  const floatingHostRef = useRef<HTMLElement | null>(null)
+  const [floatingButtonPosition, setFloatingButtonPosition] =
+    useState<React.CSSProperties>({
+      display: 'none',
+    })
 
   const isInThumbnail = elementIsInThumbnail(element)
   const isInPlaylist = elementIsInPlaylist(element)
@@ -331,26 +321,11 @@ const WatchLaterButton = ({ anchor }) => {
     })
   }
 
-  const getFloatingHost = useCallback((): HTMLElement | null => {
-    if (floatingHostRef.current) return floatingHostRef.current
-
-    const rootNode = buttonRef.current?.getRootNode()
-
-    if (rootNode instanceof ShadowRoot) {
-      floatingHostRef.current = rootNode.host as HTMLElement
-    }
-
-    return floatingHostRef.current
-  }, [])
-
   const syncFloatingHostPosition = useCallback(() => {
     if (!usesPreviewOverlayHost) return
 
-    const host = getFloatingHost()
-    if (!host) return
-
     if (!shouldShow) {
-      host.style.display = 'none'
+      setFloatingButtonPosition({ display: 'none' })
       return
     }
 
@@ -365,26 +340,61 @@ const WatchLaterButton = ({ anchor }) => {
       rect.top > window.innerHeight ||
       rect.left > window.innerWidth
     ) {
-      host.style.display = 'none'
+      setFloatingButtonPosition({ display: 'none' })
       return
     }
 
-    const hostWidth = host.getBoundingClientRect().width || floatingButtonSize
     const left =
       buttonConfig.position === ButtonPosition.TopRight
-        ? rect.right - hostWidth - floatingButtonInlineOffset
+        ? rect.right - floatingButtonSize - floatingButtonInlineOffset
         : rect.left + floatingButtonInlineOffset
     const top = rect.top + floatingButtonBlockOffset
 
-    host.style.left = `${Math.round(left)}px`
-    host.style.top = `${Math.round(top)}px`
-    host.style.display = 'block'
+    setFloatingButtonPosition({
+      display: 'flex',
+      left: Math.round(left),
+      top: Math.round(top),
+    })
+  }, [buttonConfig.position, element, shouldShow, usesPreviewOverlayHost])
+
+  const floatingButtonStyle = useMemo<React.CSSProperties>(() => {
+    const isCompleteStatus = status === 3 || status === 4
+    const backgroundColor =
+      status === 3
+        ? '#4ade80'
+        : status === 4
+          ? '#f87171'
+          : ytData?.clientTheme === 'USER_INTERFACE_THEME_LIGHT'
+            ? 'rgba(0,0,0,0.05)'
+            : '#282828'
+
+    return {
+      position: 'fixed',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      appearance: 'none',
+      boxSizing: 'border-box',
+      width: floatingButtonSize,
+      height: floatingButtonSize,
+      padding: 5,
+      border: 'none',
+      borderRadius: 18,
+      fontSize: 12,
+      outline: 'none',
+      zIndex: 2147483647,
+      cursor: status === 1 ? 'pointer' : 'not-allowed',
+      backgroundColor,
+      color: isCompleteStatus ? '#0f0f0f' : '#f1f1f1',
+      opacity: buttonConfig.opacity === ButtonOpacity.Half ? 0.5 : 1,
+      pointerEvents: 'auto',
+      ...floatingButtonPosition,
+    }
   }, [
-    buttonConfig.position,
-    element,
-    getFloatingHost,
-    shouldShow,
-    usesPreviewOverlayHost,
+    buttonConfig.opacity,
+    floatingButtonPosition,
+    status,
+    ytData?.clientTheme,
   ])
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -671,9 +681,23 @@ const WatchLaterButton = ({ anchor }) => {
 
   if (!shouldShow) return null
 
+  if (usesPreviewOverlayHost) {
+    const portalRoot = document.body || document.documentElement
+
+    return createPortal(
+      <button
+        className={`${buttonClasses} floating-preview-portal`}
+        disabled={status !== 1}
+        onClick={addVideo}
+        style={floatingButtonStyle}>
+        <Icon status={status} />
+      </button>,
+      portalRoot,
+    )
+  }
+
   return (
     <button
-      ref={buttonRef}
       className={buttonClasses}
       disabled={status !== 1}
       onClick={addVideo}>
