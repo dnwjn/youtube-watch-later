@@ -215,10 +215,12 @@ const WatchLaterButton = ({ anchor }) => {
     enabled,
     latestElementRef,
     videoPreviewIsHovered,
+    addedVideoIds,
     setYtData,
     setUrl,
     setEnabled,
     setLatestElementRef,
+    markVideoAsAdded,
   } = useWatchLaterStore()
 
   /**
@@ -247,6 +249,7 @@ const WatchLaterButton = ({ anchor }) => {
   const isOnVideoDetail = elementIsOnVideoDetailPage(element)
   const isInPlayerSuggested = elementIsInPlayerSuggested(element)
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
+  const videoId = useMemo(() => getVideoId(element), [element])
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -361,21 +364,20 @@ const WatchLaterButton = ({ anchor }) => {
 
     if (status !== 1) return
 
-    const videoId: string | null = getVideoId(element)
-
     if (videoId && ytData) {
       setStatus(2)
 
       addToWatchLater(videoId)
         .then(() => {
+          markVideoAsAdded(videoId)
           setStatus(3)
 
           if (isInNotification) {
             markNotificationAsRead()
           }
         })
-        .catch(() => setStatus(4))
-        .finally(() => {
+        .catch(() => {
+          setStatus(4)
           setTimeout(() => setStatus(1), 2000)
         })
     }
@@ -588,11 +590,11 @@ const WatchLaterButton = ({ anchor }) => {
 
   useEffect(() => {
     if (visible && hasData) {
-      setStatus(1)
+      setStatus(videoId && addedVideoIds.has(videoId) ? 3 : 1)
     } else {
       setStatus(0)
     }
-  }, [visible, hasData])
+  }, [visible, hasData, videoId, addedVideoIds])
 
   useEffect(() => {
     const handlePopState = () => {
