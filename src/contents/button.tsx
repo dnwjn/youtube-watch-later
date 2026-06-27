@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { createPortal } from 'react-dom'
@@ -86,6 +87,14 @@ const getThumbnailElement = (element: Element): HTMLElement =>
   (element.querySelector('a#thumbnail') as HTMLElement | null) ||
   (element.querySelector('ytd-thumbnail') as HTMLElement | null) ||
   (element as HTMLElement)
+
+const rectCanPositionButton = (rect: DOMRect | DOMRectReadOnly) =>
+  rect.width > 0 &&
+  rect.height > 0 &&
+  rect.bottom >= 0 &&
+  rect.right >= 0 &&
+  rect.top <= window.innerHeight &&
+  rect.left <= window.innerWidth
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(anchorListSelectors.join(','))
@@ -219,6 +228,9 @@ const WatchLaterButton = ({ anchor }) => {
     useState<React.CSSProperties>({
       display: 'none',
     })
+  const lastFloatingAnchorRectRef = useRef<DOMRect | DOMRectReadOnly | null>(
+    null,
+  )
 
   const isInThumbnail = elementIsInThumbnail(element)
   const isInPlaylist = elementIsInPlaylist(element)
@@ -330,19 +342,20 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     const thumbnailElement = getThumbnailElement(element)
-    const rect = thumbnailElement.getBoundingClientRect()
+    const thumbnailRect = thumbnailElement.getBoundingClientRect()
+    const elementRect = element.getBoundingClientRect()
+    const rect = rectCanPositionButton(thumbnailRect)
+      ? thumbnailRect
+      : rectCanPositionButton(elementRect)
+        ? elementRect
+        : lastFloatingAnchorRectRef.current
 
-    if (
-      rect.width === 0 ||
-      rect.height === 0 ||
-      rect.bottom < 0 ||
-      rect.right < 0 ||
-      rect.top > window.innerHeight ||
-      rect.left > window.innerWidth
-    ) {
+    if (!rect) {
       setFloatingButtonPosition({ display: 'none' })
       return
     }
+
+    lastFloatingAnchorRectRef.current = rect
 
     const left =
       buttonConfig.position === ButtonPosition.TopRight
@@ -689,6 +702,8 @@ const WatchLaterButton = ({ anchor }) => {
         className={`${buttonClasses} floating-preview-portal`}
         disabled={status !== 1}
         onClick={addVideo}
+        onMouseEnter={onElementMouseEnter}
+        onMouseLeave={onElementMouseLeave}
         style={floatingButtonStyle}>
         <Icon status={status} />
       </button>,
