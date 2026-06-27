@@ -1,5 +1,6 @@
 import type {
   PlasmoCSConfig,
+  PlasmoCSUIWatch,
   PlasmoGetInlineAnchorList,
   PlasmoGetOverlayAnchorList,
   PlasmoGetStyle,
@@ -37,6 +38,10 @@ import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
 import { buttonStyles } from './button.styles'
 
 let inlineAnchorListInterval: ReturnType<typeof setInterval> | null = null
+let overlayAnchorElementId = 0
+let lastOverlayAnchorSignature = ''
+let overlayAnchorRefreshInFlight = false
+const overlayAnchorElementIds = new WeakMap<Element, number>()
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -103,6 +108,47 @@ const removeNestedOverlayAnchors = (elements: Element[]) =>
     return !closestOverlayParent || !elements.includes(closestOverlayParent)
   })
 
+const elementIsVisible = (element: Element) => {
+  const rect = element.getBoundingClientRect()
+  const style = getComputedStyle(element)
+
+  if (style.display === 'none') return false
+  if (style.visibility === 'hidden') return false
+  if (style.opacity === '0') return false
+  if (rect.width === 0 && rect.height === 0 && style.overflow !== 'hidden') {
+    return false
+  }
+
+  return rect.x + rect.width >= 0 && rect.y + rect.height >= 0
+}
+
+const getOverlayAnchorElements = () => {
+  const elements = document.querySelectorAll(previewOverlayAnchorSelector)
+
+  return removeNestedOverlayAnchors(Array.from(elements))
+    .filter((element) => elementIsVisible(element))
+    .filter((element) => elementNeedsButton(element))
+    .filter((element) => !element.querySelector('.watch-later-btn'))
+}
+
+const getOverlayAnchorElementId = (element: Element) => {
+  const existingId = overlayAnchorElementIds.get(element)
+
+  if (existingId) return existingId
+
+  overlayAnchorElementId += 1
+  overlayAnchorElementIds.set(element, overlayAnchorElementId)
+  return overlayAnchorElementId
+}
+
+const getOverlayAnchorSignature = (elements: Element[]) =>
+  elements
+    .map(
+      (element) =>
+        `${getOverlayAnchorElementId(element)}:${getVideoId(element) || ''}`,
+    )
+    .join('|')
+
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(anchorListSelectors.join(','))
 
@@ -128,13 +174,56 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
 }
 
 export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
-  const elements = document.querySelectorAll(previewOverlayAnchorSelector)
+  return getOverlayAnchorElements() as unknown as NodeList
+}
 
-  return removeNestedOverlayAnchors(Array.from(elements))
-    .filter((element) => elementNeedsButton(element))
-    .filter(
-      (element) => !element.querySelector('.watch-later-btn'),
-    ) as unknown as NodeList
+export const watch: PlasmoCSUIWatch = ({ observer, render }) => {
+  const refreshOverlayAnchors = async () => {
+    if (overlayAnchorRefreshInFlight || observer.mountState.isMounting) return
+
+    overlayAnchorRefreshInFlight = true
+
+    try {
+      const elements = getOverlayAnchorElements()
+      const signature = getOverlayAnchorSignature(elements)
+      const overlayHost = Array.from(observer.mountState.hostSet).find(
+        (host) => observer.mountState.hostMap.get(host)?.type === 'overlay',
+      )
+
+      if (signature === lastOverlayAnchorSignature && overlayHost) return
+
+      lastOverlayAnchorSignature = signature
+      observer.mountState.overlayTargetList = elements
+
+      if (overlayHost) {
+        const overlayAnchor = observer.mountState.hostMap.get(overlayHost)
+
+        overlayAnchor?.root?.unmount()
+        overlayHost.remove()
+        observer.mountState.hostSet.delete(overlayHost)
+        observer.mountState.hostMap.delete(overlayHost)
+      }
+
+      if (elements.length > 0) {
+        await render({
+          element: document.documentElement,
+          type: 'overlay',
+        })
+      }
+    } finally {
+      overlayAnchorRefreshInFlight = false
+    }
+  }
+
+  const interval = setInterval(refreshOverlayAnchors, 500)
+
+  window.addEventListener('ytwl-yt-nav-finish', refreshOverlayAnchors)
+  refreshOverlayAnchors()
+
+  return () => {
+    clearInterval(interval)
+    window.removeEventListener('ytwl-yt-nav-finish', refreshOverlayAnchors)
+  }
 }
 
 export const watchOverlayAnchor: PlasmoWatchOverlayAnchor = (
