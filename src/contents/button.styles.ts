@@ -209,9 +209,7 @@ export const buttonStyles = `
     pointer-events: none !important;
 }
 
-.watch-later-btn.floating-preview,
-.watch-later-btn.floating-preview.top-left,
-.watch-later-btn.floating-preview.top-right {
+.watch-later-btn.floating-preview {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -225,6 +223,11 @@ export const buttonStyles = `
     margin: 0;
     pointer-events: auto !important;
     z-index: 2147483647;
+}
+
+.watch-later-btn.floating-preview.top-right {
+    left: unset;
+    right: 5px;
 }
 
 .watch-later-btn svg {
