@@ -22,7 +22,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
     getCookie('__Secure-3PAPISID'),
   ])
 
-  if (!sapisid) {
+  if (!sapisid && !sapisid1p && !sapisid3p) {
     throw new Error('SAPISID cookie not found')
   }
 

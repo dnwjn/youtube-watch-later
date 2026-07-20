@@ -22,7 +22,7 @@ export interface ButtonConfig {
 }
 
 export interface VisitorCookies {
-  sapisid: string
+  sapisid: string | null
   sapisid1p: string | null
   sapisid3p: string | null
 }
