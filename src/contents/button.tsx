@@ -177,7 +177,12 @@ export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
   return getOverlayAnchorElements() as unknown as NodeList
 }
 
+const OVERLAY_REFRESH_DEBOUNCE_MS = 200
+const OVERLAY_REFRESH_FALLBACK_INTERVAL_MS = 2000
+
 export const watch: PlasmoCSUIWatch = ({ observer, render }) => {
+  let debounceTimeout: ReturnType<typeof setTimeout> | null = null
+
   const refreshOverlayAnchors = async () => {
     if (overlayAnchorRefreshInFlight || observer.mountState.isMounting) return
 
@@ -215,13 +220,32 @@ export const watch: PlasmoCSUIWatch = ({ observer, render }) => {
     }
   }
 
-  const interval = setInterval(refreshOverlayAnchors, 500)
+  const scheduleRefresh = () => {
+    if (debounceTimeout) clearTimeout(debounceTimeout)
+    debounceTimeout = setTimeout(
+      refreshOverlayAnchors,
+      OVERLAY_REFRESH_DEBOUNCE_MS,
+    )
+  }
+
+  const mutationObserver = new MutationObserver(scheduleRefresh)
+  mutationObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  })
+
+  const fallbackInterval = setInterval(
+    refreshOverlayAnchors,
+    OVERLAY_REFRESH_FALLBACK_INTERVAL_MS,
+  )
 
   window.addEventListener('ytwl-yt-nav-finish', refreshOverlayAnchors)
   refreshOverlayAnchors()
 
   return () => {
-    clearInterval(interval)
+    mutationObserver.disconnect()
+    clearInterval(fallbackInterval)
+    if (debounceTimeout) clearTimeout(debounceTimeout)
     window.removeEventListener('ytwl-yt-nav-finish', refreshOverlayAnchors)
   }
 }
