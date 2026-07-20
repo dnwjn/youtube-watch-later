@@ -330,11 +330,16 @@ const WatchLaterButton = ({ anchor }) => {
     latestElementRef,
     videoPreviewIsHovered,
     addedVideoIds,
+    pendingVideoIds,
+    erroredVideoIds,
     setYtData,
     setUrl,
     setEnabled,
     setLatestElementRef,
+    markVideoAsPending,
     markVideoAsAdded,
+    markVideoAsErrored,
+    clearVideoError,
   } = useWatchLaterStore()
 
   /**
@@ -487,6 +492,7 @@ const WatchLaterButton = ({ anchor }) => {
 
     if (videoId && ytData) {
       setStatus(2)
+      markVideoAsPending(videoId)
 
       addToWatchLater(videoId)
         .then(() => {
@@ -498,8 +504,12 @@ const WatchLaterButton = ({ anchor }) => {
           }
         })
         .catch(() => {
+          markVideoAsErrored(videoId)
           setStatus(4)
-          setTimeout(() => setStatus(1), 2000)
+          setTimeout(() => {
+            clearVideoError(videoId)
+            setStatus(1)
+          }, 2000)
         })
     }
   }
@@ -711,11 +721,26 @@ const WatchLaterButton = ({ anchor }) => {
 
   useEffect(() => {
     if (visible && hasData) {
-      setStatus(videoId && addedVideoIds.has(videoId) ? 3 : 1)
+      if (videoId && addedVideoIds.has(videoId)) {
+        setStatus(3)
+      } else if (videoId && erroredVideoIds.has(videoId)) {
+        setStatus(4)
+      } else if (videoId && pendingVideoIds.has(videoId)) {
+        setStatus(2)
+      } else {
+        setStatus(1)
+      }
     } else {
       setStatus(0)
     }
-  }, [visible, hasData, videoId, addedVideoIds])
+  }, [
+    visible,
+    hasData,
+    videoId,
+    addedVideoIds,
+    pendingVideoIds,
+    erroredVideoIds,
+  ])
 
   useEffect(() => {
     const handlePopState = () => {
