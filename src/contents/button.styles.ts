@@ -8,6 +8,11 @@ export const buttonStyles = `
     position: unset !important;
 }
 
+ytd-thumbnail:has(> #plasmo-shadow-container),
+yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
+    position: relative;
+}
+
 #plasmo-shadow-container:has(.watch-later-btn.in-notification.spaced) {
     margin-top: 60px;
 }

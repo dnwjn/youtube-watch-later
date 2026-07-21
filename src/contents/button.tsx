@@ -95,6 +95,15 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
 
   if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)
+  } else if (elementIsInThumbnail(element)) {
+    // Mount inside the thumbnail image wrapper (rather than the whole video
+    // card) so absolute positioning is relative to the thumbnail itself, not
+    // the card including the title/channel metadata below it.
+    const thumbnail = element.querySelector(
+      'ytd-thumbnail, yt-thumbnail-view-model',
+    )
+    const mountTarget = thumbnail ?? element
+    mountTarget.insertBefore(shadowHost, mountTarget.firstChild)
   } else {
     element.insertBefore(shadowHost, element.firstChild)
   }
