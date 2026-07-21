@@ -212,6 +212,7 @@ const WatchLaterButton = ({ anchor }) => {
     position: ButtonPosition.TopLeft,
     visibility: ButtonVisibility.Always,
   })
+  const [configLoaded, setConfigLoaded] = useState<boolean>(false)
   const [isHovered, setIsHovered] = useState(false)
 
   const isInThumbnail = elementIsInThumbnail(element)
@@ -295,6 +296,7 @@ const WatchLaterButton = ({ anchor }) => {
   }, [status, ytData?.clientTheme, buttonConfig])
 
   const shouldShow = useMemo(() => {
+    if (!configLoaded) return false
     if (status === 0) return false
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
@@ -302,6 +304,7 @@ const WatchLaterButton = ({ anchor }) => {
     if (videoPreviewIsHovered && latestElementRef === element) return true
     return false
   }, [
+    configLoaded,
     status,
     buttonConfig,
     isHovered,
@@ -315,6 +318,7 @@ const WatchLaterButton = ({ anchor }) => {
     setButtonConfig((previous) =>
       computeButtonConfig(settings, positionContext, previous),
     )
+    setConfigLoaded(true)
   }
 
   const handleSettingsChanged = (event) => {
