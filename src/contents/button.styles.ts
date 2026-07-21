@@ -44,6 +44,22 @@ export const buttonStyles = `
     bottom: unset;
 }
 
+.watch-later-btn.in-thumbnail.bottom-left,
+.watch-later-btn.in-playlist.bottom-left {
+    left: 5px;
+    top: unset;
+    right: unset;
+    bottom: 4px;
+}
+
+.watch-later-btn.in-thumbnail.bottom-right,
+.watch-later-btn.in-playlist.bottom-right {
+    left: unset;
+    top: unset;
+    right: 5px;
+    bottom: 4px;
+}
+
 .watch-later-btn.in-endscreen-suggested {
     left: 5px;
     top: unset;

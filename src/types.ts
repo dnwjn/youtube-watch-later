@@ -6,6 +6,8 @@ export class ButtonOpacity {
 export class ButtonPosition {
   static TopLeft = 'top-left'
   static TopRight = 'top-right'
+  static BottomLeft = 'bottom-left'
+  static BottomRight = 'bottom-right'
 }
 
 export class ButtonVisibility {

@@ -177,6 +177,30 @@ const Popup = () => {
               <span className="status">Move to top right</span>
             </div>
           </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.BottomLeft}
+            onClick={() => setButtonPosition(ButtonPosition.BottomLeft)}>
+            <div className="default">
+              <span className="status">Bottom left</span>
+            </div>
+            <div className="hover">
+              <span className="status">Move to bottom left</span>
+            </div>
+          </button>
+
+          <button
+            className="button w-half"
+            disabled={buttonPosition === ButtonPosition.BottomRight}
+            onClick={() => setButtonPosition(ButtonPosition.BottomRight)}>
+            <div className="default">
+              <span className="status">Bottom right</span>
+            </div>
+            <div className="hover">
+              <span className="status">Move to bottom right</span>
+            </div>
+          </button>
         </div>
       </div>
 
