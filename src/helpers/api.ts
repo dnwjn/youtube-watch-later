@@ -19,7 +19,9 @@ export const getAuthorizationHeader = async () => {
       name: 'visitor-cookie',
     })
   } catch (error) {
-    throw new Error('Visitor cookie not found. Reason: ' + error)
+    throw new Error('Visitor cookie not found. Reason: ' + error, {
+      cause: error,
+    })
   }
 
   if (!cookies?.sapisid && !cookies?.sapisid1p && !cookies?.sapisid3p) {

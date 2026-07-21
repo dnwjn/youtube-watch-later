@@ -1,7 +1,8 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging'
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
-  const cookieStoreId = (req.sender?.tab as any)?.cookieStoreId as string | undefined
+  const cookieStoreId = (req.sender?.tab as { cookieStoreId?: string })
+    ?.cookieStoreId
 
   const getCookie = (name: string): Promise<string | null> => {
     return new Promise((resolve) => {

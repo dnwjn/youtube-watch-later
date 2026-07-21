@@ -1,4 +1,4 @@
-import { extractVideoId, isVideoUrl } from '~helpers/browser'
+import { extractVideoId } from '~helpers/browser'
 import {
   elementIsAnchor,
   elementIsInMobilePlayerSuggested,
