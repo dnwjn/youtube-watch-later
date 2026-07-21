@@ -83,10 +83,6 @@ const ButtonPositionSettings = () => {
     <div className="content">
       <h2 className="title">Button position</h2>
 
-      <p className="instruction">
-        A page reload is required for these settings to take effect.
-      </p>
-
       {locations.map(({ context, label, description }) => (
         <LocationSetting
           key={context}

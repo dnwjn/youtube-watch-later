@@ -21,14 +21,9 @@ import {
   elementIsOnVideoDetailPage,
   elementNeedsButton,
 } from '~helpers/matching'
-import {
-  buttonOpacity,
-  buttonPosition,
-  buttonVisibility,
-  markNotificationsAsRead,
-} from '~helpers/system'
+import { getSettings, markNotificationsAsRead } from '~helpers/system'
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
-import type { ButtonConfig, YTData } from '~interfaces'
+import type { ButtonConfig, Settings, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
 import {
   ButtonOpacity,
@@ -105,6 +100,22 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
   }
 
   mountState.observer.disconnect()
+}
+
+const computeButtonConfig = (
+  settings: Settings,
+  positionContext: string | null,
+  previous: ButtonConfig,
+): ButtonConfig => {
+  const position = positionContext
+    ? (settings[positionContext as keyof Settings] as string)
+    : null
+
+  return {
+    opacity: settings.buttonOpacity || previous.opacity,
+    position: position || previous.position,
+    visibility: settings.buttonVisibility || previous.visibility,
+  }
 }
 
 const startIntervals = () => {
@@ -213,6 +224,17 @@ const WatchLaterButton = ({ anchor }) => {
   const isInPlayerSuggested = elementIsInPlayerSuggested(element)
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
 
+  let positionContext: string | null = null
+  if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
+  else if (isInModernEndscreenSuggested)
+    positionContext = ButtonPositionContext.EndscreenModern
+  else if (isInEndscreenSuggested)
+    positionContext = ButtonPositionContext.Endscreen
+  else if (isInPlayerSuggested) positionContext = ButtonPositionContext.Sidebar
+  else if (isInNotification)
+    positionContext = ButtonPositionContext.Notification
+  else if (isInThumbnail) positionContext = ButtonPositionContext.Thumbnail
+
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
 
@@ -289,30 +311,17 @@ const WatchLaterButton = ({ anchor }) => {
   ])
 
   const fetchButtonConfig = async () => {
-    const opacity = await buttonOpacity()
+    const settings = await getSettings()
+    setButtonConfig((previous) =>
+      computeButtonConfig(settings, positionContext, previous),
+    )
+  }
 
-    let positionContext: string | null = null
-    if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
-    else if (isInModernEndscreenSuggested)
-      positionContext = ButtonPositionContext.EndscreenModern
-    else if (isInEndscreenSuggested)
-      positionContext = ButtonPositionContext.Endscreen
-    else if (isInPlayerSuggested)
-      positionContext = ButtonPositionContext.Sidebar
-    else if (isInNotification)
-      positionContext = ButtonPositionContext.Notification
-    else if (isInThumbnail) positionContext = ButtonPositionContext.Thumbnail
-
-    const position = positionContext
-      ? await buttonPosition(positionContext)
-      : null
-    const visibility = await buttonVisibility()
-
-    setButtonConfig({
-      opacity: opacity || buttonConfig.opacity,
-      position: position || buttonConfig.position,
-      visibility: visibility || buttonConfig.visibility,
-    })
+  const handleSettingsChanged = (event) => {
+    const settings = event.detail as Settings
+    setButtonConfig((previous) =>
+      computeButtonConfig(settings, positionContext, previous),
+    )
   }
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -502,6 +511,7 @@ const WatchLaterButton = ({ anchor }) => {
 
     setEnabledFromYtData()
     fetchButtonConfig()
+    window.addEventListener('ytwl-settings-changed', handleSettingsChanged)
 
     if (ytData) {
       setHasData(true)
@@ -524,6 +534,10 @@ const WatchLaterButton = ({ anchor }) => {
     window.removeEventListener('ytwl-yt', setYtwlYt)
     window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
     window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+    window.removeEventListener(
+      'ytwl-settings-changed',
+      handleSettingsChanged,
+    )
   }
 
   useEffect(() => {

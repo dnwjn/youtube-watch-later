@@ -106,10 +106,6 @@ const Popup = () => {
         <h2 className="title">Button settings</h2>
 
         <p className="instruction">
-          A page reload is required for these settings to take effect.
-        </p>
-
-        <p className="instruction spacing">
           These settings do not affect the button inside the video player
           controls or in suggested videos on mobile.
         </p>
