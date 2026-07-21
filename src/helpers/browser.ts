@@ -27,7 +27,7 @@ export const hasPath = (url: string | null, search: string): boolean => {
 
   try {
     return new URL(url).pathname === search
-  } catch (e) {
+  } catch {
     return url === search
   }
 }
@@ -46,7 +46,7 @@ export const isVideoUrl = (url: string): boolean => {
       return true
     }
     return false
-  } catch (e) {
+  } catch {
     // Fallback: check if URL string contains ?v= or /shorts/
     return url.includes('?v=') || url.includes('/shorts/')
   }
@@ -73,7 +73,7 @@ export const extractVideoId = (url: string | null): string | null => {
       }
     }
     return null
-  } catch (e) {
+  } catch {
     // Fallback: try to extract from URL string
     // Try ?v= format
     const vMatch = url.match(/[?&]v=([^&]+)/)

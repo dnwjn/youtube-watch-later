@@ -30,7 +30,7 @@ dist/
 .plasmo
 
 # typescript
-.tsbuildinfo
+*.tsbuildinfo
 
 # keys
 key.json

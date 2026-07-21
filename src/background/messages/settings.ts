@@ -53,9 +53,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
     buttonPositionEndscreenModern: await buttonPosition(
       ButtonPositionContext.EndscreenModern,
     ),
-    buttonPositionSidebar: await buttonPosition(
-      ButtonPositionContext.Sidebar,
-    ),
+    buttonPositionSidebar: await buttonPosition(ButtonPositionContext.Sidebar),
     buttonPositionNotification: await buttonPosition(
       ButtonPositionContext.Notification,
     ),

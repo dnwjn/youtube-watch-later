@@ -23,8 +23,8 @@ export const elementIsInModernEndscreenSuggested = (element: Element) =>
   element.classList.contains('ytp-modern-videowall-still')
 
 export const elementIsInPlayerSuggested = (element: Element) =>
-  element.classList.contains('yt-lockup-view-model')
-  || element.classList.contains('ytLockupViewModelHost')
+  element.classList.contains('yt-lockup-view-model') ||
+  element.classList.contains('ytLockupViewModelHost')
 
 export const elementIsInMobilePlayerSuggested = (element: Element) =>
   element.classList.contains('media-item-menu')

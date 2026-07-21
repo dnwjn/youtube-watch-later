@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install npm dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Plasmo types
+        run: pnpm build:chrome:raw
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Prettier
+        run: pnpm pretty:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test

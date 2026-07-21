@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useWatchLaterStore } from '~store'
 
 const useVideoPreviewListener = () => {
-  const [tries, setTries] = useState<number>(1)
   const setVideoPreviewIsHovered = useWatchLaterStore(
     (state) => state.setVideoPreviewIsHovered,
   )
 
   useEffect(() => {
+    let tries = 0
+
     const videoPreviewInterval = setInterval(() => {
       const videoPreviewEl = document.querySelector('#video-preview-container')
 
@@ -21,14 +22,14 @@ const useVideoPreviewListener = () => {
           setVideoPreviewIsHovered(false),
         )
       } else if (tries < 10) {
-        setTries(tries + 1)
+        tries += 1
       } else {
         clearInterval(videoPreviewInterval)
       }
     }, 500)
 
     return () => clearInterval(videoPreviewInterval)
-  }, [])
+  }, [setVideoPreviewIsHovered])
 }
 
 export default useVideoPreviewListener

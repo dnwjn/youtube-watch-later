@@ -8,16 +8,22 @@ export const config: PlasmoCSConfig = {
 }
 
 const getYtData = async () => {
-  const ytcfg = (window as any).ytcfg
+  const ytcfg = (
+    window as unknown as {
+      ytcfg?: { get: (key: string) => unknown }
+    }
+  ).ytcfg
 
   if (typeof ytcfg !== 'undefined') {
-    const authUser = ytcfg.get('SESSION_INDEX')
-    const clientTheme =
-      ytcfg.get('INNERTUBE_CONTEXT')?.client?.userInterfaceTheme
-    const clientVersion = ytcfg.get('INNERTUBE_CLIENT_VERSION')
+    const authUser = ytcfg.get('SESSION_INDEX') as string | null
+    const clientTheme = (
+      ytcfg.get('INNERTUBE_CONTEXT') as
+        { client?: { userInterfaceTheme?: string } } | undefined
+    )?.client?.userInterfaceTheme as string | null
+    const clientVersion = ytcfg.get('INNERTUBE_CLIENT_VERSION') as string | null
     const loggedIn = ytcfg.get('LOGGED_IN') === true
-    const pageId = ytcfg.get('DELEGATED_SESSION_ID')
-    const visitorId = ytcfg.get('VISITOR_DATA')
+    const pageId = ytcfg.get('DELEGATED_SESSION_ID') as string | null
+    const visitorId = ytcfg.get('VISITOR_DATA') as string | null
 
     const ytData: YTData = {
       authUser,
@@ -34,7 +40,7 @@ const getYtData = async () => {
 
 window.addEventListener('ytwl-yt-req', getYtData)
 
-const handleNavigateStart = (event) => {
+const handleNavigateStart = () => {
   window.dispatchEvent(new CustomEvent('ytwl-yt-nav-start'))
 }
 
