@@ -21,16 +21,16 @@ import {
   elementIsOnVideoDetailPage,
   elementNeedsButton,
 } from '~helpers/matching'
-import {
-  buttonOpacity,
-  buttonPosition,
-  buttonVisibility,
-  markNotificationsAsRead,
-} from '~helpers/system'
+import { getSettings, markNotificationsAsRead } from '~helpers/system'
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
-import type { ButtonConfig, YTData } from '~interfaces'
+import type { ButtonConfig, Settings, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
-import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
+import {
+  ButtonOpacity,
+  ButtonPosition,
+  ButtonPositionContext,
+  ButtonVisibility,
+} from '~types'
 
 import { buttonStyles } from './button.styles'
 
@@ -95,11 +95,36 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
 
   if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)
+  } else if (elementIsInThumbnail(element)) {
+    // Mount inside the thumbnail image wrapper (rather than the whole video
+    // card) so absolute positioning is relative to the thumbnail itself, not
+    // the card including the title/channel metadata below it.
+    const thumbnail = element.querySelector(
+      'ytd-thumbnail, yt-thumbnail-view-model',
+    )
+    const mountTarget = thumbnail ?? element
+    mountTarget.insertBefore(shadowHost, mountTarget.firstChild)
   } else {
     element.insertBefore(shadowHost, element.firstChild)
   }
 
   mountState.observer.disconnect()
+}
+
+const computeButtonConfig = (
+  settings: Settings,
+  positionContext: string | null,
+  previous: ButtonConfig,
+): ButtonConfig => {
+  const position = positionContext
+    ? (settings[positionContext as keyof Settings] as string)
+    : null
+
+  return {
+    opacity: settings.buttonOpacity || previous.opacity,
+    position: position || previous.position,
+    visibility: settings.buttonVisibility || previous.visibility,
+  }
 }
 
 const startIntervals = () => {
@@ -196,6 +221,7 @@ const WatchLaterButton = ({ anchor }) => {
     position: ButtonPosition.TopLeft,
     visibility: ButtonVisibility.Always,
   })
+  const [configLoaded, setConfigLoaded] = useState<boolean>(false)
   const [isHovered, setIsHovered] = useState(false)
 
   const isInThumbnail = elementIsInThumbnail(element)
@@ -207,6 +233,17 @@ const WatchLaterButton = ({ anchor }) => {
   const isOnVideoDetail = elementIsOnVideoDetailPage(element)
   const isInPlayerSuggested = elementIsInPlayerSuggested(element)
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
+
+  let positionContext: string | null = null
+  if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
+  else if (isInModernEndscreenSuggested)
+    positionContext = ButtonPositionContext.EndscreenModern
+  else if (isInEndscreenSuggested)
+    positionContext = ButtonPositionContext.Endscreen
+  else if (isInPlayerSuggested) positionContext = ButtonPositionContext.Sidebar
+  else if (isInNotification)
+    positionContext = ButtonPositionContext.Notification
+  else if (isInThumbnail) positionContext = ButtonPositionContext.Thumbnail
 
   const buttonClasses = useMemo(() => {
     let classes = ['watch-later-btn']
@@ -268,6 +305,7 @@ const WatchLaterButton = ({ anchor }) => {
   }, [status, ytData?.clientTheme, buttonConfig])
 
   const shouldShow = useMemo(() => {
+    if (!configLoaded) return false
     if (status === 0) return false
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
@@ -275,6 +313,7 @@ const WatchLaterButton = ({ anchor }) => {
     if (videoPreviewIsHovered && latestElementRef === element) return true
     return false
   }, [
+    configLoaded,
     status,
     buttonConfig,
     isHovered,
@@ -284,15 +323,18 @@ const WatchLaterButton = ({ anchor }) => {
   ])
 
   const fetchButtonConfig = async () => {
-    const opacity = await buttonOpacity()
-    const position = await buttonPosition()
-    const visibility = await buttonVisibility()
+    const settings = await getSettings()
+    setButtonConfig((previous) =>
+      computeButtonConfig(settings, positionContext, previous),
+    )
+    setConfigLoaded(true)
+  }
 
-    setButtonConfig({
-      opacity: opacity || buttonConfig.opacity,
-      position: position || buttonConfig.position,
-      visibility: visibility || buttonConfig.visibility,
-    })
+  const handleSettingsChanged = (event) => {
+    const settings = event.detail as Settings
+    setButtonConfig((previous) =>
+      computeButtonConfig(settings, positionContext, previous),
+    )
   }
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -482,6 +524,7 @@ const WatchLaterButton = ({ anchor }) => {
 
     setEnabledFromYtData()
     fetchButtonConfig()
+    window.addEventListener('ytwl-settings-changed', handleSettingsChanged)
 
     if (ytData) {
       setHasData(true)
@@ -504,6 +547,10 @@ const WatchLaterButton = ({ anchor }) => {
     window.removeEventListener('ytwl-yt', setYtwlYt)
     window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
     window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+    window.removeEventListener(
+      'ytwl-settings-changed',
+      handleSettingsChanged,
+    )
   }
 
   useEffect(() => {
