@@ -32,7 +32,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: pnpm exec tsc --noEmit
+        run: pnpm typecheck
+
+      - name: Prettier
+        run: pnpm pretty:check
 
       - name: Lint
         run: pnpm lint
