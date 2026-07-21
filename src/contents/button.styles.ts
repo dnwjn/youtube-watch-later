@@ -62,8 +62,39 @@ export const buttonStyles = `
 
 .watch-later-btn.in-endscreen-suggested {
     left: 5px;
+    right: unset;
+}
+
+.watch-later-btn.in-endscreen-suggested.top-left,
+.watch-later-btn.in-endscreen-suggested.top-right {
+    top: 4px;
+    bottom: unset;
+}
+
+.watch-later-btn.in-endscreen-suggested.bottom-left,
+.watch-later-btn.in-endscreen-suggested.bottom-right {
+    top: unset;
+    bottom: 4px;
+}
+
+.watch-later-btn.in-mod-endscreen-suggested.top-right {
+    left: unset;
+    top: 4px;
+    right: 5px;
+    bottom: unset;
+}
+
+.watch-later-btn.in-mod-endscreen-suggested.bottom-left {
+    left: 5px;
     top: unset;
     right: unset;
+    bottom: 4px;
+}
+
+.watch-later-btn.in-mod-endscreen-suggested.bottom-right {
+    left: unset;
+    top: unset;
+    right: 5px;
     bottom: 4px;
 }
 
@@ -87,7 +118,8 @@ export const buttonStyles = `
 .watch-later-btn.dark.in-thumbnail,
 .watch-later-btn.dark.in-playlist,
 .watch-later-btn.dark.in-endscreen-suggested,
-.watch-later-btn.dark.in-mod-endscreen-suggested {
+.watch-later-btn.dark.in-mod-endscreen-suggested,
+.watch-later-btn.dark.in-player-suggested {
     background-color: #282828;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
@@ -100,6 +132,7 @@ export const buttonStyles = `
 .watch-later-btn.light.in-playlist,
 .watch-later-btn.light.in-endscreen-suggested,
 .watch-later-btn.light.in-mod-endscreen-suggested,
+.watch-later-btn.light.in-player-suggested,
 .watch-later-btn.light.on-video-detail {
     background-color: rgba(0,0,0,0.05);
 }
@@ -115,16 +148,36 @@ export const buttonStyles = `
 
 .watch-later-btn.in-notification {
     left: unset;
-    top: unset;
     right: 10px;
+}
+
+.watch-later-btn.in-notification.top-left,
+.watch-later-btn.in-notification.top-right {
+    top: 8px;
+    bottom: unset;
+}
+
+.watch-later-btn.in-notification.bottom-left,
+.watch-later-btn.in-notification.bottom-right {
+    top: unset;
     bottom: 8px;
 }
 
 .watch-later-btn.in-player-suggested {
-    left: unset;
+    left: 5px;
+    right: unset;
+}
+
+.watch-later-btn.in-player-suggested.top-left,
+.watch-later-btn.in-player-suggested.top-right {
+    top: 4px;
+    bottom: unset;
+}
+
+.watch-later-btn.in-player-suggested.bottom-left,
+.watch-later-btn.in-player-suggested.bottom-right {
     top: unset;
-    right: -10px;
-    bottom: 8px;
+    bottom: 4px;
 }
 
 .watch-later-btn.on-video-detail {

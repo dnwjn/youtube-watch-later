@@ -30,7 +30,12 @@ import {
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
-import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
+import {
+  ButtonOpacity,
+  ButtonPosition,
+  ButtonPositionContext,
+  ButtonVisibility,
+} from '~types'
 
 import { buttonStyles } from './button.styles'
 
@@ -285,7 +290,22 @@ const WatchLaterButton = ({ anchor }) => {
 
   const fetchButtonConfig = async () => {
     const opacity = await buttonOpacity()
-    const position = await buttonPosition()
+
+    let positionContext: string | null = null
+    if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
+    else if (isInModernEndscreenSuggested)
+      positionContext = ButtonPositionContext.EndscreenModern
+    else if (isInEndscreenSuggested)
+      positionContext = ButtonPositionContext.Endscreen
+    else if (isInPlayerSuggested)
+      positionContext = ButtonPositionContext.Sidebar
+    else if (isInNotification)
+      positionContext = ButtonPositionContext.Notification
+    else if (isInThumbnail) positionContext = ButtonPositionContext.Thumbnail
+
+    const position = positionContext
+      ? await buttonPosition(positionContext)
+      : null
     const visibility = await buttonVisibility()
 
     setButtonConfig({

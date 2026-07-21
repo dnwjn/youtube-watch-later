@@ -10,12 +10,12 @@ export const buttonOpacity = async (): Promise<string> => {
   return settings.buttonOpacity
 }
 
-export const buttonPosition = async (): Promise<string> => {
+export const buttonPosition = async (context: string): Promise<string> => {
   const settings: Settings = await sendToBackgroundViaRelay<Settings>({
     name: 'settings',
   })
 
-  return settings.buttonPosition
+  return settings[context as keyof Settings] as string
 }
 
 export const buttonVisibility = async (): Promise<string> => {

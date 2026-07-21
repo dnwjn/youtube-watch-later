@@ -9,7 +9,12 @@ export interface YTData {
 
 export interface Settings {
   buttonOpacity: string
-  buttonPosition: string
+  buttonPositionThumbnail: string
+  buttonPositionPlaylist: string
+  buttonPositionEndscreenModern: string
+  buttonPositionSidebar: string
+  buttonPositionNotification: string
+  buttonPositionEndscreen: string
   buttonVisibility: string
   loggingEnabled: boolean
   markNotificationsAsRead: boolean
