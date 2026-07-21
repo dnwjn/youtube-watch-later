@@ -27,7 +27,7 @@ const Popup = () => {
   )
 
   return (
-    <div className="root">
+    <div className="popup-root">
       <ExtensionHeader title="YouTube Watch Later" />
 
       <div className="content">

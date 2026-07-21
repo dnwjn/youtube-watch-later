@@ -15,11 +15,15 @@ body {
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 h2 {
-  font-size: 18px;
+  font-size: 14px;
+}
+
+h3 {
+  font-size: 12px;
 }
 
 a {
@@ -32,7 +36,7 @@ a {
   text-decoration: none;
   cursor: pointer;
   background-color: #3d3d3d;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #3d3d3d;
   text-align: center;
   display: inline-block;
