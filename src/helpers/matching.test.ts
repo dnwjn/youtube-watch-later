@@ -77,9 +77,9 @@ describe('elementIsInEndscreenSuggested', () => {
   })
 
   it('returns false otherwise', () => {
-    expect(
-      elementIsInEndscreenSuggested(document.createElement('div')),
-    ).toBe(false)
+    expect(elementIsInEndscreenSuggested(document.createElement('div'))).toBe(
+      false,
+    )
   })
 })
 

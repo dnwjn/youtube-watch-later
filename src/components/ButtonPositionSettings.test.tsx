@@ -1,16 +1,15 @@
-import React from 'react'
-
 import { render, screen } from '@testing-library/react'
+import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('@plasmohq/storage/hook', () => ({
-  useStorage: vi.fn(),
-}))
 
 import { useStorage } from '@plasmohq/storage/hook'
 
 import ButtonPositionSettings from '~components/ButtonPositionSettings'
 import { ButtonPosition } from '~types'
+
+vi.mock('@plasmohq/storage/hook', () => ({
+  useStorage: vi.fn(),
+}))
 
 const mockedUseStorage = vi.mocked(useStorage)
 

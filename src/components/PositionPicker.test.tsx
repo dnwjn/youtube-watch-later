@@ -1,6 +1,5 @@
-import React from 'react'
-
 import { fireEvent, render, screen } from '@testing-library/react'
+import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import PositionPicker from '~components/PositionPicker'
@@ -35,9 +34,10 @@ describe('PositionPicker', () => {
       />,
     )
 
-    expect(
-      screen.getByLabelText(ButtonPosition.BottomRight),
-    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByLabelText(ButtonPosition.BottomRight)).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
     expect(screen.getByLabelText(ButtonPosition.TopLeft)).toHaveAttribute(
       'aria-pressed',
       'false',

@@ -57,9 +57,7 @@ describe('isVideoUrl', () => {
   })
 
   it('returns false for a non-video url', () => {
-    expect(
-      isVideoUrl('https://www.youtube.com/feed/subscriptions'),
-    ).toBe(false)
+    expect(isVideoUrl('https://www.youtube.com/feed/subscriptions')).toBe(false)
   })
 
   it('falls back to string matching for malformed urls', () => {
@@ -85,9 +83,9 @@ describe('extractVideoId', () => {
   })
 
   it('extracts id from /shorts/ path with trailing segments', () => {
-    expect(
-      extractVideoId('https://www.youtube.com/shorts/abc123/extra'),
-    ).toBe('abc123')
+    expect(extractVideoId('https://www.youtube.com/shorts/abc123/extra')).toBe(
+      'abc123',
+    )
   })
 
   it('returns null when neither format matches', () => {

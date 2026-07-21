@@ -4,8 +4,8 @@ import { useStorage } from '@plasmohq/storage/hook'
 
 import PositionPicker from '~components/PositionPicker'
 import {
-  ButtonPositionContext,
   buttonPositionAllowed,
+  ButtonPositionContext,
   buttonPositionDefault,
 } from '~types'
 

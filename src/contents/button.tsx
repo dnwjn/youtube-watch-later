@@ -4,7 +4,7 @@ import type {
   PlasmoGetStyle,
   PlasmoMountShadowHost,
 } from 'plasmo'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { getAuthorizationHeader, getHostname } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
@@ -302,7 +302,20 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     return classes.join(' ')
-  }, [status, ytData?.clientTheme, buttonConfig])
+  }, [
+    status,
+    ytData?.clientTheme,
+    buttonConfig,
+    element.offsetHeight,
+    isInThumbnail,
+    isInPlaylist,
+    isInNotification,
+    isInEndscreenSuggested,
+    isInModernEndscreenSuggested,
+    isOnVideoDetail,
+    isInPlayerSuggested,
+    isInPlayerSuggestedMobile,
+  ])
 
   const shouldShow = useMemo(() => {
     if (!configLoaded) return false
@@ -320,6 +333,7 @@ const WatchLaterButton = ({ anchor }) => {
     videoPreviewIsHovered,
     latestElementRef,
     isOnVideoDetail,
+    element,
   ])
 
   const fetchButtonConfig = async () => {
@@ -443,10 +457,7 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }
 
-  const _apiPost = async (
-    path: string,
-    payload: object,
-  ): Promise<Response> => {
+  const _apiPost = async (path: string, payload: object): Promise<Response> => {
     const authorizationHeader = await getAuthorizationHeader()
     const { authUser, clientVersion, pageId, visitorId } = ytData
 
@@ -504,12 +515,12 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }
 
-  const setEnabledFromYtData = () => {
+  const setEnabledFromYtData = useCallback(() => {
     const currentYtData = useWatchLaterStore.getState().ytData
     if (currentYtData) {
       setEnabled(currentYtData.loggedIn === true)
     }
-  }
+  }, [setEnabled])
 
   const handleNavigateStart = () => {
     setEnabled(false)
@@ -550,15 +561,12 @@ const WatchLaterButton = ({ anchor }) => {
     window.removeEventListener('ytwl-yt', setYtwlYt)
     window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
     window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
-    window.removeEventListener(
-      'ytwl-settings-changed',
-      handleSettingsChanged,
-    )
+    window.removeEventListener('ytwl-settings-changed', handleSettingsChanged)
   }
 
   useEffect(() => {
     setEnabledFromYtData()
-  }, [ytData])
+  }, [ytData, setEnabledFromYtData])
 
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
@@ -582,17 +590,25 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }, [visible, hasData])
 
+  // init/cleanup close over per-render state (ytData, url, positionContext, ...)
+  // but this effect must only run once on mount, so the latest versions are
+  // tracked in refs rather than added as effect dependencies.
+  const initRef = useRef(init)
+  const cleanupRef = useRef(cleanup)
+  initRef.current = init
+  cleanupRef.current = cleanup
+
   useEffect(() => {
     const handlePopState = () => {
-      cleanup()
-      setTimeout(() => init(), 100)
+      cleanupRef.current()
+      setTimeout(() => initRef.current(), 100)
     }
 
-    init()
+    initRef.current()
     window.addEventListener('popstate', handlePopState)
 
     return () => {
-      cleanup()
+      cleanupRef.current()
       window.removeEventListener('popstate', handlePopState)
     }
   }, [])
