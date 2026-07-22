@@ -305,6 +305,17 @@ yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
     right: 5px;
 }
 
+.watch-later-btn.floating-preview.bottom-left,
+.watch-later-btn.floating-preview.bottom-right {
+    top: unset;
+    bottom: 4px;
+}
+
+.watch-later-btn.floating-preview.bottom-right {
+    left: unset;
+    right: 5px;
+}
+
 .watch-later-btn svg {
     pointer-events: none;
     display: inherit;
