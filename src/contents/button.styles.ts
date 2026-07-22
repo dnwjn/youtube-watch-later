@@ -268,13 +268,14 @@ yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
 :host(.ytwl-overlay-root) {
     position: absolute !important;
     inset: 0 auto auto 0 !important;
-    z-index: 2147483647 !important;
+    /* Above thumbnails/preview player, but below YouTube's own panels/menus. */
+    z-index: 2000 !important;
     pointer-events: none !important;
 }
 
 :host(.ytwl-overlay-root) #plasmo-shadow-container {
     position: relative !important;
-    z-index: 2147483647 !important;
+    z-index: 2000 !important;
     pointer-events: none !important;
 }
 
@@ -296,7 +297,7 @@ yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
     bottom: unset;
     margin: 0;
     pointer-events: auto !important;
-    z-index: 2147483647;
+    z-index: 2000;
 }
 
 .watch-later-btn.floating-preview.top-right {
