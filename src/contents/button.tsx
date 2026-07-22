@@ -58,11 +58,6 @@ export const getStyle: PlasmoGetStyle = () => {
 const anchorListSelectors = [
   // General videos
   'ytd-rich-item-renderer',
-  'ytd-rich-grid-media',
-  'ytd-grid-video-renderer',
-  'ytd-video-renderer',
-  'ytd-compact-video-renderer',
-  'ytd-reel-item-renderer',
   // Videos on playlist page
   'ytd-playlist-video-renderer',
   // Videos in notification drawer
@@ -83,17 +78,14 @@ const anchorListSelectors = [
 ]
 
 const previewOverlayAnchorSelectors = [
-  // General thumbnail cards and rows
+  // General thumbnail cards
   'ytd-rich-item-renderer',
-  'ytd-rich-grid-media',
-  'ytd-grid-video-renderer',
-  'ytd-video-renderer',
-  'ytd-compact-video-renderer',
-  'ytd-reel-item-renderer',
   // Videos on playlist page
   'ytd-playlist-video-renderer',
+  // Videos on search page
+  'ytd-search ytd-video-renderer',
   // Suggested videos next to video player
-  'yt-lockup-view-model',
+  '.yt-lockup-view-model',
   '.ytLockupViewModelHost',
 ]
 
