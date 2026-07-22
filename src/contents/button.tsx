@@ -24,6 +24,12 @@ import {
   elementIsOnVideoDetailPage,
   elementNeedsButton,
 } from '~helpers/matching'
+import {
+  getOverlayAnchorElements,
+  getOverlayAnchorSignature,
+  mutationsAffectOverlayAnchors,
+  previewOverlayAnchorSelector,
+} from '~helpers/overlay'
 import { getSettings, markNotificationsAsRead } from '~helpers/system'
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, Settings, YTData } from '~interfaces'
@@ -38,10 +44,8 @@ import {
 import { buttonStyles } from './button.styles'
 
 let inlineAnchorListInterval: ReturnType<typeof setInterval> | null = null
-let overlayAnchorElementId = 0
 let lastOverlayAnchorSignature = ''
 let overlayAnchorRefreshInFlight = false
-const overlayAnchorElementIds = new WeakMap<Element, number>()
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -76,70 +80,6 @@ const anchorListSelectors = [
   // Suggested videos below video player on mobile
   'ytm-media-item .media-item-menu',
 ]
-
-const previewOverlayAnchorSelectors = [
-  // General thumbnail cards
-  'ytd-rich-item-renderer',
-  // Videos on playlist page
-  'ytd-playlist-video-renderer',
-  // Videos on search page
-  'ytd-search ytd-video-renderer',
-  // Suggested videos next to video player
-  '.yt-lockup-view-model',
-  '.ytLockupViewModelHost',
-]
-
-const previewOverlayAnchorSelector = previewOverlayAnchorSelectors.join(',')
-
-const removeNestedOverlayAnchors = (elements: Element[]) =>
-  elements.filter((element) => {
-    const closestOverlayParent = element.parentElement?.closest(
-      previewOverlayAnchorSelector,
-    )
-
-    return !closestOverlayParent || !elements.includes(closestOverlayParent)
-  })
-
-const elementIsVisible = (element: Element) => {
-  const rect = element.getBoundingClientRect()
-  const style = getComputedStyle(element)
-
-  if (style.display === 'none') return false
-  if (style.visibility === 'hidden') return false
-  if (style.opacity === '0') return false
-  if (rect.width === 0 && rect.height === 0 && style.overflow !== 'hidden') {
-    return false
-  }
-
-  return rect.x + rect.width >= 0 && rect.y + rect.height >= 0
-}
-
-const getOverlayAnchorElements = () => {
-  const elements = document.querySelectorAll(previewOverlayAnchorSelector)
-
-  return removeNestedOverlayAnchors(Array.from(elements))
-    .filter((element) => elementIsVisible(element))
-    .filter((element) => elementNeedsButton(element))
-    .filter((element) => !element.querySelector('.watch-later-btn'))
-}
-
-const getOverlayAnchorElementId = (element: Element) => {
-  const existingId = overlayAnchorElementIds.get(element)
-
-  if (existingId) return existingId
-
-  overlayAnchorElementId += 1
-  overlayAnchorElementIds.set(element, overlayAnchorElementId)
-  return overlayAnchorElementId
-}
-
-const getOverlayAnchorSignature = (elements: Element[]) =>
-  elements
-    .map(
-      (element) =>
-        `${getOverlayAnchorElementId(element)}:${getVideoId(element) || ''}`,
-    )
-    .join('|')
 
 export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
   const elements = document.querySelectorAll(anchorListSelectors.join(','))
@@ -220,7 +160,9 @@ export const watch: PlasmoCSUIWatch = ({ observer, render }) => {
     )
   }
 
-  const mutationObserver = new MutationObserver(scheduleRefresh)
+  const mutationObserver = new MutationObserver((mutations) => {
+    if (mutationsAffectOverlayAnchors(mutations)) scheduleRefresh()
+  })
   mutationObserver.observe(document.documentElement, {
     childList: true,
     subtree: true,
@@ -400,6 +342,11 @@ const WatchLaterButton = ({ anchor }) => {
   })
   const [configLoaded, setConfigLoaded] = useState<boolean>(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [overlayPositionSettled, setOverlayPositionSettled] =
+    useState(!isOverlay)
+  const [overlayAnchorConnected, setOverlayAnchorConnected] = useState(
+    () => !isOverlay || element.isConnected,
+  )
 
   const isInThumbnail = elementIsInThumbnail(element)
   const isInPlaylist = elementIsInPlaylist(element)
@@ -502,6 +449,9 @@ const WatchLaterButton = ({ anchor }) => {
 
   const shouldShow = useMemo(() => {
     if (!configLoaded) return false
+    if (isOverlay && (!overlayPositionSettled || !overlayAnchorConnected)) {
+      return false
+    }
     if (status === 0) return false
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
@@ -510,6 +460,9 @@ const WatchLaterButton = ({ anchor }) => {
     return false
   }, [
     configLoaded,
+    isOverlay,
+    overlayPositionSettled,
+    overlayAnchorConnected,
     status,
     buttonConfig,
     isHovered,
@@ -518,6 +471,37 @@ const WatchLaterButton = ({ anchor }) => {
     isOnVideoDetail,
     element,
   ])
+
+  // Detached anchor -> zero rect -> Plasmo snaps the button to (0,0). Hide until reconnected.
+  useEffect(() => {
+    if (!isOverlay) return
+
+    setOverlayAnchorConnected(element.isConnected)
+
+    const interval = setInterval(() => {
+      setOverlayAnchorConnected(element.isConnected)
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [isOverlay, element])
+
+  // Plasmo keys overlay containers by list index, so a swapped anchor can briefly
+  // reuse the previous button's position. Hide for a couple frames until it settles.
+  useEffect(() => {
+    if (!isOverlay) return
+
+    setOverlayPositionSettled(false)
+
+    let secondFrame = 0
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => setOverlayPositionSettled(true))
+    })
+
+    return () => {
+      cancelAnimationFrame(firstFrame)
+      if (secondFrame) cancelAnimationFrame(secondFrame)
+    }
+  }, [isOverlay, element])
 
   const fetchButtonConfig = async () => {
     const settings = await getSettings()
@@ -535,19 +519,39 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   const overlayButtonStyle = useMemo<React.CSSProperties | undefined>(() => {
-    if (!isOverlay || buttonConfig.position !== ButtonPosition.TopRight) {
+    if (!isOverlay) return undefined
+
+    // Measure the thumbnail sub-element, not the whole card, so `right`/`bottom`
+    // resolve correctly and the button doesn't land over the title/channel text.
+    const cardRect = element.getBoundingClientRect()
+    const thumbnail = element.querySelector(
+      'ytd-thumbnail, yt-thumbnail-view-model',
+    )
+    const thumbnailRect = thumbnail?.getBoundingClientRect() ?? cardRect
+
+    if (thumbnailRect.width <= 0 || thumbnailRect.height <= 0) {
       return undefined
     }
 
-    const width = element.getBoundingClientRect().width
+    const offsetX = thumbnailRect.left - cardRect.left
+    const offsetY = thumbnailRect.top - cardRect.top
 
-    if (width <= 0) {
-      return undefined
-    }
+    const isLeft =
+      buttonConfig.position === ButtonPosition.TopLeft ||
+      buttonConfig.position === ButtonPosition.BottomLeft
+    const isTop =
+      buttonConfig.position === ButtonPosition.TopLeft ||
+      buttonConfig.position === ButtonPosition.TopRight
 
     return {
-      left: `${Math.max(5, Math.round(width - 39))}px`,
+      left: isLeft
+        ? `${Math.round(offsetX + 5)}px`
+        : `${Math.max(5, Math.round(offsetX + thumbnailRect.width - 39))}px`,
       right: 'unset',
+      top: isTop
+        ? `${Math.round(offsetY + 4)}px`
+        : `${Math.max(4, Math.round(offsetY + thumbnailRect.height - 38))}px`,
+      bottom: 'unset',
     }
   }, [buttonConfig.position, element, isOverlay])
 
