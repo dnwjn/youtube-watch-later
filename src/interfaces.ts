@@ -9,7 +9,12 @@ export interface YTData {
 
 export interface Settings {
   buttonOpacity: string
-  buttonPosition: string
+  buttonPositionThumbnail: string
+  buttonPositionPlaylist: string
+  buttonPositionEndscreenModern: string
+  buttonPositionSidebar: string
+  buttonPositionNotification: string
+  buttonPositionEndscreen: string
   buttonVisibility: string
   loggingEnabled: boolean
   markNotificationsAsRead: boolean
@@ -22,7 +27,7 @@ export interface ButtonConfig {
 }
 
 export interface VisitorCookies {
-  sapisid: string
+  sapisid: string | null
   sapisid1p: string | null
   sapisid3p: string | null
 }

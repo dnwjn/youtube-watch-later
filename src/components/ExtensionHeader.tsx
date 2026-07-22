@@ -6,11 +6,22 @@ import '~css/shared.css'
 interface Props {
   title: string
   subtitle?: string
+  onBack?: () => void
 }
 
-const ExtensionHeader = ({ title, subtitle }: Props) => {
+const ExtensionHeader = ({ title, subtitle, onBack }: Props) => {
   return (
     <div className="header">
+      {onBack && (
+        <button
+          type="button"
+          className="back-arrow"
+          aria-label="Back"
+          onClick={onBack}>
+          ←
+        </button>
+      )}
+
       <img className="logo" src={logo} alt="logo" />
 
       <h1 className="title">{title}</h1>

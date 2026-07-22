@@ -7,7 +7,7 @@ import type {
   PlasmoMountShadowHost,
   PlasmoWatchOverlayAnchor,
 } from 'plasmo'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { getAuthorizationHeader, getHostname } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
@@ -24,16 +24,16 @@ import {
   elementIsOnVideoDetailPage,
   elementNeedsButton,
 } from '~helpers/matching'
-import {
-  buttonOpacity,
-  buttonPosition,
-  buttonVisibility,
-  markNotificationsAsRead,
-} from '~helpers/system'
+import { getSettings, markNotificationsAsRead } from '~helpers/system'
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
-import type { ButtonConfig, YTData } from '~interfaces'
+import type { ButtonConfig, Settings, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
-import { ButtonOpacity, ButtonPosition, ButtonVisibility } from '~types'
+import {
+  ButtonOpacity,
+  ButtonPosition,
+  ButtonPositionContext,
+  ButtonVisibility,
+} from '~types'
 
 import { buttonStyles } from './button.styles'
 
@@ -271,11 +271,36 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
     overlayRoot.appendChild(shadowHost)
   } else if (elementIsInMobilePlayerSuggested(element)) {
     element.appendChild(shadowHost)
+  } else if (elementIsInThumbnail(element)) {
+    // Mount inside the thumbnail image wrapper (rather than the whole video
+    // card) so absolute positioning is relative to the thumbnail itself, not
+    // the card including the title/channel metadata below it.
+    const thumbnail = element.querySelector(
+      'ytd-thumbnail, yt-thumbnail-view-model',
+    )
+    const mountTarget = thumbnail ?? element
+    mountTarget.insertBefore(shadowHost, mountTarget.firstChild)
   } else {
     element.insertBefore(shadowHost, element.firstChild)
   }
 
   mountState.observer.disconnect()
+}
+
+const computeButtonConfig = (
+  settings: Settings,
+  positionContext: string | null,
+  previous: ButtonConfig,
+): ButtonConfig => {
+  const position = positionContext
+    ? (settings[positionContext as keyof Settings] as string)
+    : null
+
+  return {
+    opacity: settings.buttonOpacity || previous.opacity,
+    position: position || previous.position,
+    visibility: settings.buttonVisibility || previous.visibility,
+  }
 }
 
 const startIntervals = () => {
@@ -381,6 +406,7 @@ const WatchLaterButton = ({ anchor }) => {
     position: ButtonPosition.TopLeft,
     visibility: ButtonVisibility.Always,
   })
+  const [configLoaded, setConfigLoaded] = useState<boolean>(false)
   const [isHovered, setIsHovered] = useState(false)
 
   const isInThumbnail = elementIsInThumbnail(element)
@@ -395,8 +421,19 @@ const WatchLaterButton = ({ anchor }) => {
   const usesThumbnailButtonStyle = isInThumbnail || (isOverlay && !isInPlaylist)
   const videoId = useMemo(() => getVideoId(element), [element])
 
+  let positionContext: string | null = null
+  if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
+  else if (isInModernEndscreenSuggested)
+    positionContext = ButtonPositionContext.EndscreenModern
+  else if (isInEndscreenSuggested)
+    positionContext = ButtonPositionContext.Endscreen
+  else if (isInPlayerSuggested) positionContext = ButtonPositionContext.Sidebar
+  else if (isInNotification)
+    positionContext = ButtonPositionContext.Notification
+  else if (isInThumbnail) positionContext = ButtonPositionContext.Thumbnail
+
   const buttonClasses = useMemo(() => {
-    let classes = ['watch-later-btn']
+    const classes = ['watch-later-btn']
 
     if (buttonConfig.opacity) {
       classes.push(buttonConfig.opacity)
@@ -459,11 +496,20 @@ const WatchLaterButton = ({ anchor }) => {
     status,
     ytData?.clientTheme,
     buttonConfig,
-    isOverlay,
+    element.offsetHeight,
     usesThumbnailButtonStyle,
+    isInPlaylist,
+    isInNotification,
+    isInEndscreenSuggested,
+    isInModernEndscreenSuggested,
+    isOnVideoDetail,
+    isInPlayerSuggested,
+    isInPlayerSuggestedMobile,
+    isOverlay,
   ])
 
   const shouldShow = useMemo(() => {
+    if (!configLoaded) return false
     if (status === 0) return false
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
@@ -471,24 +517,29 @@ const WatchLaterButton = ({ anchor }) => {
     if (videoPreviewIsHovered && latestElementRef === element) return true
     return false
   }, [
+    configLoaded,
     status,
     buttonConfig,
     isHovered,
     videoPreviewIsHovered,
     latestElementRef,
     isOnVideoDetail,
+    element,
   ])
 
   const fetchButtonConfig = async () => {
-    const opacity = await buttonOpacity()
-    const position = await buttonPosition()
-    const visibility = await buttonVisibility()
+    const settings = await getSettings()
+    setButtonConfig((previous) =>
+      computeButtonConfig(settings, positionContext, previous),
+    )
+    setConfigLoaded(true)
+  }
 
-    setButtonConfig({
-      opacity: opacity || buttonConfig.opacity,
-      position: position || buttonConfig.position,
-      visibility: visibility || buttonConfig.visibility,
-    })
+  const handleSettingsChanged = (event) => {
+    const settings = event.detail as Settings
+    setButtonConfig((previous) =>
+      computeButtonConfig(settings, positionContext, previous),
+    )
   }
 
   const overlayButtonStyle = useMemo<React.CSSProperties | undefined>(() => {
@@ -539,36 +590,34 @@ const WatchLaterButton = ({ anchor }) => {
   }
 
   const addToWatchLater = async (videoId: string): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const payload = {
-          actions: [
-            {
-              action: 'ACTION_ADD_VIDEO',
-              addedVideoId: videoId,
-            },
-          ],
-          playlistId: 'WL',
-        }
+    const payload = {
+      actions: [
+        {
+          action: 'ACTION_ADD_VIDEO',
+          addedVideoId: videoId,
+        },
+      ],
+      playlistId: 'WL',
+    }
 
-        const response = await _apiPost(
-          'browse/edit_playlist?prettyPrint=false',
-          payload,
-        )
-        const responseJson = await response.json()
+    try {
+      const response = await _apiPost(
+        'browse/edit_playlist?prettyPrint=false',
+        payload,
+      )
+      const responseJson = await response.json()
 
-        if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
-          logLine('Video added to Watch Later', videoId)
-          resolve()
-        } else {
-          logError('Failed to add video to Watch Later', responseJson)
-          reject()
-        }
-      } catch (error) {
-        logError('Failed to add video to Watch Later', error)
-        reject()
+      if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
+        logLine('Video added to Watch Later', videoId)
+        return
       }
-    })
+
+      logError('Failed to add video to Watch Later', responseJson)
+    } catch (error) {
+      logError('Failed to add video to Watch Later', error)
+    }
+
+    throw new Error('Failed to add video to Watch Later')
   }
 
   const markNotificationAsRead = async (): Promise<void> => {
@@ -578,7 +627,17 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     try {
-      const elementData: any = element?.data
+      const elementData = (
+        element as unknown as {
+          data?: {
+            recordClickEndpoint?: {
+              recordNotificationInteractionsEndpoint?: {
+                serializedInteractionsRequest?: string
+              }
+            }
+          }
+        }
+      )?.data
 
       if (!elementData) {
         logError(
@@ -610,48 +669,40 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }
 
-  const _apiPost = async (
-    path: string,
-    payload: object,
-  ): Promise<Response | null> => {
-    return new Promise(async (resolve, reject) => {
-      const authorizationHeader = await getAuthorizationHeader()
-      const { authUser, clientVersion, pageId, visitorId } = ytData
+  const _apiPost = async (path: string, payload: object): Promise<Response> => {
+    const authorizationHeader = await getAuthorizationHeader()
+    const { authUser, clientVersion, pageId, visitorId } = ytData
 
-      if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
-        reject('Missing required data to make request')
-        return
-      }
+    if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
+      throw new Error('Missing required data to make request')
+    }
 
-      const url = `https://${getHostname()}/youtubei/v1/${path}`
-      const finalPayload = {
-        ...payload,
-        context: {
-          client: {
-            clientName: 'WEB',
-            clientVersion,
-          },
+    const url = `https://${getHostname()}/youtubei/v1/${path}`
+    const finalPayload = {
+      ...payload,
+      context: {
+        client: {
+          clientName: 'WEB',
+          clientVersion,
         },
-      }
+      },
+    }
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: authorizationHeader,
-          'Content-Type': 'application/json',
-          'X-Origin': 'https://www.youtube.com',
-          'X-Goog-Authuser': authUser,
-          // PageId seems to be only available when you've switched to a different user from the original one.
-          ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
-          'X-Goog-Visitor-Id': visitorId,
-          'X-Youtube-Bootstrap-Logged-In': 'true',
-          'X-Youtube-Client-Name': '1',
-          'X-Youtube-Client-Version': clientVersion,
-        },
-        body: JSON.stringify(finalPayload),
-      })
-
-      resolve(response)
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: authorizationHeader,
+        'Content-Type': 'application/json',
+        'X-Origin': 'https://www.youtube.com',
+        'X-Goog-Authuser': authUser,
+        // PageId seems to be only available when you've switched to a different user from the original one.
+        ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
+        'X-Goog-Visitor-Id': visitorId,
+        'X-Youtube-Bootstrap-Logged-In': 'true',
+        'X-Youtube-Client-Name': '1',
+        'X-Youtube-Client-Version': clientVersion,
+      },
+      body: JSON.stringify(finalPayload),
     })
   }
 
@@ -678,12 +729,12 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }
 
-  const setEnabledFromYtData = () => {
+  const setEnabledFromYtData = useCallback(() => {
     const currentYtData = useWatchLaterStore.getState().ytData
     if (currentYtData) {
       setEnabled(currentYtData.loggedIn === true)
     }
-  }
+  }, [setEnabled])
 
   const handleNavigateStart = () => {
     setEnabled(false)
@@ -701,6 +752,7 @@ const WatchLaterButton = ({ anchor }) => {
 
     setEnabledFromYtData()
     fetchButtonConfig()
+    window.addEventListener('ytwl-settings-changed', handleSettingsChanged)
 
     if (ytData) {
       setHasData(true)
@@ -723,11 +775,12 @@ const WatchLaterButton = ({ anchor }) => {
     window.removeEventListener('ytwl-yt', setYtwlYt)
     window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
     window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
+    window.removeEventListener('ytwl-settings-changed', handleSettingsChanged)
   }
 
   useEffect(() => {
     setEnabledFromYtData()
-  }, [ytData])
+  }, [ytData, setEnabledFromYtData])
 
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
@@ -766,17 +819,25 @@ const WatchLaterButton = ({ anchor }) => {
     erroredVideoIds,
   ])
 
+  // init/cleanup close over per-render state (ytData, url, positionContext, ...)
+  // but this effect must only run once on mount, so the latest versions are
+  // tracked in refs rather than added as effect dependencies.
+  const initRef = useRef(init)
+  const cleanupRef = useRef(cleanup)
+  initRef.current = init
+  cleanupRef.current = cleanup
+
   useEffect(() => {
     const handlePopState = () => {
-      cleanup()
-      setTimeout(() => init(), 100)
+      cleanupRef.current()
+      setTimeout(() => initRef.current(), 100)
     }
 
-    init()
+    initRef.current()
     window.addEventListener('popstate', handlePopState)
 
     return () => {
-      cleanup()
+      cleanupRef.current()
       window.removeEventListener('popstate', handlePopState)
     }
   }, [])

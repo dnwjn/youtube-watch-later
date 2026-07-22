@@ -19,10 +19,12 @@ export const getAuthorizationHeader = async () => {
       name: 'visitor-cookie',
     })
   } catch (error) {
-    throw new Error('Visitor cookie not found. Reason: ' + error)
+    throw new Error('Visitor cookie not found. Reason: ' + error, {
+      cause: error,
+    })
   }
 
-  if (!cookies?.sapisid) {
+  if (!cookies?.sapisid && !cookies?.sapisid1p && !cookies?.sapisid3p) {
     throw new Error('Visitor cookie not found. Reason: no value')
   }
 
@@ -32,8 +34,11 @@ export const getAuthorizationHeader = async () => {
   const computeHash = async (cookieValue: string) =>
     `${time}_${await sha1(`${time} ${cookieValue} ${origin}`)}`
 
-  const parts = [`SAPISIDHASH ${await computeHash(cookies.sapisid)}`]
+  const parts: string[] = []
 
+  if (cookies.sapisid) {
+    parts.push(`SAPISIDHASH ${await computeHash(cookies.sapisid)}`)
+  }
   if (cookies.sapisid1p) {
     parts.push(`SAPISID1PHASH ${await computeHash(cookies.sapisid1p)}`)
   }

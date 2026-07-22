@@ -1,17 +1,16 @@
-name: Create release
+name: CI
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - v*
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
       - name: Check out code
@@ -32,14 +31,17 @@ jobs:
       - name: Install npm dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build and zip extension
-        run: pnpm run build
+      - name: Generate Plasmo types
+        run: pnpm build:chrome:raw
 
-      - name: Create new release
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          artifacts: 'build/*-prod.zip'
-          allowUpdates: true
-          omitBodyDuringUpdate: true
-          updateOnlyUnreleased: true
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Prettier
+        run: pnpm pretty:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test

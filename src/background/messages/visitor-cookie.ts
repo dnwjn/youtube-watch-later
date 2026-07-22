@@ -1,7 +1,8 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging'
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
-  const cookieStoreId = (req.sender?.tab as any)?.cookieStoreId as string | undefined
+  const cookieStoreId = (req.sender?.tab as { cookieStoreId?: string })
+    ?.cookieStoreId
 
   const getCookie = (name: string): Promise<string | null> => {
     return new Promise((resolve) => {
@@ -22,7 +23,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
     getCookie('__Secure-3PAPISID'),
   ])
 
-  if (!sapisid) {
+  if (!sapisid && !sapisid1p && !sapisid3p) {
     throw new Error('SAPISID cookie not found')
   }
 
