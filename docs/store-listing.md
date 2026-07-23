@@ -23,7 +23,12 @@ The following button settings can be configured:
 
 - 'Visibility' allows you to set the visibility of the button to either 'always' or 'hover'.
 - 'Opacity' allows you to set the opacity of the button to either 'full' or 'half'.
-- 'Position' allows you to set the position of the button to either 'top left' or 'top right'.
+
+(v0.6.0+) The button's position can be configured separately for each location it appears in, from its own subpage:
+
+- Grid videos, playlist videos, and endscreen suggestions can be set to 'top left', 'top right', 'bottom left', or 'bottom right'.
+- The player sidebar and old endscreen suggestions can be set to 'top left' or 'bottom left'.
+- Notifications can be set to 'top right' or 'bottom right'.
 
 ---
 
