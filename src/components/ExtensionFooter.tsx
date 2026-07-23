@@ -5,7 +5,11 @@ import { openTab } from '~helpers/browser'
 
 import '~css/shared.css'
 
-const ExtensionFooter = () => {
+interface ExtensionFooterProps {
+  showWhatsNew?: boolean
+}
+
+const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
   const version = useMemo(() => {
     if (process.env.NODE_ENV === 'production') {
       return `v${packageJson.version}`
@@ -41,6 +45,18 @@ const ExtensionFooter = () => {
 
       <div className="credits small">
         Version: <span className="name">{version}</span>
+        {showWhatsNew && (
+          <>
+            {' | '}
+            <button
+              className="whats-new-link"
+              onClick={() =>
+                openTab(chrome.runtime.getURL('tabs/whats-new.html'))
+              }>
+              What's new
+            </button>
+          </>
+        )}
       </div>
     </div>
   )

@@ -190,7 +190,7 @@ const Popup = () => {
         </button>
       </div>
 
-      <ExtensionFooter />
+      <ExtensionFooter showWhatsNew />
     </div>
   )
 }
