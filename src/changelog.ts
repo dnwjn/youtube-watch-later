@@ -13,6 +13,25 @@ export interface ChangelogVersion {
 // 2. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '0.6.0',
+    date: '2026-07-23',
+    entries: {
+      new: [
+        'Added more position options for the button, including bottom-left and bottom-right.',
+        "Added a link to this What's New tab in the popup footer, so you can now always see the latest changes instead of just once per update.",
+      ],
+      improved: [
+        'The button now only shows once your settings have finished loading, preventing it from flashing in the wrong position.',
+        'Position settings moved to their own subpage and now apply immediately, without needing to reload the page.',
+        'Decreased font sizes and limited the height of the popup for a more compact look.',
+      ],
+      fixed: [
+        'Fixed an issue where the button could stop working if the primary cookie was missing, by falling back to its 1st-party and 3rd-party variants.',
+        'Fixed the button disappearing or flashing when hovering over thumbnail previews.',
+      ],
+    },
+  },
+  {
     version: '0.5.3',
     date: '2026-05-25',
     entries: {
