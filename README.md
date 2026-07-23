@@ -47,14 +47,25 @@ The following general settings can be configured:
 
 The following button settings can be configured:
 
-| Setting    | Description                                                         | Default    |
-|------------|---------------------------------------------------------------------|------------|
-| Visibility | Set the visibility of the button to either `always` or `hover`.     | `always`   |
-| Opacity    | Set the opacity of the button to either `full` or `half`.           | `full`     |
-| Position   | Set the position of the button to either `top left` or `top right`. | `top left` |
+| Setting    | Description                                                     | Default  |
+|------------|-----------------------------------------------------------------|----------|
+| Visibility | Set the visibility of the button to either `always` or `hover`. | `always` |
+| Opacity    | Set the opacity of the button to either `full` or `half`.       | `full`   |
 
-Please note that a page reload is required for these settings to take effect.
-These settings do not affect the button inside the video player controls and in the suggested videos next to/below the player.
+These settings do not affect the button inside the video player controls.
+
+### Button position
+
+The position of the button can be configured separately for each location it appears in:
+
+| Location                  | Available positions                                    | Default     |
+|---------------------------|--------------------------------------------------------|-------------|
+| Grid videos               | `top left`, `top right`, `bottom left`, `bottom right` | `top left`  |
+| Playlist videos           | `top left`, `top right`, `bottom left`, `bottom right` | `top left`  |
+| Endscreen suggestions     | `top left`, `top right`, `bottom left`, `bottom right` | `top left`  |
+| Player sidebar            | `top left`, `bottom left`                              | `top left`  |
+| Notifications             | `top right`, `bottom right`                            | `top right` |
+| Old endscreen suggestions | `top left`, `bottom left`                              | `top left`  |
 
 ## Changelog
 
