@@ -5,8 +5,8 @@ export const elementIsAnchor = (element: Element) => element.tagName === 'A'
 
 export const elementIsInThumbnail = (element: Element) =>
   [
-    'YTD-RICH-ITEM-RENDERER',
     'YTD-GRID-VIDEO-RENDERER',
+    'YTD-RICH-ITEM-RENDERER',
     'YTD-VIDEO-RENDERER',
   ].includes(element.tagName)
 

@@ -265,6 +265,57 @@ yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
     color: #0f0f0f;
 }
 
+:host(.ytwl-overlay-root) {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    /* Above thumbnails/preview player, but below YouTube's own panels/menus. */
+    z-index: 2000 !important;
+    pointer-events: none !important;
+}
+
+:host(.ytwl-overlay-root) #plasmo-shadow-container {
+    position: relative !important;
+    z-index: 2000 !important;
+    pointer-events: none !important;
+}
+
+:host(.ytwl-overlay-root) #plasmo-shadow-container .plasmo-csui-container {
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+.watch-later-btn.floating-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 34px;
+    height: 34px;
+    left: 5px;
+    top: 4px;
+    right: unset;
+    bottom: unset;
+    margin: 0;
+    pointer-events: auto !important;
+    z-index: 2000;
+}
+
+.watch-later-btn.floating-preview.top-right {
+    left: unset;
+    right: 5px;
+}
+
+.watch-later-btn.floating-preview.bottom-left,
+.watch-later-btn.floating-preview.bottom-right {
+    top: unset;
+    bottom: 4px;
+}
+
+.watch-later-btn.floating-preview.bottom-right {
+    left: unset;
+    right: 5px;
+}
+
 .watch-later-btn svg {
     pointer-events: none;
     display: inherit;
