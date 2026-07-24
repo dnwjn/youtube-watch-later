@@ -48,6 +48,13 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     reason === 'update' &&
     changelog.some((c: ChangelogVersion) => c.version === packageJson.version)
   ) {
-    chrome.tabs.create({ url: chrome.runtime.getURL('tabs/whats-new.html') })
+    const storage = new Storage()
+    const openWhatsNewOnUpdate = await storage.get<boolean>(
+      'openWhatsNewOnUpdate',
+    )
+
+    if (openWhatsNewOnUpdate) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('tabs/whats-new.html') })
+    }
   }
 })

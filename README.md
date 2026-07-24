@@ -38,10 +38,11 @@ The button is available in the following locations:
 
 The following general settings can be configured:
 
-| Setting                    | Description                                                                                      | Default  | Notes                                                   |
-|----------------------------|--------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------|
-| Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist. | disabled | Only affects the button inside the notification drawer. |
-| Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.        | disabled |                                                         |
+| Setting                    | Description                                                                                      | Default  | Notes                                                   | Since  |
+|----------------------------|--------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------|--------|
+| Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist. | disabled | Only affects the button inside the notification drawer. |        |
+| Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.        | disabled |                                                         |        |
+| Open What's New on update  | Automatically open a new tab with the latest changes after an update.                            | disabled |                                                         | v0.6.1 |
 
 ### Button
 

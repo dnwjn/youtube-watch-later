@@ -18,6 +18,7 @@ The following general settings can be configured:
 
 - 'Mark notifications as read' allows for notifications to be marked as read when you add those videos to your Watch Later playlist.
 - 'Logging' allows the plugin to send logs to your console. Could be useful for debugging purposes.
+- (v0.6.1+) 'Open What's New on update' automatically opens a new tab with the latest changes after an update.
 
 The following button settings can be configured:
 
