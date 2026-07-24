@@ -53,7 +53,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       'openWhatsNewOnUpdate',
     )
 
-    if (openWhatsNewOnUpdate) {
+    if (openWhatsNewOnUpdate ?? true) {
       chrome.tabs.create({ url: chrome.runtime.getURL('tabs/whats-new.html') })
     }
   }
