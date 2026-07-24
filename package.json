@@ -23,6 +23,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "all": "pnpm run lint && pnpm run pretty && pnpm run typecheck && pnpm run test",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "bump:patch": "pnpm version patch --no-git-tag-version",
     "bump:minor": "pnpm version minor --no-git-tag-version",
