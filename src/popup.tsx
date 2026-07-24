@@ -21,6 +21,10 @@ const Popup = () => {
   const [isLogging, setIsLogging] = useStorage<boolean>('isLogging', false)
   const [markNotificationsAsRead, setMarkNotificationsAsRead] =
     useStorage<boolean>('markNotificationsAsRead', false)
+  const [openWhatsNewOnUpdate, setOpenWhatsNewOnUpdate] = useStorage<boolean>(
+    'openWhatsNewOnUpdate',
+    true,
+  )
   const [buttonVisibility, setButtonVisibility] = useStorage<string>(
     'buttonVisibility',
     ButtonVisibility.Always,
@@ -28,10 +32,6 @@ const Popup = () => {
   const [buttonOpacity, setButtonOpacity] = useStorage<string>(
     'buttonOpacity',
     ButtonOpacity.Full,
-  )
-  const [openWhatsNewOnUpdate, setOpenWhatsNewOnUpdate] = useStorage<boolean>(
-    'openWhatsNewOnUpdate',
-    false,
   )
 
   if (view === 'positions') {
