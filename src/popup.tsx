@@ -29,6 +29,10 @@ const Popup = () => {
     'buttonOpacity',
     ButtonOpacity.Full,
   )
+  const [openWhatsNewOnUpdate, setOpenWhatsNewOnUpdate] = useStorage<boolean>(
+    'openWhatsNewOnUpdate',
+    false,
+  )
 
   if (view === 'positions') {
     return (
@@ -98,6 +102,30 @@ const Popup = () => {
 
           <p className="instruction spacing">
             When enabled, logs will be shown in the console.
+          </p>
+        </div>
+
+        <div className="setting">
+          <h3 className="title">Open What's New on update</h3>
+
+          <button
+            className="button"
+            onClick={() => setOpenWhatsNewOnUpdate(!openWhatsNewOnUpdate)}>
+            <div className="default">
+              <span className="status">
+                {openWhatsNewOnUpdate ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+            <div className="hover">
+              <span className="status">
+                {openWhatsNewOnUpdate ? 'Disable' : 'Enable'}
+              </span>
+            </div>
+          </button>
+
+          <p className="instruction spacing">
+            When enabled, a new tab with the latest changes opens automatically
+            after an update.
           </p>
         </div>
       </div>
