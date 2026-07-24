@@ -13,6 +13,15 @@ export interface ChangelogVersion {
 // 2. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '0.6.1',
+    date: '2026-07-24',
+    entries: {
+      new: [
+        "Added an 'Open What's New on update' setting, so you can control whether this tab opens automatically after an update.",
+      ],
+    },
+  },
+  {
     version: '0.6.0',
     date: '2026-07-23',
     entries: {
