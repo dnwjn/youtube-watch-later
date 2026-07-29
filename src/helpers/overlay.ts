@@ -1,4 +1,3 @@
-import { getVideoId } from '~helpers/extracting'
 import { elementNeedsButton } from '~helpers/matching'
 
 export const previewOverlayAnchorSelectors = [
@@ -47,35 +46,3 @@ export const getOverlayAnchorElements = () => {
     .filter((element) => elementNeedsButton(element))
     .filter((element) => !element.querySelector('.watch-later-btn'))
 }
-
-const overlayAnchorElementIds = new WeakMap<Element, number>()
-let overlayAnchorElementId = 0
-
-export const getOverlayAnchorElementId = (element: Element) => {
-  const existingId = overlayAnchorElementIds.get(element)
-
-  if (existingId) return existingId
-
-  overlayAnchorElementId += 1
-  overlayAnchorElementIds.set(element, overlayAnchorElementId)
-  return overlayAnchorElementId
-}
-
-export const getOverlayAnchorSignature = (elements: Element[]) =>
-  elements
-    .map(
-      (element) =>
-        `${getOverlayAnchorElementId(element)}:${getVideoId(element) || ''}`,
-    )
-    .join('|')
-
-// YouTube's DOM churns constantly; only refresh anchors when a mutation actually adds/removes one.
-export const mutationsAffectOverlayAnchors = (mutations: MutationRecord[]) =>
-  mutations.some((mutation) =>
-    [...mutation.addedNodes, ...mutation.removedNodes].some(
-      (node) =>
-        node instanceof Element &&
-        (node.matches(previewOverlayAnchorSelector) ||
-          node.querySelector(previewOverlayAnchorSelector) !== null),
-    ),
-  )

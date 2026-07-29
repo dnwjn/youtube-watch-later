@@ -1,6 +1,5 @@
 import type {
   PlasmoCSConfig,
-  PlasmoCSUIWatch,
   PlasmoGetInlineAnchorList,
   PlasmoGetOverlayAnchorList,
   PlasmoGetStyle,
@@ -26,8 +25,6 @@ import {
 } from '~helpers/matching'
 import {
   getOverlayAnchorElements,
-  getOverlayAnchorSignature,
-  mutationsAffectOverlayAnchors,
   previewOverlayAnchorSelector,
 } from '~helpers/overlay'
 import { getSettings, markNotificationsAsRead } from '~helpers/system'
@@ -44,8 +41,6 @@ import {
 import { buttonStyles } from './button.styles'
 
 let inlineAnchorListInterval: ReturnType<typeof setInterval> | null = null
-let lastOverlayAnchorSignature = ''
-let overlayAnchorRefreshInFlight = false
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -107,81 +102,6 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
 
 export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
   return getOverlayAnchorElements() as unknown as NodeList
-}
-
-const OVERLAY_REFRESH_DEBOUNCE_MS = 200
-const OVERLAY_REFRESH_FALLBACK_INTERVAL_MS = 2000
-
-export const watch: PlasmoCSUIWatch = ({ observer, render }) => {
-  let debounceTimeout: ReturnType<typeof setTimeout> | null = null
-
-  const refreshOverlayAnchors = async () => {
-    if (overlayAnchorRefreshInFlight || observer.mountState.isMounting) return
-
-    overlayAnchorRefreshInFlight = true
-
-    try {
-      const elements = getOverlayAnchorElements()
-      const signature = getOverlayAnchorSignature(elements)
-      const overlayHost = Array.from(observer.mountState.hostSet).find(
-        (host) => observer.mountState.hostMap.get(host)?.type === 'overlay',
-      )
-
-      if (signature === lastOverlayAnchorSignature && overlayHost) return
-
-      lastOverlayAnchorSignature = signature
-      observer.mountState.overlayTargetList = elements
-
-      if (overlayHost) {
-        const overlayAnchor = observer.mountState.hostMap.get(overlayHost)
-
-        overlayAnchor?.root?.unmount()
-        overlayHost.remove()
-        observer.mountState.hostSet.delete(overlayHost)
-        observer.mountState.hostMap.delete(overlayHost)
-      }
-
-      if (elements.length > 0) {
-        await render({
-          element: document.documentElement,
-          type: 'overlay',
-        })
-      }
-    } finally {
-      overlayAnchorRefreshInFlight = false
-    }
-  }
-
-  const scheduleRefresh = () => {
-    if (debounceTimeout) clearTimeout(debounceTimeout)
-    debounceTimeout = setTimeout(
-      refreshOverlayAnchors,
-      OVERLAY_REFRESH_DEBOUNCE_MS,
-    )
-  }
-
-  const mutationObserver = new MutationObserver((mutations) => {
-    if (mutationsAffectOverlayAnchors(mutations)) scheduleRefresh()
-  })
-  mutationObserver.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  })
-
-  const fallbackInterval = setInterval(
-    refreshOverlayAnchors,
-    OVERLAY_REFRESH_FALLBACK_INTERVAL_MS,
-  )
-
-  window.addEventListener('ytwl-yt-nav-finish', refreshOverlayAnchors)
-  refreshOverlayAnchors()
-
-  return () => {
-    mutationObserver.disconnect()
-    clearInterval(fallbackInterval)
-    if (debounceTimeout) clearTimeout(debounceTimeout)
-    window.removeEventListener('ytwl-yt-nav-finish', refreshOverlayAnchors)
-  }
 }
 
 export const watchOverlayAnchor: PlasmoWatchOverlayAnchor = (

@@ -2,10 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import {
   elementIsVisible,
-  getOverlayAnchorElementId,
   getOverlayAnchorElements,
-  getOverlayAnchorSignature,
-  mutationsAffectOverlayAnchors,
   previewOverlayAnchorSelector,
   removeNestedOverlayAnchors,
 } from '~helpers/overlay'
@@ -126,102 +123,5 @@ describe('getOverlayAnchorElements', () => {
     setRect(el, { width: 100, height: 100 })
 
     expect(getOverlayAnchorElements()).toEqual([el])
-  })
-})
-
-describe('getOverlayAnchorElementId', () => {
-  it('returns a stable id for the same element', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const first = getOverlayAnchorElementId(el)
-    const second = getOverlayAnchorElementId(el)
-
-    expect(first).toBe(second)
-  })
-
-  it('returns different ids for different elements', () => {
-    const a = document.createElement('ytd-rich-item-renderer')
-    const b = document.createElement('ytd-rich-item-renderer')
-
-    expect(getOverlayAnchorElementId(a)).not.toBe(getOverlayAnchorElementId(b))
-  })
-})
-
-describe('getOverlayAnchorSignature', () => {
-  it('changes when the video id behind an anchor changes', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const anchor = document.createElement('a')
-    anchor.href = 'https://www.youtube.com/watch?v=abc123'
-    el.appendChild(anchor)
-
-    const before = getOverlayAnchorSignature([el])
-    anchor.href = 'https://www.youtube.com/watch?v=def456'
-    const after = getOverlayAnchorSignature([el])
-
-    expect(before).not.toBe(after)
-  })
-
-  it('is stable for the same set of elements', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const anchor = document.createElement('a')
-    anchor.href = 'https://www.youtube.com/watch?v=abc123'
-    el.appendChild(anchor)
-
-    expect(getOverlayAnchorSignature([el])).toBe(
-      getOverlayAnchorSignature([el]),
-    )
-  })
-})
-
-describe('mutationsAffectOverlayAnchors', () => {
-  const makeMutation = (overrides: Partial<MutationRecord>): MutationRecord =>
-    ({
-      addedNodes: document.createDocumentFragment().childNodes,
-      removedNodes: document.createDocumentFragment().childNodes,
-      type: 'childList',
-      target: document.createElement('div'),
-      attributeName: null,
-      attributeNamespace: null,
-      nextSibling: null,
-      previousSibling: null,
-      oldValue: null,
-      ...overrides,
-    }) as MutationRecord
-
-  it('returns false when no added/removed node is an overlay anchor candidate', () => {
-    const fragment = document.createDocumentFragment()
-    fragment.appendChild(document.createElement('span'))
-
-    const mutation = makeMutation({ addedNodes: fragment.childNodes })
-
-    expect(mutationsAffectOverlayAnchors([mutation])).toBe(false)
-  })
-
-  it('returns true when an added node is itself an overlay anchor candidate', () => {
-    const fragment = document.createDocumentFragment()
-    fragment.appendChild(document.createElement('ytd-rich-item-renderer'))
-
-    const mutation = makeMutation({ addedNodes: fragment.childNodes })
-
-    expect(mutationsAffectOverlayAnchors([mutation])).toBe(true)
-  })
-
-  it('returns true when an added node contains an overlay anchor candidate', () => {
-    const wrapper = document.createElement('div')
-    wrapper.appendChild(document.createElement('ytd-playlist-video-renderer'))
-    const fragment = document.createDocumentFragment()
-    fragment.appendChild(wrapper)
-
-    const mutation = makeMutation({ addedNodes: fragment.childNodes })
-
-    expect(mutationsAffectOverlayAnchors([mutation])).toBe(true)
-  })
-
-  it('returns true when a removed node is an overlay anchor candidate', () => {
-    const fragment = document.createDocumentFragment()
-    fragment.appendChild(document.createElement('ytd-rich-item-renderer'))
-
-    const mutation = makeMutation({ removedNodes: fragment.childNodes })
-
-    expect(mutationsAffectOverlayAnchors([mutation])).toBe(true)
   })
 })
