@@ -50,7 +50,7 @@
     "auto-changelog": "^2.6.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^29.1.1",
     "prettier": "3.9.5",
     "typescript": "6.0.3",
