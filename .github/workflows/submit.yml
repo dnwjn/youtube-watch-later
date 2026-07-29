@@ -63,35 +63,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v7
-
       - name: Download Chrome artifact
         uses: actions/download-artifact@v8
         with:
           name: chrome-mv3-prod
           path: build
 
-      - name: Create Chrome keys.json
-        id: chrome-keys
-        run: |
-          # Replace placeholders with secret values using jq (properly escapes JSON)
-          KEYS_JSON=$(cat .github/submit/keys-chrome.json | \
-            jq --arg clientId '${{ secrets.CHROME_CLIENT_ID }}' \
-               --arg clientSecret '${{ secrets.CHROME_CLIENT_SECRET }}' \
-               --arg refreshToken '${{ secrets.CHROME_REFRESH_TOKEN }}' \
-               '.chrome.clientId = $clientId |
-                .chrome.clientSecret = $clientSecret |
-                .chrome.refreshToken = $refreshToken')
-          echo "keys<<EOF" >> $GITHUB_OUTPUT
-          echo "$KEYS_JSON" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Publish to Chrome Web Store
-        uses: PlasmoHQ/bpp@v3
+        uses: wdzeng/chrome-extension@ccb488e04fba014a4b574a533ccee8bc1b772f0a # v2.0.1
         with:
-          keys: ${{ steps.chrome-keys.outputs.keys }}
-          verbose: true
+          extension-id: nmpfhocciajonacicdelpbhipglapgaa
+          zip-path: build/chrome-mv3-prod.zip
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
   submit-edge:
     needs: build
@@ -107,24 +92,21 @@ jobs:
           name: edge-mv3-prod
           path: build
 
-      - name: Create Edge keys.json
-        id: edge-keys
+      - name: Read Edge certification notes
+        id: edge-notes
         run: |
-          # Replace placeholders with secret values using jq (properly escapes JSON)
-          KEYS_JSON=$(cat .github/submit/keys-edge.json | \
-            jq --arg clientId '${{ secrets.EDGE_CLIENT_ID }}' \
-               --arg apiKey '${{ secrets.EDGE_API_KEY }}' \
-               '.edge.clientId = $clientId |
-                .edge.apiKey = $apiKey')
-          echo "keys<<EOF" >> $GITHUB_OUTPUT
-          echo "$KEYS_JSON" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "notes<<EDGE_NOTES_EOF" >> $GITHUB_OUTPUT
+          cat docs/edge-notes.md >> $GITHUB_OUTPUT
+          echo "EDGE_NOTES_EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Edge Add-ons
-        uses: PlasmoHQ/bpp@v3
+        uses: wdzeng/edge-addon@9881f57720358040d079eaa06a4596dc9c273eb6 # v2.1.1
         with:
-          keys: ${{ steps.edge-keys.outputs.keys }}
-          verbose: true
+          product-id: 174f024a-d422-46bd-a9e5-8f62bb76ae21
+          zip-path: build/edge-mv3-prod.zip
+          client-id: ${{ secrets.EDGE_CLIENT_ID }}
+          api-key: ${{ secrets.EDGE_API_KEY }}
+          notes-for-certification: ${{ steps.edge-notes.outputs.notes }}
 
   submit-firefox:
     needs: build
@@ -146,21 +128,19 @@ jobs:
           name: source
           path: build
 
-      - name: Create Firefox keys.json
-        id: firefox-keys
+      - name: Read Firefox approval notes
+        id: firefox-notes
         run: |
-          # Replace placeholders with secret values using jq (properly escapes JSON)
-          KEYS_JSON=$(cat .github/submit/keys-firefox.json | \
-            jq --arg apiKey '${{ secrets.FIREFOX_API_KEY }}' \
-               --arg apiSecret '${{ secrets.FIREFOX_API_SECRET }}' \
-               '.firefox.apiKey = $apiKey |
-                .firefox.apiSecret = $apiSecret')
-          echo "keys<<EOF" >> $GITHUB_OUTPUT
-          echo "$KEYS_JSON" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "notes<<FIREFOX_NOTES_EOF" >> $GITHUB_OUTPUT
+          cat docs/firefox-notes.md >> $GITHUB_OUTPUT
+          echo "FIREFOX_NOTES_EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Firefox Add-ons
-        uses: PlasmoHQ/bpp@v3
+        uses: wdzeng/firefox-addon@3184ee491b500e080885e046051366a4228c6e5d # v1.2.1
         with:
-          keys: ${{ steps.firefox-keys.outputs.keys }}
-          verbose: true
+          addon-guid: youtube-watch-later
+          xpi-path: build/firefox-mv2-prod.zip
+          source-file-path: build/source.zip
+          jwt-issuer: ${{ secrets.FIREFOX_API_KEY }}
+          jwt-secret: ${{ secrets.FIREFOX_API_SECRET }}
+          approval-notes: ${{ steps.firefox-notes.outputs.notes }}
