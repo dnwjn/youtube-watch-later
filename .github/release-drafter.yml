@@ -28,3 +28,9 @@ template: |
   # What's changed
 
   $CHANGES
+
+  # Installation
+
+  Install from the official stores: [Chrome Web Store](https://chromewebstore.google.com/detail/youtube-watch-later/nmpfhocciajonacicdelpbhipglapgaa) · [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/youtube-watch-later/hbceknmmffnemncljbkccfgcgnccbale) · [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/youtube-watch-later/)
+  
+  The attached zips are unsigned builds. Stable Firefox only accepts the signed version from Firefox Add-ons; browsers that allow unsigned extensions (Zen, Firefox Developer Edition/Nightly with `xpinstall.signatures.required=false`) can install the Firefox zip by renaming it to `.xpi`.

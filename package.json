@@ -58,6 +58,11 @@
     "vitest": "^4.1.10"
   },
   "manifest": {
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "{767563c0-f773-41a2-afa9-e36cc0d49c31}"
+      }
+    },
     "host_permissions": [
       "https://www.youtube.com/*",
       "https://m.youtube.com/*",
