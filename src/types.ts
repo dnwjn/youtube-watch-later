@@ -15,6 +15,14 @@ export class ButtonVisibility {
   static Hover = 'visibility-hover'
 }
 
+export class ButtonStatus {
+  static Hidden = 0
+  static Default = 1
+  static Loading = 2
+  static Success = 3
+  static Error = 4
+}
+
 export class ButtonPositionContext {
   static Thumbnail = 'buttonPositionThumbnail'
   static Playlist = 'buttonPositionPlaylist'

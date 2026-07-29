@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import {
   elementIsVisible,
   getOverlayAnchorElements,
+  mutationsAffectOverlayAnchors,
   previewOverlayAnchorSelector,
   removeNestedOverlayAnchors,
 } from '~helpers/overlay'
@@ -123,5 +124,59 @@ describe('getOverlayAnchorElements', () => {
     setRect(el, { width: 100, height: 100 })
 
     expect(getOverlayAnchorElements()).toEqual([el])
+  })
+})
+
+describe('mutationsAffectOverlayAnchors', () => {
+  const makeMutation = (overrides: Partial<MutationRecord>): MutationRecord =>
+    ({
+      addedNodes: document.createDocumentFragment().childNodes,
+      removedNodes: document.createDocumentFragment().childNodes,
+      type: 'childList',
+      target: document.createElement('div'),
+      attributeName: null,
+      attributeNamespace: null,
+      nextSibling: null,
+      previousSibling: null,
+      oldValue: null,
+      ...overrides,
+    }) as MutationRecord
+
+  it('returns false when no added/removed node is an overlay anchor candidate', () => {
+    const fragment = document.createDocumentFragment()
+    fragment.appendChild(document.createElement('span'))
+
+    const mutation = makeMutation({ addedNodes: fragment.childNodes })
+
+    expect(mutationsAffectOverlayAnchors([mutation])).toBe(false)
+  })
+
+  it('returns true when an added node is itself an overlay anchor candidate', () => {
+    const fragment = document.createDocumentFragment()
+    fragment.appendChild(document.createElement('ytd-rich-item-renderer'))
+
+    const mutation = makeMutation({ addedNodes: fragment.childNodes })
+
+    expect(mutationsAffectOverlayAnchors([mutation])).toBe(true)
+  })
+
+  it('returns true when an added node contains an overlay anchor candidate', () => {
+    const wrapper = document.createElement('div')
+    wrapper.appendChild(document.createElement('ytd-playlist-video-renderer'))
+    const fragment = document.createDocumentFragment()
+    fragment.appendChild(wrapper)
+
+    const mutation = makeMutation({ addedNodes: fragment.childNodes })
+
+    expect(mutationsAffectOverlayAnchors([mutation])).toBe(true)
+  })
+
+  it('returns true when a removed node is an overlay anchor candidate', () => {
+    const fragment = document.createDocumentFragment()
+    fragment.appendChild(document.createElement('ytd-rich-item-renderer'))
+
+    const mutation = makeMutation({ removedNodes: fragment.childNodes })
+
+    expect(mutationsAffectOverlayAnchors([mutation])).toBe(true)
   })
 })

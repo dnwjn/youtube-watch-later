@@ -1,5 +1,6 @@
 import type {
   PlasmoCSConfig,
+  PlasmoCSUIWatch,
   PlasmoGetInlineAnchorList,
   PlasmoGetOverlayAnchorList,
   PlasmoGetStyle,
@@ -8,10 +9,10 @@ import type {
 } from 'plasmo'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { getAuthorizationHeader, getHostname } from '~helpers/api'
+import WatchLaterIcon from '~components/WatchLaterIcon'
+import { addToWatchLater, markNotificationAsRead } from '~helpers/api'
 import { hasPath, hasSearch } from '~helpers/browser'
 import { getVideoId } from '~helpers/extracting'
-import { logError, logLine } from '~helpers/logging'
 import {
   elementIsInEndscreenSuggested,
   elementIsInMobilePlayerSuggested,
@@ -24,10 +25,13 @@ import {
   elementNeedsButton,
 } from '~helpers/matching'
 import {
+  computeOverlayButtonStyle,
   getOverlayAnchorElements,
   previewOverlayAnchorSelector,
+  watchOverlayEviction,
 } from '~helpers/overlay'
-import { getSettings, markNotificationsAsRead } from '~helpers/system'
+import { getSettings } from '~helpers/system'
+import useOverlayAlignmentGuard from '~hooks/useOverlayAlignmentGuard'
 import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
 import type { ButtonConfig, Settings, YTData } from '~interfaces'
 import { useWatchLaterStore } from '~store'
@@ -35,12 +39,11 @@ import {
   ButtonOpacity,
   ButtonPosition,
   ButtonPositionContext,
+  ButtonStatus,
   ButtonVisibility,
 } from '~types'
 
 import { buttonStyles } from './button.styles'
-
-let inlineAnchorListInterval: ReturnType<typeof setInterval> | null = null
 
 export const config: PlasmoCSConfig = {
   matches: ['*://*.youtube.com/*'],
@@ -104,12 +107,32 @@ export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
   return getOverlayAnchorElements() as unknown as NodeList
 }
 
+export const watch: PlasmoCSUIWatch = ({ observer }) =>
+  watchOverlayEviction(observer)
+
 export const watchOverlayAnchor: PlasmoWatchOverlayAnchor = (
   updatePosition,
 ) => {
+  // Right after a (re)mount YouTube may still be laying out the swapped-in
+  // content, so track the anchor at frame rate for a short burst before
+  // dropping to the slow interval - otherwise the container sits at a stale
+  // position for up to 250ms.
+  let burstFramesLeft = 30
+  let rafId = 0
+
+  const burst = () => {
+    updatePosition()
+    burstFramesLeft -= 1
+    if (burstFramesLeft > 0) rafId = requestAnimationFrame(burst)
+  }
+  rafId = requestAnimationFrame(burst)
+
   const interval = setInterval(updatePosition, 250)
 
-  return () => clearInterval(interval)
+  return () => {
+    cancelAnimationFrame(rafId)
+    clearInterval(interval)
+  }
 }
 
 export const mountShadowHost: PlasmoMountShadowHost = ({
@@ -138,6 +161,11 @@ export const mountShadowHost: PlasmoMountShadowHost = ({
     element.insertBefore(shadowHost, element.firstChild)
   }
 
+  // Deliberate: this kills Plasmo's own MutationObserver, whose callback
+  // runs a full-page anchor scan on every DOM mutation - a constant cost on
+  // YouTube's ever-churning DOM. Plasmo's 142ms interval keeps running and
+  // is what picks up new anchors and rebuilds the overlay host after our
+  // `watch` evicts it. Don't "fix" this by reconnecting the observer.
   mountState.observer.disconnect()
 }
 
@@ -157,68 +185,30 @@ const computeButtonConfig = (
   }
 }
 
-const startIntervals = () => {
-  inlineAnchorListInterval = setInterval(getInlineAnchorList, 2000)
+// `ytData`/`enabled` live in one page-wide store and, once ytData is set, no
+// further button instance attaches nav listeners (see `init` below) - so a
+// single button instance ends up "owning" them. That owner can easily be an
+// overlay button, which gets torn down on every YouTube navigation, taking
+// the only nav listeners with it and leaving `enabled` stuck at `false`.
+// Handling navigation here instead, at module scope, means it survives every
+// individual button mounting and unmounting.
+const handleGlobalNavigateStart = () => {
+  useWatchLaterStore.getState().setEnabled(false)
 }
 
-const clearIntervals = () => {
-  if (inlineAnchorListInterval) {
-    clearInterval(inlineAnchorListInterval)
-    inlineAnchorListInterval = null
-  }
+const handleGlobalNavigateFinish = (event: CustomEvent) => {
+  const newUrl = event.detail?.response?.url as string | null
+  const { ytData, setUrl, setEnabled } = useWatchLaterStore.getState()
+
+  setUrl(newUrl)
+  if (ytData) setEnabled(ytData.loggedIn === true)
 }
 
-const Icon = ({ status }: { status: number }) => {
-  if (status === 3) {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-        />
-      </svg>
-    )
-  }
-
-  if (status === 4) {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-        />
-      </svg>
-    )
-  }
-
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="with-fill">
-      <path d="M14.97 16.95 10 13.87V7h2v5.76l4.03 2.49-1.06 1.7zM12 3c-4.96 0-9 4.04-9 9s4.04 9 9 9 9-4.04 9-9-4.04-9-9-9m0-1c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"></path>
-    </svg>
-  )
-}
+window.addEventListener('ytwl-yt-nav-start', handleGlobalNavigateStart)
+window.addEventListener(
+  'ytwl-yt-nav-finish',
+  handleGlobalNavigateFinish as EventListener,
+)
 
 const WatchLaterButton = ({ anchor }) => {
   const { element } = anchor
@@ -236,7 +226,6 @@ const WatchLaterButton = ({ anchor }) => {
     pendingVideoIds,
     erroredVideoIds,
     setYtData,
-    setUrl,
     setEnabled,
     setLatestElementRef,
     markVideoAsPending,
@@ -245,14 +234,7 @@ const WatchLaterButton = ({ anchor }) => {
     clearVideoError,
   } = useWatchLaterStore()
 
-  /**
-   * 0: Hidden
-   * 1: Default
-   * 2: Loading
-   * 3: Success
-   * 4: Error
-   */
-  const [status, setStatus] = useState<number>(0)
+  const [status, setStatus] = useState<number>(ButtonStatus.Hidden)
   const [visible, setVisible] = useState<boolean>(false)
   const [hasData, setHasData] = useState<boolean>(false)
   const [buttonConfig, setButtonConfig] = useState<ButtonConfig>({
@@ -262,11 +244,7 @@ const WatchLaterButton = ({ anchor }) => {
   })
   const [configLoaded, setConfigLoaded] = useState<boolean>(false)
   const [isHovered, setIsHovered] = useState(false)
-  const [overlayPositionSettled, setOverlayPositionSettled] =
-    useState(!isOverlay)
-  const [overlayAnchorConnected, setOverlayAnchorConnected] = useState(
-    () => !isOverlay || element.isConnected,
-  )
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const isInThumbnail = elementIsInThumbnail(element)
   const isInPlaylist = elementIsInPlaylist(element)
@@ -340,13 +318,13 @@ const WatchLaterButton = ({ anchor }) => {
       classes.push('light')
     }
 
-    if (status === 2) {
+    if (status === ButtonStatus.Loading) {
       classes.push('loading')
     }
-    if (status === 3) {
+    if (status === ButtonStatus.Success) {
       classes.push('success')
     }
-    if (status === 4) {
+    if (status === ButtonStatus.Error) {
       classes.push('error')
     }
 
@@ -369,10 +347,7 @@ const WatchLaterButton = ({ anchor }) => {
 
   const shouldShow = useMemo(() => {
     if (!configLoaded) return false
-    if (isOverlay && (!overlayPositionSettled || !overlayAnchorConnected)) {
-      return false
-    }
-    if (status === 0) return false
+    if (status === ButtonStatus.Hidden) return false
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
     if (isHovered) return true
@@ -380,9 +355,6 @@ const WatchLaterButton = ({ anchor }) => {
     return false
   }, [
     configLoaded,
-    isOverlay,
-    overlayPositionSettled,
-    overlayAnchorConnected,
     status,
     buttonConfig,
     isHovered,
@@ -392,36 +364,7 @@ const WatchLaterButton = ({ anchor }) => {
     element,
   ])
 
-  // Detached anchor -> zero rect -> Plasmo snaps the button to (0,0). Hide until reconnected.
-  useEffect(() => {
-    if (!isOverlay) return
-
-    setOverlayAnchorConnected(element.isConnected)
-
-    const interval = setInterval(() => {
-      setOverlayAnchorConnected(element.isConnected)
-    }, 100)
-
-    return () => clearInterval(interval)
-  }, [isOverlay, element])
-
-  // Plasmo keys overlay containers by list index, so a swapped anchor can briefly
-  // reuse the previous button's position. Hide for a couple frames until it settles.
-  useEffect(() => {
-    if (!isOverlay) return
-
-    setOverlayPositionSettled(false)
-
-    let secondFrame = 0
-    const firstFrame = requestAnimationFrame(() => {
-      secondFrame = requestAnimationFrame(() => setOverlayPositionSettled(true))
-    })
-
-    return () => {
-      cancelAnimationFrame(firstFrame)
-      if (secondFrame) cancelAnimationFrame(secondFrame)
-    }
-  }, [isOverlay, element])
+  useOverlayAlignmentGuard(isOverlay, element, buttonRef)
 
   const fetchButtonConfig = async () => {
     const settings = await getSettings()
@@ -438,188 +381,42 @@ const WatchLaterButton = ({ anchor }) => {
     )
   }
 
-  const overlayButtonStyle = useMemo<React.CSSProperties | undefined>(() => {
-    if (!isOverlay) return undefined
-
-    // Measure the thumbnail sub-element, not the whole card, so `right`/`bottom`
-    // resolve correctly and the button doesn't land over the title/channel text.
-    const cardRect = element.getBoundingClientRect()
-    const thumbnail = element.querySelector(
-      'ytd-thumbnail, yt-thumbnail-view-model',
-    )
-    const thumbnailRect = thumbnail?.getBoundingClientRect() ?? cardRect
-
-    if (thumbnailRect.width <= 0 || thumbnailRect.height <= 0) {
-      return undefined
-    }
-
-    const offsetX = thumbnailRect.left - cardRect.left
-    const offsetY = thumbnailRect.top - cardRect.top
-
-    const isLeft =
-      buttonConfig.position === ButtonPosition.TopLeft ||
-      buttonConfig.position === ButtonPosition.BottomLeft
-    const isTop =
-      buttonConfig.position === ButtonPosition.TopLeft ||
-      buttonConfig.position === ButtonPosition.TopRight
-
-    return {
-      left: isLeft
-        ? `${Math.round(offsetX + 5)}px`
-        : `${Math.max(5, Math.round(offsetX + thumbnailRect.width - 39))}px`,
-      right: 'unset',
-      top: isTop
-        ? `${Math.round(offsetY + 4)}px`
-        : `${Math.max(4, Math.round(offsetY + thumbnailRect.height - 38))}px`,
-      bottom: 'unset',
-    }
-  }, [buttonConfig.position, element, isOverlay])
+  const overlayButtonStyle = useMemo<React.CSSProperties | undefined>(
+    () =>
+      isOverlay
+        ? computeOverlayButtonStyle(element, buttonConfig.position)
+        : undefined,
+    [buttonConfig.position, element, isOverlay],
+  )
 
   const addVideo = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
 
-    if (status !== 1) return
+    if (status !== ButtonStatus.Default) return
 
     if (videoId && ytData) {
-      setStatus(2)
+      setStatus(ButtonStatus.Loading)
       markVideoAsPending(videoId)
 
-      addToWatchLater(videoId)
+      addToWatchLater(ytData, videoId)
         .then(() => {
           markVideoAsAdded(videoId)
-          setStatus(3)
+          setStatus(ButtonStatus.Success)
 
           if (isInNotification) {
-            markNotificationAsRead()
+            markNotificationAsRead(ytData, element)
           }
         })
         .catch(() => {
           markVideoAsErrored(videoId)
-          setStatus(4)
+          setStatus(ButtonStatus.Error)
           setTimeout(() => {
             clearVideoError(videoId)
-            setStatus(1)
+            setStatus(ButtonStatus.Default)
           }, 2000)
         })
     }
-  }
-
-  const addToWatchLater = async (videoId: string): Promise<void> => {
-    const payload = {
-      actions: [
-        {
-          action: 'ACTION_ADD_VIDEO',
-          addedVideoId: videoId,
-        },
-      ],
-      playlistId: 'WL',
-    }
-
-    try {
-      const response = await _apiPost(
-        'browse/edit_playlist?prettyPrint=false',
-        payload,
-      )
-      const responseJson = await response.json()
-
-      if (response.ok && responseJson.status === 'STATUS_SUCCEEDED') {
-        logLine('Video added to Watch Later', videoId)
-        return
-      }
-
-      logError('Failed to add video to Watch Later', responseJson)
-    } catch (error) {
-      logError('Failed to add video to Watch Later', error)
-    }
-
-    throw new Error('Failed to add video to Watch Later')
-  }
-
-  const markNotificationAsRead = async (): Promise<void> => {
-    if (!(await markNotificationsAsRead())) {
-      logLine('Marking notifications as read is disabled')
-      return
-    }
-
-    try {
-      const elementData = (
-        element as unknown as {
-          data?: {
-            recordClickEndpoint?: {
-              recordNotificationInteractionsEndpoint?: {
-                serializedInteractionsRequest?: string
-              }
-            }
-          }
-        }
-      )?.data
-
-      if (!elementData) {
-        logError(
-          'Missing required data to mark notification as read',
-          elementData,
-        )
-        return
-      }
-
-      const payload = {
-        serializedRecordNotificationInteractionsRequest:
-          elementData.recordClickEndpoint.recordNotificationInteractionsEndpoint
-            .serializedInteractionsRequest,
-      }
-
-      const response = await _apiPost(
-        'notification/record_interactions?prettyPrint=false',
-        payload,
-      )
-      const responseJson = await response.json()
-
-      if (response.ok && responseJson?.success) {
-        logLine('Notification marked as read')
-      } else {
-        logError('Failed to mark notification as read', responseJson)
-      }
-    } catch (error) {
-      logError('Failed to mark notification as read', error)
-    }
-  }
-
-  const _apiPost = async (path: string, payload: object): Promise<Response> => {
-    const authorizationHeader = await getAuthorizationHeader()
-    const { authUser, clientVersion, pageId, visitorId } = ytData
-
-    if (!authUser || !clientVersion || !visitorId || !authorizationHeader) {
-      throw new Error('Missing required data to make request')
-    }
-
-    const url = `https://${getHostname()}/youtubei/v1/${path}`
-    const finalPayload = {
-      ...payload,
-      context: {
-        client: {
-          clientName: 'WEB',
-          clientVersion,
-        },
-      },
-    }
-
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: authorizationHeader,
-        'Content-Type': 'application/json',
-        'X-Origin': 'https://www.youtube.com',
-        'X-Goog-Authuser': authUser,
-        // PageId seems to be only available when you've switched to a different user from the original one.
-        ...(pageId ? { 'X-Goog-PageId': pageId } : {}),
-        'X-Goog-Visitor-Id': visitorId,
-        'X-Youtube-Bootstrap-Logged-In': 'true',
-        'X-Youtube-Client-Name': '1',
-        'X-Youtube-Client-Version': clientVersion,
-      },
-      body: JSON.stringify(finalPayload),
-    })
   }
 
   const onElementMouseEnter = () => {
@@ -652,16 +449,6 @@ const WatchLaterButton = ({ anchor }) => {
     }
   }, [setEnabled])
 
-  const handleNavigateStart = () => {
-    setEnabled(false)
-  }
-
-  const handleNavigateFinish = (event) => {
-    const newUrl = event.detail?.response?.url as string | null
-    setUrl(newUrl)
-    setEnabledFromYtData()
-  }
-
   const init = () => {
     element.addEventListener('mouseenter', onElementMouseEnter)
     element.addEventListener('mouseleave', onElementMouseLeave)
@@ -676,21 +463,15 @@ const WatchLaterButton = ({ anchor }) => {
     }
 
     window.addEventListener('ytwl-yt', setYtwlYt)
-    window.addEventListener('ytwl-yt-nav-start', handleNavigateStart)
-    window.addEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
 
     window.dispatchEvent(new CustomEvent('ytwl-yt-req'))
   }
 
   const cleanup = () => {
-    clearIntervals()
-
     element.removeEventListener('mouseenter', onElementMouseEnter)
     element.removeEventListener('mouseleave', onElementMouseLeave)
 
     window.removeEventListener('ytwl-yt', setYtwlYt)
-    window.removeEventListener('ytwl-yt-nav-start', handleNavigateStart)
-    window.removeEventListener('ytwl-yt-nav-finish', handleNavigateFinish)
     window.removeEventListener('ytwl-settings-changed', handleSettingsChanged)
   }
 
@@ -715,16 +496,16 @@ const WatchLaterButton = ({ anchor }) => {
   useEffect(() => {
     if (visible && hasData) {
       if (videoId && addedVideoIds.has(videoId)) {
-        setStatus(3)
+        setStatus(ButtonStatus.Success)
       } else if (videoId && erroredVideoIds.has(videoId)) {
-        setStatus(4)
+        setStatus(ButtonStatus.Error)
       } else if (videoId && pendingVideoIds.has(videoId)) {
-        setStatus(2)
+        setStatus(ButtonStatus.Loading)
       } else {
-        setStatus(1)
+        setStatus(ButtonStatus.Default)
       }
     } else {
-      setStatus(0)
+      setStatus(ButtonStatus.Hidden)
     }
   }, [
     visible,
@@ -760,17 +541,23 @@ const WatchLaterButton = ({ anchor }) => {
 
   if (!shouldShow) return null
 
+  // Overlay buttons start hidden; useOverlayAlignmentGuard owns `visibility`
+  // from here via direct DOM writes. React never changes this key between
+  // renders, so it won't clobber the guard's writes.
+  const buttonStyle = isOverlay
+    ? { ...overlayButtonStyle, visibility: 'hidden' as const }
+    : overlayButtonStyle
+
   return (
     <button
+      ref={buttonRef}
       className={buttonClasses}
-      disabled={status !== 1}
+      disabled={status !== ButtonStatus.Default}
       onClick={addVideo}
-      style={overlayButtonStyle}>
-      <Icon status={status} />
+      style={buttonStyle}>
+      <WatchLaterIcon status={status} />
     </button>
   )
 }
-
-startIntervals()
 
 export default WatchLaterButton
