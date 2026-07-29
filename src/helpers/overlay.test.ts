@@ -2,9 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import {
   elementIsVisible,
-  getOverlayAnchorElementId,
   getOverlayAnchorElements,
-  getOverlayAnchorSignature,
   mutationsAffectOverlayAnchors,
   previewOverlayAnchorSelector,
   removeNestedOverlayAnchors,
@@ -126,49 +124,6 @@ describe('getOverlayAnchorElements', () => {
     setRect(el, { width: 100, height: 100 })
 
     expect(getOverlayAnchorElements()).toEqual([el])
-  })
-})
-
-describe('getOverlayAnchorElementId', () => {
-  it('returns a stable id for the same element', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const first = getOverlayAnchorElementId(el)
-    const second = getOverlayAnchorElementId(el)
-
-    expect(first).toBe(second)
-  })
-
-  it('returns different ids for different elements', () => {
-    const a = document.createElement('ytd-rich-item-renderer')
-    const b = document.createElement('ytd-rich-item-renderer')
-
-    expect(getOverlayAnchorElementId(a)).not.toBe(getOverlayAnchorElementId(b))
-  })
-})
-
-describe('getOverlayAnchorSignature', () => {
-  it('changes when the video id behind an anchor changes', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const anchor = document.createElement('a')
-    anchor.href = 'https://www.youtube.com/watch?v=abc123'
-    el.appendChild(anchor)
-
-    const before = getOverlayAnchorSignature([el])
-    anchor.href = 'https://www.youtube.com/watch?v=def456'
-    const after = getOverlayAnchorSignature([el])
-
-    expect(before).not.toBe(after)
-  })
-
-  it('is stable for the same set of elements', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const anchor = document.createElement('a')
-    anchor.href = 'https://www.youtube.com/watch?v=abc123'
-    el.appendChild(anchor)
-
-    expect(getOverlayAnchorSignature([el])).toBe(
-      getOverlayAnchorSignature([el]),
-    )
   })
 })
 
