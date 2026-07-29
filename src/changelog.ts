@@ -13,6 +13,15 @@ export interface ChangelogVersion {
 // 2. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '0.6.2',
+    date: '2026-07-29',
+    entries: {
+      fixed: [
+        'Fixed an issue where the extension could slow down the page the longer you kept browsing, by removing a redundant refresh loop for the button.',
+      ],
+    },
+  },
+  {
     version: '0.6.1',
     date: '2026-07-24',
     entries: {
