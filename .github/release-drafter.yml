@@ -29,7 +29,7 @@ template: |
 
   $CHANGES
 
-  ## 📦 Installation
+  # Installation
 
   Install from the official stores: [Chrome Web Store](https://chromewebstore.google.com/detail/youtube-watch-later/nmpfhocciajonacicdelpbhipglapgaa) · [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/youtube-watch-later/hbceknmmffnemncljbkccfgcgnccbale) · [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/youtube-watch-later/)
   
