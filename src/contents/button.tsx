@@ -104,7 +104,19 @@ export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
 }
 
 export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
-  return getOverlayAnchorElements() as unknown as NodeList
+  let elements = getOverlayAnchorElements()
+
+  // YouTube's own hover-preview player briefly detaches/reattaches the feed
+  // during layout, which can make every anchor selector miss for a single
+  // poll tick even though nothing actually changed. Treating that as "no
+  // anchors" tears down and rebuilds every mounted button (visible as
+  // flicker), so re-check after a frame before trusting an empty result.
+  if (elements.length === 0) {
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+    elements = getOverlayAnchorElements()
+  }
+
+  return elements as unknown as NodeList
 }
 
 export const watch: PlasmoCSUIWatch = ({ observer }) =>
