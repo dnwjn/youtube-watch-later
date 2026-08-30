@@ -38,8 +38,13 @@ export const getAuthorizationHeader = async () => {
 
   const parts: string[] = []
 
-  if (cookies.sapisid) {
-    parts.push(`SAPISIDHASH ${await computeHash(cookies.sapisid)}`)
+  // Some browsers/accounts no longer set the plain SAPISID cookie. YouTube
+  // accepts __Secure-3PAPISID's value as a SAPISIDHASH fallback in that case
+  // (a SAPISID3PHASH alone is not enough to authorize mutating requests).
+  const primarySapisid = cookies.sapisid ?? cookies.sapisid3p
+
+  if (primarySapisid) {
+    parts.push(`SAPISIDHASH ${await computeHash(primarySapisid)}`)
   }
   if (cookies.sapisid1p) {
     parts.push(`SAPISID1PHASH ${await computeHash(cookies.sapisid1p)}`)
