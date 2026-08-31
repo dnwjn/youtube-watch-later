@@ -70,7 +70,7 @@ jobs:
           path: build
 
       - name: Publish to Chrome Web Store
-        uses: wdzeng/chrome-extension@ccb488e04fba014a4b574a533ccee8bc1b772f0a # v2.0.1
+        uses: wdzeng/chrome-extension@37f4f9cdc664959bafef36b1f4da03dec5141620 # v2.0.0
         with:
           extension-id: nmpfhocciajonacicdelpbhipglapgaa
           zip-path: build/chrome-mv3-prod.zip
@@ -97,6 +97,7 @@ jobs:
         run: |
           echo "notes<<EDGE_NOTES_EOF" >> $GITHUB_OUTPUT
           cat docs/edge-notes.md >> $GITHUB_OUTPUT
+          echo >> $GITHUB_OUTPUT
           echo "EDGE_NOTES_EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Edge Add-ons
@@ -133,6 +134,7 @@ jobs:
         run: |
           echo "notes<<FIREFOX_NOTES_EOF" >> $GITHUB_OUTPUT
           cat docs/firefox-notes.md >> $GITHUB_OUTPUT
+          echo >> $GITHUB_OUTPUT
           echo "FIREFOX_NOTES_EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to Firefox Add-ons
