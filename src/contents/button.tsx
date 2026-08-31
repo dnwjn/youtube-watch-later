@@ -247,7 +247,6 @@ const WatchLaterButton = ({ anchor }) => {
   } = useWatchLaterStore()
 
   const [status, setStatus] = useState<number>(ButtonStatus.Hidden)
-  const [visible, setVisible] = useState<boolean>(false)
   const [hasData, setHasData] = useState<boolean>(false)
   const [buttonConfig, setButtonConfig] = useState<ButtonConfig>({
     opacity: ButtonOpacity.Full,
@@ -491,20 +490,20 @@ const WatchLaterButton = ({ anchor }) => {
     setEnabledFromYtData()
   }, [ytData, setEnabledFromYtData])
 
-  useEffect(() => {
+  const visible = useMemo(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
     const isWatchLaterItem =
       (isOnVideoDetail && isWL) || (isInPlaylist && (isWL || isPlaylists))
 
-    if (!enabled || (!isInNotification && isWatchLaterItem)) {
-      setVisible(false)
-    } else {
-      setVisible(true)
-    }
+    return enabled && (isInNotification || !isWatchLaterItem)
   }, [enabled, isInPlaylist, isInNotification, isOnVideoDetail, url])
 
   useEffect(() => {
+    // status is also driven imperatively by addVideo's async flow
+    // (Loading/Success/Error), so it can't be a value purely derived at
+    // render time; this effect resyncs it with the shared store.
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (visible && hasData) {
       if (videoId && addedVideoIds.has(videoId)) {
         setStatus(ButtonStatus.Success)
@@ -518,6 +517,7 @@ const WatchLaterButton = ({ anchor }) => {
     } else {
       setStatus(ButtonStatus.Hidden)
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [
     visible,
     hasData,
@@ -528,12 +528,15 @@ const WatchLaterButton = ({ anchor }) => {
   ])
 
   // init/cleanup close over per-render state (ytData, url, positionContext, ...)
-  // but this effect must only run once on mount, so the latest versions are
-  // tracked in refs rather than added as effect dependencies.
+  // but the mount effect below must only run once, so the latest versions are
+  // tracked in refs, kept in sync after every render rather than mutated
+  // directly during render.
   const initRef = useRef(init)
   const cleanupRef = useRef(cleanup)
-  initRef.current = init
-  cleanupRef.current = cleanup
+  useEffect(() => {
+    initRef.current = init
+    cleanupRef.current = cleanup
+  })
 
   useEffect(() => {
     const handlePopState = () => {
