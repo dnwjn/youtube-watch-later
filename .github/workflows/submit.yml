@@ -70,7 +70,7 @@ jobs:
           path: build
 
       - name: Publish to Chrome Web Store
-        uses: wdzeng/chrome-extension@ccb488e04fba014a4b574a533ccee8bc1b772f0a # v2.0.1
+        uses: wdzeng/chrome-extension@25f21f518a470076a8fe40c817e20505cd1a81a7 # v2.0.1
         with:
           extension-id: nmpfhocciajonacicdelpbhipglapgaa
           zip-path: build/chrome-mv3-prod.zip
