@@ -494,16 +494,15 @@ const WatchLaterButton = ({ anchor }) => {
   useEffect(() => {
     const isWL = hasSearch(url, 'list', 'WL')
     const isPlaylists = hasPath(url, '/feed/playlists')
+    const isWatchLaterItem =
+      (isOnVideoDetail && isWL) || (isInPlaylist && (isWL || isPlaylists))
 
-    if (
-      !enabled ||
-      (!isInNotification && !isOnVideoDetail && (isWL || isPlaylists))
-    ) {
+    if (!enabled || (!isInNotification && isWatchLaterItem)) {
       setVisible(false)
     } else {
       setVisible(true)
     }
-  }, [enabled, isInNotification, isOnVideoDetail, url])
+  }, [enabled, isInPlaylist, isInNotification, isOnVideoDetail, url])
 
   useEffect(() => {
     if (visible && hasData) {
