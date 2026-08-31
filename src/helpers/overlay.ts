@@ -65,21 +65,24 @@ export const mutationsAffectOverlayAnchors = (mutations: MutationRecord[]) =>
     ),
   )
 
-const OVERLAY_EVICTION_DEBOUNCE_MS = 200
+const OVERLAY_RECHECK_DEBOUNCE_MS = 200
 
 // Plasmo only (re-)renders the overlay host when it doesn't exist yet — once
 // mounted, its own mutation/interval loop keeps recomputing the anchor list
-// but never re-renders it. Evicting the host forces Plasmo's already-running
-// loop to rebuild it with the fresh anchor list on its next pass, instead of
-// leaving buttons stuck on stale (often removed) anchors.
+// (`mountState.overlayTargetList`) but never re-renders it. Evicting the host
+// forces Plasmo's already-running loop to rebuild it with the fresh anchor
+// list on its next pass, instead of leaving buttons stuck on a stale list.
 //
-// This needs to happen both on YouTube navigation and on plain DOM churn
-// (e.g. switching the sidebar between Up next/Related/Chapters swaps its
-// content without a navigation event). The mutation check only ever looks at
-// the nodes a given mutation touched, not the page, so it stays cheap even
-// though it runs on every mutation.
+// "Stale" here isn't just DOM churn (nodes added/removed, e.g. switching the
+// sidebar between Up next/Related/Chapters). On YouTube's virtualized grids
+// (subscriptions feed, home page) scrolling far and back can leave tile
+// nodes in the DOM the whole time — same elements, no mutation at all — with
+// only their on-screen position changing, which is what the anchor list's
+// own visibility filter keys off. So this also has to react to scrolling,
+// not just mutations, or tiles scrolled back into view stay buttonless.
 export const watchOverlayEviction = (observer: CSUIObserver) => {
   let debounceTimeout: ReturnType<typeof setTimeout> | null = null
+  let lastAnchorElements: Element[] = []
 
   const evictOverlayHost = () => {
     const overlayHost = Array.from(observer.mountState.hostSet).find(
@@ -94,17 +97,37 @@ export const watchOverlayEviction = (observer: CSUIObserver) => {
     observer.mountState.hostMap.delete(overlayHost)
   }
 
-  const scheduleEviction = () => {
+  // Only evicts (and pays for rebuilding the overlay host) when the
+  // computed anchor set actually differs from what's currently rendered, so
+  // idle settling after a scroll/mutation is a cheap no-op.
+  const recheckAndEvict = () => {
+    const anchors = getOverlayAnchorElements()
+    const changed =
+      anchors.length !== lastAnchorElements.length ||
+      anchors.some((element) => !lastAnchorElements.includes(element))
+
+    lastAnchorElements = anchors
+    if (changed) evictOverlayHost()
+  }
+
+  const scheduleRecheck = () => {
     if (debounceTimeout) clearTimeout(debounceTimeout)
-    debounceTimeout = setTimeout(evictOverlayHost, OVERLAY_EVICTION_DEBOUNCE_MS)
+    debounceTimeout = setTimeout(recheckAndEvict, OVERLAY_RECHECK_DEBOUNCE_MS)
   }
 
   const mutationObserver = new MutationObserver((mutations) => {
-    if (mutationsAffectOverlayAnchors(mutations)) scheduleEviction()
+    if (mutationsAffectOverlayAnchors(mutations)) scheduleRecheck()
   })
   mutationObserver.observe(document.documentElement, {
     childList: true,
     subtree: true,
+  })
+
+  // Capture phase: YouTube's grids scroll within nested containers, not
+  // necessarily `window`, and `scroll` doesn't bubble.
+  window.addEventListener('scroll', scheduleRecheck, {
+    passive: true,
+    capture: true,
   })
 
   window.addEventListener('ytwl-yt-nav-finish', evictOverlayHost)
@@ -112,6 +135,7 @@ export const watchOverlayEviction = (observer: CSUIObserver) => {
   return () => {
     mutationObserver.disconnect()
     if (debounceTimeout) clearTimeout(debounceTimeout)
+    window.removeEventListener('scroll', scheduleRecheck, true)
     window.removeEventListener('ytwl-yt-nav-finish', evictOverlayHost)
   }
 }
