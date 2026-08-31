@@ -72,6 +72,7 @@ jobs:
       - name: Publish to Chrome Web Store
         uses: wdzeng/chrome-extension@37f4f9cdc664959bafef36b1f4da03dec5141620 # v2.0.0
         with:
+          publisher-id: ${{ secrets.CHROME_PUBLISHER_ID }}
           extension-id: nmpfhocciajonacicdelpbhipglapgaa
           zip-path: build/chrome-mv3-prod.zip
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
