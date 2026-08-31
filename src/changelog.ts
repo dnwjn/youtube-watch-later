@@ -13,6 +13,15 @@ export interface ChangelogVersion {
 // 2. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '0.6.3',
+    date: '2026-08-31',
+    entries: {
+      fixed: [
+        'Reduced unnecessary re-renders of the button by avoiding state updates that ran synchronously during render.',
+      ],
+    },
+  },
+  {
     version: '0.6.2',
     date: '2026-07-29',
     entries: {
