@@ -55,8 +55,8 @@ importers:
         specifier: ^6.0.5
         version: 6.0.5(vite@8.1.5(@types/node@26.4.0)(esbuild@0.18.20)(less@4.6.4)(sass@1.98.0)(yaml@2.8.3))
       auto-changelog:
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       eslint:
         specifier: ^10.10.0
         version: 10.10.0(supports-color@7.2.0)
@@ -2168,8 +2168,8 @@ packages:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
 
-  auto-changelog@2.6.0:
-    resolution: {integrity: sha512-jJgUkuWXQ7fPLPXOMQk/XSSmy7KvzpzhjJa6w660dq1KTEez/GW2CPckBra3jMMMMpcwxp84bOslo29qRCewzA==}
+  auto-changelog@2.7.0:
+    resolution: {integrity: sha512-8j2Al8+yObcZDe9dxXS2nvhRBPQW2X98OS0B+GF9VybUfTbDGvJVko3uQRF69HP83a2IK8DKQpZ759LtUc7hMA==}
     engines: {node: '>= 10'}
     hasBin: true
 
@@ -3628,11 +3628,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.8.1:
-    resolution: {integrity: sha512-rkVq3IXh+4FDGch+KwzX3aV9W3kO54GyEgpvBzSyctDA6Xtd7RJQV1xmXbeQp5v7+VzLOfVqiutSE6GICgPFvg==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.8.5:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
@@ -4904,7 +4899,7 @@ snapshots:
       json5: 2.2.3
       msgpackr: 1.11.9
       nullthrows: 1.1.1
-      semver: 7.8.1
+      semver: 7.8.5
 
   '@parcel/diagnostic@2.8.3':
     dependencies:
@@ -5083,7 +5078,7 @@ snapshots:
       '@parcel/types': 2.9.3(@parcel/core@2.9.3)
       '@parcel/utils': 2.9.3
       '@parcel/workers': 2.9.3(@parcel/core@2.9.3)
-      semver: 7.8.1
+      semver: 7.8.5
 
   '@parcel/packager-css@2.9.3(@parcel/core@2.9.3)':
     dependencies:
@@ -6419,13 +6414,13 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  auto-changelog@2.6.0:
+  auto-changelog@2.7.0:
     dependencies:
       commander: 7.2.0
       handlebars: 4.7.9
       import-cwd: 3.0.0
       parse-github-url: 1.0.4
-      semver: 7.8.1
+      semver: 7.8.5
 
   axobject-query@3.2.4: {}
 
@@ -7560,7 +7555,7 @@ snapshots:
       ky: 1.14.3
       registry-auth-token: 5.1.1
       registry-url: 6.0.1
-      semver: 7.8.1
+      semver: 7.8.5
 
   parent-module@1.0.1:
     dependencies:
@@ -7888,15 +7883,13 @@ snapshots:
 
   semver@7.7.4: {}
 
-  semver@7.8.1: {}
-
   semver@7.8.5: {}
 
   sharp@0.33.5:
     dependencies:
       color: 4.2.3
       detect-libc: 2.1.2
-      semver: 7.8.1
+      semver: 7.8.5
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.33.5
       '@img/sharp-darwin-x64': 0.33.5
