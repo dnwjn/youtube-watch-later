@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 
-import { useStorage } from '@plasmohq/storage/hook'
+import ButtonPositionSettings from '~/components/ButtonPositionSettings'
+import ExtensionFooter from '~/components/ExtensionFooter'
+import ExtensionHeader from '~/components/ExtensionHeader'
+import { openTab } from '~/helpers/browser'
+import useStorage from '~/hooks/useStorage'
+import { ButtonOpacity, ButtonVisibility } from '~/types'
 
-import ButtonPositionSettings from '~components/ButtonPositionSettings'
-import ExtensionFooter from '~components/ExtensionFooter'
-import ExtensionHeader from '~components/ExtensionHeader'
-import { openTab } from '~helpers/browser'
-import { ButtonOpacity, ButtonVisibility } from '~types'
-
-import '~css/popup.css'
+import '~/css/popup.css'
 
 const Popup = () => {
   const [view, setView] = useState<'main' | 'positions'>('main')

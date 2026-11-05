@@ -31,3 +31,8 @@ export interface VisitorCookies {
   sapisid1p: string | null
   sapisid3p: string | null
 }
+
+export interface ButtonAnchor {
+  element: HTMLElement
+  type: 'inline' | 'overlay'
+}

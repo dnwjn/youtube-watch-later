@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { useWatchLaterStore } from '~store'
+import { useWatchLaterStore } from '~/store'
 
 const useVideoPreviewListener = () => {
   const setVideoPreviewIsHovered = useWatchLaterStore(

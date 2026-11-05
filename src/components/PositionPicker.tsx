@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ButtonPosition } from '~types'
+import { ButtonPosition } from '~/types'
 
 interface Props {
   value: string

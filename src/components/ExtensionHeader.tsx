@@ -1,7 +1,7 @@
-import logo from 'data-base64:@root/assets/icon.png'
+import logo from '@root/assets/icon.png'
 import React from 'react'
 
-import '~css/shared.css'
+import '~/css/shared.css'
 
 interface Props {
   title: string

@@ -1,10 +1,7 @@
-import type { PlasmoCSUIWatch } from 'plasmo'
 import type { CSSProperties } from 'react'
 
-import { elementNeedsButton } from '~helpers/matching'
-import { ButtonPosition } from '~types'
-
-type CSUIObserver = Parameters<PlasmoCSUIWatch>[0]['observer']
+import { elementNeedsButton } from '~/helpers/matching'
+import { ButtonPosition } from '~/types'
 
 export const previewOverlayAnchorSelectors = [
   // General thumbnail cards
@@ -67,11 +64,9 @@ export const mutationsAffectOverlayAnchors = (mutations: MutationRecord[]) =>
 
 const OVERLAY_RECHECK_DEBOUNCE_MS = 200
 
-// Plasmo only (re-)renders the overlay host when it doesn't exist yet — once
-// mounted, its own mutation/interval loop keeps recomputing the anchor list
-// (`mountState.overlayTargetList`) but never re-renders it. Evicting the host
-// forces Plasmo's already-running loop to rebuild it with the fresh anchor
-// list on its next pass, instead of leaving buttons stuck on a stale list.
+// Once mounted, the overlay host is only rebuilt after it is evicted, so a
+// stale anchor list would leave buttons stuck. Evicting forces the mount loop
+// to rebuild it with a fresh anchor list on its next pass.
 //
 // "Stale" here isn't just DOM churn (nodes added/removed, e.g. switching the
 // sidebar between Up next/Related/Chapters). On YouTube's virtualized grids
@@ -80,22 +75,9 @@ const OVERLAY_RECHECK_DEBOUNCE_MS = 200
 // only their on-screen position changing, which is what the anchor list's
 // own visibility filter keys off. So this also has to react to scrolling,
 // not just mutations, or tiles scrolled back into view stay buttonless.
-export const watchOverlayEviction = (observer: CSUIObserver) => {
+export const watchOverlayEviction = (evictOverlayHost: () => void) => {
   let debounceTimeout: ReturnType<typeof setTimeout> | null = null
   let lastAnchorElements: Element[] = []
-
-  const evictOverlayHost = () => {
-    const overlayHost = Array.from(observer.mountState.hostSet).find(
-      (host) => observer.mountState.hostMap.get(host)?.type === 'overlay',
-    )
-    if (!overlayHost) return
-
-    const overlayAnchor = observer.mountState.hostMap.get(overlayHost)
-    overlayAnchor?.root?.unmount()
-    overlayHost.remove()
-    observer.mountState.hostSet.delete(overlayHost)
-    observer.mountState.hostMap.delete(overlayHost)
-  }
 
   // Only evicts (and pays for rebuilding the overlay host) when the
   // computed anchor set actually differs from what's currently rendered, so

@@ -1,9 +1,9 @@
-import { extractVideoId } from '~helpers/browser'
+import { extractVideoId } from '~/helpers/browser'
 import {
   elementIsAnchor,
   elementIsInMobilePlayerSuggested,
   elementIsOnVideoDetailPage,
-} from '~helpers/matching'
+} from '~/helpers/matching'
 
 export const getVideoId = (element: Element) => {
   if (elementIsOnVideoDetailPage(element)) {

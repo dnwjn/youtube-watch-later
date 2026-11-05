@@ -5,7 +5,7 @@ import {
   hasPath,
   hasSearch,
   isVideoUrl,
-} from '~helpers/browser'
+} from '~/helpers/browser'
 
 describe('hasSearch', () => {
   it('returns false when url is null', () => {

@@ -1,9 +1,9 @@
 import packageJson from '@root/package.json'
 import React, { useMemo } from 'react'
 
-import { openTab } from '~helpers/browser'
+import { openTab } from '~/helpers/browser'
 
-import '~css/shared.css'
+import '~/css/shared.css'
 
 interface ExtensionFooterProps {
   showWhatsNew?: boolean
@@ -50,9 +50,7 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
             {' | '}
             <button
               className="whats-new-link"
-              onClick={() =>
-                openTab(chrome.runtime.getURL('tabs/whats-new.html'))
-              }>
+              onClick={() => openTab(chrome.runtime.getURL('whats-new.html'))}>
               What's new
             </button>
           </>

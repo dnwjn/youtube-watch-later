@@ -1,6 +1,5 @@
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
-
-import type { Settings } from '~interfaces'
+import { sendToBackgroundViaRelay } from '~/helpers/messaging'
+import type { Settings } from '~/interfaces'
 
 export const getSettings = async (): Promise<Settings> => {
   return sendToBackgroundViaRelay<Settings>({

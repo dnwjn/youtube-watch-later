@@ -1,5 +1,5 @@
-import { isVideoUrl } from '~helpers/browser'
-import { getMobileSuggestedMenuHref } from '~helpers/extracting'
+import { isVideoUrl } from '~/helpers/browser'
+import { getMobileSuggestedMenuHref } from '~/helpers/extracting'
 
 export const elementIsAnchor = (element: Element) => element.tagName === 'A'
 

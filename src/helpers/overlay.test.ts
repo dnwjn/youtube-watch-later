@@ -6,7 +6,7 @@ import {
   mutationsAffectOverlayAnchors,
   previewOverlayAnchorSelector,
   removeNestedOverlayAnchors,
-} from '~helpers/overlay'
+} from '~/helpers/overlay'
 
 const setRect = (element: Element, rect: Partial<DOMRect>) => {
   element.getBoundingClientRect = () =>

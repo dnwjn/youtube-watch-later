@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { changelog } from '~changelog'
-import ExtensionFooter from '~components/ExtensionFooter'
-import ExtensionHeader from '~components/ExtensionHeader'
+import { changelog } from '~/changelog'
+import ExtensionFooter from '~/components/ExtensionFooter'
+import ExtensionHeader from '~/components/ExtensionHeader'
 
-import '~css/whats-new.css'
+import '~/css/whats-new.css'
 
 const TYPE_LABELS: Record<string, string> = {
   new: 'New',

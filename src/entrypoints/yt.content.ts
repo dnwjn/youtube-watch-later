@@ -1,11 +1,4 @@
-import type { PlasmoCSConfig } from 'plasmo'
-
-import type { YTData } from '~interfaces'
-
-export const config: PlasmoCSConfig = {
-  matches: ['*://*.youtube.com/*'],
-  world: 'MAIN',
-}
+import type { YTData } from '~/interfaces'
 
 const getYtData = async () => {
   const ytcfg = (
@@ -38,24 +31,30 @@ const getYtData = async () => {
   }
 }
 
-window.addEventListener('ytwl-yt-req', getYtData)
+export default defineContentScript({
+  matches: ['*://*.youtube.com/*'],
+  world: 'MAIN',
+  main() {
+    window.addEventListener('ytwl-yt-req', getYtData)
 
-const handleNavigateStart = () => {
-  window.dispatchEvent(new CustomEvent('ytwl-yt-nav-start'))
-}
+    const handleNavigateStart = () => {
+      window.dispatchEvent(new CustomEvent('ytwl-yt-nav-start'))
+    }
 
-window.addEventListener('yt-navigate-start', handleNavigateStart)
+    window.addEventListener('yt-navigate-start', handleNavigateStart)
 
-let navigateFinishTimeout: NodeJS.Timeout = null
+    let navigateFinishTimeout: NodeJS.Timeout = null
 
-const handleNavigateFinish = (event) => {
-  clearTimeout(navigateFinishTimeout)
+    const handleNavigateFinish = (event) => {
+      clearTimeout(navigateFinishTimeout)
 
-  navigateFinishTimeout = setTimeout(() => {
-    window.dispatchEvent(
-      new CustomEvent('ytwl-yt-nav-finish', { detail: event.detail }),
-    )
-  }, 100)
-}
+      navigateFinishTimeout = setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('ytwl-yt-nav-finish', { detail: event.detail }),
+        )
+      }, 100)
+    }
 
-window.addEventListener('yt-navigate-finish', handleNavigateFinish)
+    window.addEventListener('yt-navigate-finish', handleNavigateFinish)
+  },
+})

@@ -1,13 +1,12 @@
 import React from 'react'
 
-import { useStorage } from '@plasmohq/storage/hook'
-
-import PositionPicker from '~components/PositionPicker'
+import PositionPicker from '~/components/PositionPicker'
+import useStorage from '~/hooks/useStorage'
 import {
   buttonPositionAllowed,
   ButtonPositionContext,
   buttonPositionDefault,
-} from '~types'
+} from '~/types'
 
 const locations = [
   {
