@@ -1,26 +1,14 @@
 {
-  "extends": "plasmo/templates/tsconfig.base",
+  "extends": "./.wxt/tsconfig.json",
   "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    ".plasmo/index.d.ts",
-    "./*.ts",
-    "./**/*.ts",
-    "./*.tsx",
-    "./**/*.tsx"
+    "node_modules",
+    ".output"
   ],
   "compilerOptions": {
     "jsx": "react",
-    "paths": {
-      "~*": [
-        "./src/*"
-      ],
-      "@root/*": [
-        "./*"
-      ]
-    },
-    "moduleResolution": "bundler",
+    "strict": false,
+    "noUncheckedIndexedAccess": false,
+    "verbatimModuleSyntax": false,
     "types": [
       "node",
       "chrome"

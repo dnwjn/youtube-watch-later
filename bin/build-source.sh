@@ -14,10 +14,12 @@ INCLUDE_ITEMS=(
     "src/"
     ".nvmrc"
     "CHANGELOG.md"
-    "package-lock.json"
     "package.json"
+    "pnpm-lock.yaml"
+    "pnpm-workspace.yaml"
     "README.md"
     "tsconfig.json"
+    "wxt.config.ts"
 )
 
 mkdir -p "$OUTPUT_DIR"
