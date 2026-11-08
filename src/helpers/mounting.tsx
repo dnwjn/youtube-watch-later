@@ -40,10 +40,11 @@ const anchorListSelectors = [
   'ytm-media-item .media-item-menu',
 ]
 
-const getInlineAnchorElements = () =>
+const getInlineAnchorElements = (isMounted: (element: Element) => boolean) =>
   Array.from(document.querySelectorAll(anchorListSelectors.join(',')))
-    // Filter out elements that already have the button.
-    .filter((element) => !element.querySelector('.watch-later-btn'))
+    // Filter out elements that already have the button. The button lives in a
+    // shadow root, so it can't be found by querying the element itself.
+    .filter((element) => !isMounted(element))
     // Thumbnail cards are mounted through the overlay so they can sit above
     // YouTube's global hover-preview player.
     .filter(
@@ -198,7 +199,7 @@ const mountOverlay = (elements: Element[]): OverlayMount => {
 // run a full-page anchor scan on every mutation, a constant cost on YouTube's
 // ever-churning DOM. Don't "fix" this by switching to an observer.
 export const startMounting = () => {
-  const inlineMounts = new Set<InlineMount>()
+  const inlineMounts = new Map<Element, InlineMount>()
   let overlay: OverlayMount | null = null
   let ticking = false
 
@@ -212,17 +213,19 @@ export const startMounting = () => {
     ticking = true
 
     try {
-      inlineMounts.forEach((mount) => {
-        if (mount.element.isConnected) return
+      inlineMounts.forEach((mount, element) => {
+        if (element.isConnected) return
 
         mount.root.unmount()
         mount.host.remove()
-        inlineMounts.delete(mount)
+        inlineMounts.delete(element)
       })
 
-      getInlineAnchorElements().forEach((element) => {
-        inlineMounts.add(mountInline(element))
-      })
+      getInlineAnchorElements((element) => inlineMounts.has(element)).forEach(
+        (element) => {
+          inlineMounts.set(element, mountInline(element))
+        },
+      )
 
       if (!overlay) {
         const elements = await getOverlayAnchors()
