@@ -1,71 +1,87 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { watchVideoPreview } from '~/helpers/video-preview'
 import { useWatchLaterStore } from '~/store'
 
-const addPreviewContainer = () => {
-  const container = document.createElement('div')
-  container.id = 'video-preview-container'
-  document.body.appendChild(container)
+const addPreview = (selector: 'ytd-video-preview' | '#video-preview') => {
+  const preview = document.createElement(
+    selector === 'ytd-video-preview' ? 'ytd-video-preview' : 'div',
+  )
+  if (selector === '#video-preview') preview.id = 'video-preview'
 
-  return container
+  const inner = document.createElement('video')
+  preview.appendChild(inner)
+  document.body.appendChild(preview)
+
+  return { preview, inner }
 }
 
+const addOutside = () => {
+  const outside = document.createElement('div')
+  document.body.appendChild(outside)
+
+  return outside
+}
+
+const hoverOver = (element: Element) =>
+  element.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
+
+const isHovered = () => useWatchLaterStore.getState().videoPreviewIsHovered
+
 beforeEach(() => {
-  vi.useFakeTimers()
   useWatchLaterStore.setState({ videoPreviewIsHovered: false })
 })
 
 afterEach(() => {
-  vi.useRealTimers()
   document.body.innerHTML = ''
 })
 
 describe('watchVideoPreview', () => {
-  it('tracks hover on the preview container', () => {
-    const container = addPreviewContainer()
+  it.each(['ytd-video-preview', '#video-preview'] as const)(
+    'tracks the pointer entering and leaving %s',
+    (selector) => {
+      const { inner } = addPreview(selector)
+      const outside = addOutside()
+      const stop = watchVideoPreview()
+
+      hoverOver(inner)
+      expect(isHovered()).toBe(true)
+
+      hoverOver(outside)
+      expect(isHovered()).toBe(false)
+      stop()
+    },
+  )
+
+  it('works for a preview created after watching started', () => {
     const stop = watchVideoPreview()
-    vi.advanceTimersByTime(500)
+    const { inner } = addPreview('ytd-video-preview')
 
-    container.dispatchEvent(new MouseEvent('mouseenter'))
-    expect(useWatchLaterStore.getState().videoPreviewIsHovered).toBe(true)
+    hoverOver(inner)
 
-    container.dispatchEvent(new MouseEvent('mouseleave'))
-    expect(useWatchLaterStore.getState().videoPreviewIsHovered).toBe(false)
+    expect(isHovered()).toBe(true)
     stop()
   })
 
-  it('keeps looking when the container appears late', () => {
+  it('works after YouTube replaces the preview element', () => {
     const stop = watchVideoPreview()
-    vi.advanceTimersByTime(30_000)
+    const first = addPreview('ytd-video-preview')
+    first.preview.remove()
+    const second = addPreview('ytd-video-preview')
 
-    const container = addPreviewContainer()
-    vi.advanceTimersByTime(500)
-    container.dispatchEvent(new MouseEvent('mouseenter'))
+    hoverOver(second.inner)
 
-    expect(useWatchLaterStore.getState().videoPreviewIsHovered).toBe(true)
+    expect(isHovered()).toBe(true)
     stop()
   })
 
-  it('attaches listeners only once however long it runs', () => {
-    const container = addPreviewContainer()
-    const add = vi.spyOn(container, 'addEventListener')
+  it('stops tracking once stopped', () => {
+    const { inner } = addPreview('ytd-video-preview')
     const stop = watchVideoPreview()
 
-    vi.advanceTimersByTime(5_000)
-
-    expect(add).toHaveBeenCalledTimes(2)
     stop()
-  })
+    hoverOver(inner)
 
-  it('removes listeners when stopped', () => {
-    const container = addPreviewContainer()
-    const stop = watchVideoPreview()
-    vi.advanceTimersByTime(500)
-
-    stop()
-    container.dispatchEvent(new MouseEvent('mouseenter'))
-
-    expect(useWatchLaterStore.getState().videoPreviewIsHovered).toBe(false)
+    expect(isHovered()).toBe(false)
   })
 })

@@ -1,32 +1,37 @@
 import { useWatchLaterStore } from '~/store'
 
-const PREVIEW_CONTAINER_SELECTOR = '#video-preview-container'
-const LOOKUP_INTERVAL_MS = 500
+// YouTube's hover-preview player. The wrapper has been renamed before
+// (`#video-preview-container` -> `#video-preview`), so match the stable custom
+// element as well.
+const PREVIEW_SELECTOR =
+  'ytd-video-preview, #video-preview, #video-preview-container'
 
-// Feeds the store whether YouTube's hover-preview player is hovered. Runs
-// once for the whole page instead of once per button, which stacked a
-// duplicate pair of listeners on the container for every mounted button.
+// Feeds the store whether the pointer is over YouTube's hover-preview player.
+// The preview sits outside the thumbnail card, so moving onto it ends the
+// card's own hover; this flag is what keeps the button alive meanwhile.
+//
+// Delegated from `document` rather than bound to the preview node: YouTube
+// creates it lazily and may replace it, which would silently orphan listeners
+// bound to one node. One listener serves the whole page.
 export const watchVideoPreview = () => {
   const { setVideoPreviewIsHovered } = useWatchLaterStore.getState()
-  const onEnter = () => setVideoPreviewIsHovered(true)
-  const onLeave = () => setVideoPreviewIsHovered(false)
+  let hovered = false
 
-  let container: Element | null = null
+  const onMouseOver = (event: MouseEvent) => {
+    const next =
+      event.target instanceof Element &&
+      event.target.closest(PREVIEW_SELECTOR) !== null
 
-  // YouTube only creates the container once it first needs a preview, so keep
-  // looking until it exists rather than giving up after a few tries.
-  const interval = setInterval(() => {
-    container = document.querySelector(PREVIEW_CONTAINER_SELECTOR)
-    if (!container) return
+    if (next === hovered) return
 
-    clearInterval(interval)
-    container.addEventListener('mouseenter', onEnter)
-    container.addEventListener('mouseleave', onLeave)
-  }, LOOKUP_INTERVAL_MS)
+    hovered = next
+    setVideoPreviewIsHovered(next)
+  }
+
+  document.addEventListener('mouseover', onMouseOver, { passive: true })
 
   return () => {
-    clearInterval(interval)
-    container?.removeEventListener('mouseenter', onEnter)
-    container?.removeEventListener('mouseleave', onLeave)
+    document.removeEventListener('mouseover', onMouseOver)
+    if (hovered) setVideoPreviewIsHovered(false)
   }
 }
