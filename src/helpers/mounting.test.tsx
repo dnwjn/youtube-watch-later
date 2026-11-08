@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { startMounting } from '~/helpers/mounting'
+import { createOverlayManager, startMounting } from '~/helpers/mounting'
 
 vi.mock('~/components/WatchLaterButton', () => ({
   default: () => null,
@@ -63,5 +63,58 @@ describe('startMounting', () => {
     await vi.advanceTimersByTimeAsync(MOUNT_INTERVAL_MS * 2)
 
     expect(host?.isConnected).toBe(false)
+  })
+})
+
+describe('createOverlayManager', () => {
+  const addCard = () => {
+    const card = document.createElement('ytd-rich-item-renderer')
+    document.body.appendChild(card)
+
+    return card
+  }
+
+  const getContainers = () =>
+    Array.from(
+      document
+        .querySelector('ytwl-button-host.ytwl-overlay-root')
+        ?.shadowRoot?.querySelectorAll('.ytwl-csui-container') ?? [],
+    )
+
+  it('mounts a container per anchor in a single host', () => {
+    const manager = createOverlayManager()
+
+    manager.reconcile([addCard(), addCard()])
+
+    expect(document.querySelectorAll('ytwl-button-host')).toHaveLength(1)
+    expect(getContainers()).toHaveLength(2)
+    manager.teardown()
+  })
+
+  it('keeps existing containers when anchors are added or removed', () => {
+    const manager = createOverlayManager()
+    const [a, b, c] = [addCard(), addCard(), addCard()]
+
+    manager.reconcile([a, b])
+    const [containerA, containerB] = getContainers()
+
+    manager.reconcile([a, b, c])
+    expect(getContainers().slice(0, 2)).toEqual([containerA, containerB])
+    expect(getContainers()).toHaveLength(3)
+
+    manager.reconcile([b, c])
+    expect(getContainers()).toHaveLength(2)
+    expect(getContainers()).toContain(containerB)
+    expect(getContainers()).not.toContain(containerA)
+    manager.teardown()
+  })
+
+  it('removes the host on teardown', () => {
+    const manager = createOverlayManager()
+    manager.reconcile([addCard()])
+
+    manager.teardown()
+
+    expect(document.querySelectorAll('ytwl-button-host')).toHaveLength(0)
   })
 })

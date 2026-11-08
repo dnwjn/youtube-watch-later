@@ -93,20 +93,6 @@ describe('elementIsVisible', () => {
 })
 
 describe('getOverlayAnchorElements', () => {
-  it('excludes candidates that already have a button', () => {
-    const el = document.createElement('ytd-rich-item-renderer')
-    const anchor = document.createElement('a')
-    anchor.href = 'https://www.youtube.com/watch?v=abc123'
-    el.appendChild(anchor)
-    const button = document.createElement('button')
-    button.className = 'watch-later-btn'
-    el.appendChild(button)
-    document.body.appendChild(el)
-    setRect(el, { width: 100, height: 100 })
-
-    expect(getOverlayAnchorElements()).toEqual([])
-  })
-
   it('excludes candidates without a video link', () => {
     const el = document.createElement('ytd-rich-item-renderer')
     document.body.appendChild(el)

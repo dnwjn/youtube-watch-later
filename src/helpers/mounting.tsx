@@ -14,6 +14,7 @@ import {
   previewOverlayAnchorSelector,
   watchOverlayEviction,
 } from '~/helpers/overlay'
+import { watchVideoPreview } from '~/helpers/video-preview'
 import type { ButtonAnchor } from '~/interfaces'
 
 const MOUNT_INTERVAL_MS = 142
@@ -160,13 +161,17 @@ const trackAnchor = (element: Element, container: HTMLElement) => {
   }
 }
 
-type OverlayMount = { host: HTMLElement; teardown: () => void }
+// Keeps one overlay host with one container per anchor. Reconciling diffs
+// against what is mounted instead of rebuilding, so buttons whose anchor is
+// still on screen are never torn down while the user scrolls.
+export const createOverlayManager = () => {
+  const mounts = new Map<Element, () => void>()
+  let shadow: ReturnType<typeof createShadowHost> | null = null
 
-const mountOverlay = (elements: Element[]): OverlayMount => {
-  const { host, shadowContainer } = createShadowHost()
-  host.classList.add('ytwl-overlay-root')
-
-  const teardowns = elements.map((element) => {
+  const mount = (
+    element: Element,
+    shadowContainer: HTMLElement,
+  ): (() => void) => {
     const container = document.createElement('div')
     container.className = 'ytwl-csui-container'
     shadowContainer.appendChild(container)
@@ -180,17 +185,49 @@ const mountOverlay = (elements: Element[]): OverlayMount => {
     return () => {
       stopTracking()
       root.unmount()
+      container.remove()
     }
-  })
+  }
 
-  const overlayRoot = document.body || document.documentElement
-  overlayRoot.appendChild(host)
+  const reconcile = (elements: Element[]) => {
+    const next = new Set(elements)
+
+    mounts.forEach((unmount, element) => {
+      if (next.has(element)) return
+
+      unmount()
+      mounts.delete(element)
+    })
+
+    if (elements.length === 0) return
+
+    if (!shadow) {
+      shadow = createShadowHost()
+      shadow.host.classList.add('ytwl-overlay-root')
+    }
+    if (!shadow.host.isConnected) {
+      ;(document.body || document.documentElement).appendChild(shadow.host)
+    }
+
+    elements.forEach((element) => {
+      if (!mounts.has(element)) {
+        mounts.set(element, mount(element, shadow!.shadowContainer))
+      }
+    })
+  }
+
+  const teardown = () => {
+    mounts.forEach((unmount) => unmount())
+    mounts.clear()
+    shadow?.host.remove()
+    shadow = null
+  }
 
   return {
-    host,
-    teardown: () => {
-      teardowns.forEach((teardown) => teardown())
-      host.remove()
+    reconcile,
+    teardown,
+    get size() {
+      return mounts.size
     },
   }
 }
@@ -200,12 +237,18 @@ const mountOverlay = (elements: Element[]): OverlayMount => {
 // ever-churning DOM. Don't "fix" this by switching to an observer.
 export const startMounting = () => {
   const inlineMounts = new Map<Element, InlineMount>()
-  let overlay: OverlayMount | null = null
+  const overlay = createOverlayManager()
   let ticking = false
 
-  const evictOverlay = () => {
-    overlay?.teardown()
-    overlay = null
+  // Same transient-empty guard as `getOverlayAnchors`, for results coming from
+  // the eviction watcher: an empty list is only trusted after a frame.
+  const applyOverlayAnchors = async (elements: Element[]) => {
+    const next =
+      elements.length === 0 && overlay.size > 0
+        ? await getOverlayAnchors()
+        : elements
+
+    overlay.reconcile(next)
   }
 
   const tick = async () => {
@@ -227,23 +270,26 @@ export const startMounting = () => {
         },
       )
 
-      if (!overlay) {
-        const elements = await getOverlayAnchors()
-
-        if (elements.length > 0 && !overlay) overlay = mountOverlay(elements)
-      }
+      if (overlay.size === 0) overlay.reconcile(await getOverlayAnchors())
     } finally {
       ticking = false
     }
   }
 
   const interval = setInterval(tick, MOUNT_INTERVAL_MS)
-  const stopWatching = watchOverlayEviction(evictOverlay)
+  // On navigation YouTube may reuse the same card elements for different
+  // videos, so everything is rebuilt rather than diffed.
+  const stopWatching = watchOverlayEviction(
+    applyOverlayAnchors,
+    overlay.teardown,
+  )
+  const stopWatchingPreview = watchVideoPreview()
 
   return () => {
     clearInterval(interval)
     stopWatching()
-    evictOverlay()
+    stopWatchingPreview()
+    overlay.teardown()
     inlineMounts.forEach((mount) => {
       mount.root.unmount()
       mount.host.remove()

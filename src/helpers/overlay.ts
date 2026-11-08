@@ -47,7 +47,6 @@ export const getOverlayAnchorElements = () => {
   return removeNestedOverlayAnchors(Array.from(elements))
     .filter((element) => elementIsVisible(element))
     .filter((element) => elementNeedsButton(element))
-    .filter((element) => !element.querySelector('.watch-later-btn'))
 }
 
 // Only inspects the nodes a mutation actually touched, not the whole page, so
@@ -64,9 +63,8 @@ export const mutationsAffectOverlayAnchors = (mutations: MutationRecord[]) =>
 
 const OVERLAY_RECHECK_DEBOUNCE_MS = 200
 
-// Once mounted, the overlay host is only rebuilt after it is evicted, so a
-// stale anchor list would leave buttons stuck. Evicting forces the mount loop
-// to rebuild it with a fresh anchor list on its next pass.
+// Once mounted, the overlay only follows the anchor list while it is told
+// about changes, so a stale list would leave buttons stuck or orphaned.
 //
 // "Stale" here isn't just DOM churn (nodes added/removed, e.g. switching the
 // sidebar between Up next/Related/Chapters). On YouTube's virtualized grids
@@ -75,26 +73,31 @@ const OVERLAY_RECHECK_DEBOUNCE_MS = 200
 // only their on-screen position changing, which is what the anchor list's
 // own visibility filter keys off. So this also has to react to scrolling,
 // not just mutations, or tiles scrolled back into view stay buttonless.
-export const watchOverlayEviction = (evictOverlayHost: () => void) => {
+//
+// `onAnchorsChange` receives the new list so the caller can diff it against
+// what is mounted; `onNavigate` is for a full reset.
+export const watchOverlayEviction = (
+  onAnchorsChange: (anchors: Element[]) => void,
+  onNavigate: () => void,
+) => {
   let debounceTimeout: ReturnType<typeof setTimeout> | null = null
   let lastAnchorElements: Element[] = []
 
-  // Only evicts (and pays for rebuilding the overlay host) when the
-  // computed anchor set actually differs from what's currently rendered, so
-  // idle settling after a scroll/mutation is a cheap no-op.
-  const recheckAndEvict = () => {
+  // Only reports when the computed anchor set actually differs from the last
+  // one, so idle settling after a scroll/mutation is a cheap no-op.
+  const recheckAndReport = () => {
     const anchors = getOverlayAnchorElements()
     const changed =
       anchors.length !== lastAnchorElements.length ||
       anchors.some((element) => !lastAnchorElements.includes(element))
 
     lastAnchorElements = anchors
-    if (changed) evictOverlayHost()
+    if (changed) onAnchorsChange(anchors)
   }
 
   const scheduleRecheck = () => {
     if (debounceTimeout) clearTimeout(debounceTimeout)
-    debounceTimeout = setTimeout(recheckAndEvict, OVERLAY_RECHECK_DEBOUNCE_MS)
+    debounceTimeout = setTimeout(recheckAndReport, OVERLAY_RECHECK_DEBOUNCE_MS)
   }
 
   const mutationObserver = new MutationObserver((mutations) => {
@@ -112,13 +115,13 @@ export const watchOverlayEviction = (evictOverlayHost: () => void) => {
     capture: true,
   })
 
-  window.addEventListener('ytwl-yt-nav-finish', evictOverlayHost)
+  window.addEventListener('ytwl-yt-nav-finish', onNavigate)
 
   return () => {
     mutationObserver.disconnect()
     if (debounceTimeout) clearTimeout(debounceTimeout)
     window.removeEventListener('scroll', scheduleRecheck, true)
-    window.removeEventListener('ytwl-yt-nav-finish', evictOverlayHost)
+    window.removeEventListener('ytwl-yt-nav-finish', onNavigate)
   }
 }
 

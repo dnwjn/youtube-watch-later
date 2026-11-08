@@ -17,7 +17,6 @@ import {
 import { computeOverlayButtonStyle } from '~/helpers/overlay'
 import { getSettings } from '~/helpers/system'
 import useOverlayAlignmentGuard from '~/hooks/useOverlayAlignmentGuard'
-import useVideoPreviewListener from '~/hooks/useVideoPreviewListener'
 import type { ButtonAnchor, ButtonConfig, Settings, YTData } from '~/interfaces'
 import { useWatchLaterStore } from '~/store'
 import {
@@ -75,25 +74,28 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
   const { element } = anchor
   const isOverlay = anchor.type === 'overlay'
 
-  useVideoPreviewListener()
-
-  const {
-    ytData,
-    url,
-    enabled,
-    latestElementRef,
-    videoPreviewIsHovered,
-    addedVideoIds,
-    pendingVideoIds,
-    erroredVideoIds,
-    setYtData,
-    setEnabled,
-    setLatestElementRef,
-    markVideoAsPending,
-    markVideoAsAdded,
-    markVideoAsErrored,
-    clearVideoError,
-  } = useWatchLaterStore()
+  // Scoped selectors: subscribing to the whole store would re-render every
+  // mounted button on any change (hover, an add anywhere, navigation).
+  const ytData = useWatchLaterStore((state) => state.ytData)
+  const url = useWatchLaterStore((state) => state.url)
+  const enabled = useWatchLaterStore((state) => state.enabled)
+  const setYtData = useWatchLaterStore((state) => state.setYtData)
+  const setEnabled = useWatchLaterStore((state) => state.setEnabled)
+  const setLatestElementRef = useWatchLaterStore(
+    (state) => state.setLatestElementRef,
+  )
+  const markVideoAsPending = useWatchLaterStore(
+    (state) => state.markVideoAsPending,
+  )
+  const markVideoAsAdded = useWatchLaterStore((state) => state.markVideoAsAdded)
+  const markVideoAsErrored = useWatchLaterStore(
+    (state) => state.markVideoAsErrored,
+  )
+  const clearVideoError = useWatchLaterStore((state) => state.clearVideoError)
+  const isPreviewHoveredForElement = useWatchLaterStore(
+    (state) =>
+      state.videoPreviewIsHovered && state.latestElementRef === element,
+  )
 
   const [status, setStatus] = useState<number>(ButtonStatus.Hidden)
   const [hasData, setHasData] = useState<boolean>(false)
@@ -117,6 +119,15 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
   const usesThumbnailButtonStyle = isInThumbnail || (isOverlay && !isInPlaylist)
   const videoId = useMemo(() => getVideoId(element), [element])
+  const isAdded = useWatchLaterStore(
+    (state) => !!videoId && state.addedVideoIds.has(videoId),
+  )
+  const isErrored = useWatchLaterStore(
+    (state) => !!videoId && state.erroredVideoIds.has(videoId),
+  )
+  const isPending = useWatchLaterStore(
+    (state) => !!videoId && state.pendingVideoIds.has(videoId),
+  )
 
   let positionContext: string | null = null
   if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
@@ -211,17 +222,15 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
     if (isHovered) return true
-    if (videoPreviewIsHovered && latestElementRef === element) return true
+    if (isPreviewHoveredForElement) return true
     return false
   }, [
     configLoaded,
     status,
     buttonConfig,
     isHovered,
-    videoPreviewIsHovered,
-    latestElementRef,
+    isPreviewHoveredForElement,
     isOnVideoDetail,
-    element,
   ])
 
   useOverlayAlignmentGuard(isOverlay, element, buttonRef)
@@ -354,11 +363,11 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
     // render time; this effect resyncs it with the shared store.
     /* eslint-disable react-hooks/set-state-in-effect */
     if (visible && hasData) {
-      if (videoId && addedVideoIds.has(videoId)) {
+      if (isAdded) {
         setStatus(ButtonStatus.Success)
-      } else if (videoId && erroredVideoIds.has(videoId)) {
+      } else if (isErrored) {
         setStatus(ButtonStatus.Error)
-      } else if (videoId && pendingVideoIds.has(videoId)) {
+      } else if (isPending) {
         setStatus(ButtonStatus.Loading)
       } else {
         setStatus(ButtonStatus.Default)
@@ -367,14 +376,7 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
       setStatus(ButtonStatus.Hidden)
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [
-    visible,
-    hasData,
-    videoId,
-    addedVideoIds,
-    pendingVideoIds,
-    erroredVideoIds,
-  ])
+  }, [visible, hasData, isAdded, isErrored, isPending])
 
   // init/cleanup close over per-render state (ytData, url, positionContext, ...)
   // but the mount effect below must only run once, so the latest versions are
