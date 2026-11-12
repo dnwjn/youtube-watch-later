@@ -243,9 +243,15 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
 
   const [labels, setLabels] = useState<ButtonLabels | null>(null)
   useEffect(() => {
-    getButtonLabels()
-      .then(setLabels)
-      .catch(() => {})
+    const loadLabels = () =>
+      getButtonLabels()
+        .then(setLabels)
+        .catch(() => {})
+
+    loadLabels()
+    window.addEventListener('ytwl-language-changed', loadLabels)
+
+    return () => window.removeEventListener('ytwl-language-changed', loadLabels)
   }, [])
 
   const label = labels

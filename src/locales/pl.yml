@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Otwieraj Co nowego po aktualizacji"
       description: "Gdy włączone, po aktualizacji automatycznie otwiera się nowa karta z najnowszymi zmianami."
+    language:
+      title: "Język"
+      auto: "Domyślny przeglądarki"
+      description: "Wybierz język rozszerzenia. Domyślnie jest zgodny z przeglądarką."
   button:
     title: "Ustawienia przycisku"
     scope: "Te ustawienia nie dotyczą przycisku w elementach sterujących odtwarzacza ani w sugerowanych filmach na urządzeniach mobilnych."

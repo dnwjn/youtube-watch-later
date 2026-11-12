@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Güncellemede Yenilikler'i aç"
       description: "Açıkken, güncellemeden sonra en son değişiklikleri içeren yeni bir sekme otomatik olarak açılır."
+    language:
+      title: "Dil"
+      auto: "Tarayıcı varsayılanı"
+      description: "Uzantının dilini seçin. Varsayılan olarak tarayıcınızı takip eder."
   button:
     title: "Düğme ayarları"
     scope: "Bu ayarlar, video oynatıcı denetimlerindeki düğmeyi veya mobildeki önerilen videoları etkilemez."

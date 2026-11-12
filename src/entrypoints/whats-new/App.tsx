@@ -1,23 +1,24 @@
-import { i18n } from '#i18n'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { changelog } from '~/changelog'
 import ExtensionFooter from '~/components/ExtensionFooter'
 import ExtensionHeader from '~/components/ExtensionHeader'
+import type { MessageKey } from '~/helpers/i18n'
+import useI18n from '~/hooks/useI18n'
 
 import '~/css/whats-new.css'
 
 // Entry keys are built at runtime from the changelog version, so they can't be
 // checked against the generated key union.
-type MessageKey = Parameters<typeof i18n.t>[0]
+const entryText = (
+  t: (key: MessageKey) => string,
+  version: string,
+  type: string,
+  n: number,
+) => t(`changelog.v${version.replaceAll('.', '_')}.${type}_${n}` as MessageKey)
 
-const entryText = (version: string, type: string, n: number) =>
-  i18n.t(
-    `changelog.v${version.replaceAll('.', '_')}.${type}_${n}` as MessageKey,
-  )
-
-const formatDate = (iso: string) =>
-  new Intl.DateTimeFormat(browser.i18n.getUILanguage(), {
+const formatDate = (iso: string, locale: string) =>
+  new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
     timeZone: 'UTC',
   }).format(new Date(iso))
@@ -29,11 +30,17 @@ const TYPE_ORDER: Array<'new' | 'improved' | 'fixed'> = [
 ]
 
 const WhatsNew = () => {
+  const { t, locale } = useI18n()
+
+  useEffect(() => {
+    document.title = t('whatsNew.title')
+  }, [t])
+
   return (
     <div className="whats-new-root">
       <ExtensionHeader
-        title={i18n.t('whatsNew.title')}
-        subtitle={i18n.t('whatsNew.subtitle')}
+        title={t('whatsNew.title')}
+        subtitle={t('whatsNew.subtitle')}
       />
 
       <div>
@@ -42,7 +49,7 @@ const WhatsNew = () => {
             <div className="whats-new-version-header">
               <h2 className="whats-new-version-number">v{version.version}</h2>
               <span className="whats-new-version-date">
-                {formatDate(version.date)}
+                {formatDate(version.date, locale)}
               </span>
             </div>
 
@@ -53,12 +60,12 @@ const WhatsNew = () => {
               return (
                 <div key={type} className="whats-new-group">
                   <h3 className="whats-new-group-label">
-                    {i18n.t(`whatsNew.type.${type}`)}
+                    {t(`whatsNew.type.${type}`)}
                   </h3>
                   <ul className="whats-new-list">
                     {Array.from({ length: count }, (_, i) => (
                       <li key={i} className="whats-new-list-item">
-                        {entryText(version.version, type, i + 1)}
+                        {entryText(t, version.version, type, i + 1)}
                       </li>
                     ))}
                   </ul>

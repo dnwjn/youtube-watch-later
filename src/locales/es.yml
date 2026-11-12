@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Abrir Novedades al actualizar"
       description: "Si está activado, tras una actualización se abre automáticamente una pestaña nueva con los últimos cambios."
+    language:
+      title: "Idioma"
+      auto: "Predeterminado del navegador"
+      description: "Elige el idioma de la extensión. Por defecto sigue el de tu navegador."
   button:
     title: "Ajustes del botón"
     scope: "Estos ajustes no afectan al botón de los controles del reproductor ni a los vídeos sugeridos en móvil."

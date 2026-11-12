@@ -1,8 +1,13 @@
-import { i18n } from '#i18n'
 import { browser } from 'wxt/browser'
 
+import {
+  DEFAULT_LANGUAGE,
+  isLanguage,
+  translate,
+  type Language,
+} from '~/helpers/i18n'
 import { startRelay, type MessageName } from '~/helpers/messaging'
-import { watchStored } from '~/helpers/storage'
+import { getStored, watchStored } from '~/helpers/storage'
 import type { Settings } from '~/interfaces'
 import { ButtonPositionContext } from '~/types'
 
@@ -30,15 +35,22 @@ export default defineContentScript({
   main() {
     startRelay(async (name) => {
       if (name === 'button-labels') {
+        const stored = await getStored<Language>('language')
+        const language = isLanguage(stored) ? stored : DEFAULT_LANGUAGE
+
         return {
-          add: i18n.t('button.add'),
-          adding: i18n.t('button.adding'),
-          added: i18n.t('button.added'),
-          error: i18n.t('button.error'),
+          add: translate('button.add', language),
+          adding: translate('button.adding', language),
+          added: translate('button.added', language),
+          error: translate('button.error', language),
         }
       }
 
       return sendToBackground(name)
+    })
+
+    watchStored(['language'], () => {
+      window.dispatchEvent(new CustomEvent('ytwl-language-changed'))
     })
 
     watchStored(watchedButtonSettingsKeys, async () => {

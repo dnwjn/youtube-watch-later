@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Open What's New on update"
       description: "When enabled, a new tab with the latest changes opens automatically after an update."
+    language:
+      title: "Language"
+      auto: "Browser default"
+      description: "Choose the language of the extension. By default it follows your browser."
   button:
     title: "Button settings"
     scope: "These settings do not affect the button inside the video player controls or in suggested videos on mobile."

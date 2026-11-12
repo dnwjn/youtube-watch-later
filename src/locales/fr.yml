@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Ouvrir Nouveautés après une mise à jour"
       description: "Si cette option est activée, un nouvel onglet avec les dernières modifications s'ouvre automatiquement après une mise à jour."
+    language:
+      title: "Langue"
+      auto: "Par défaut du navigateur"
+      description: "Choisissez la langue de l'extension. Par défaut, elle suit celle de votre navigateur."
   button:
     title: "Paramètres du bouton"
     scope: "Ces paramètres n'affectent pas le bouton dans les commandes du lecteur vidéo ni dans les vidéos suggérées sur mobile."

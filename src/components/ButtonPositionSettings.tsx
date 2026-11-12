@@ -1,7 +1,7 @@
-import { i18n } from '#i18n'
 import React from 'react'
 
 import PositionPicker from '~/components/PositionPicker'
+import useI18n from '~/hooks/useI18n'
 import useStorage from '~/hooks/useStorage'
 import {
   buttonPositionAllowed,
@@ -54,16 +54,18 @@ const LocationSetting = ({
 }
 
 const ButtonPositionSettings = () => {
+  const { t } = useI18n()
+
   return (
     <div className="content">
-      <h2 className="title">{i18n.t('buttonPosition.title')}</h2>
+      <h2 className="title">{t('buttonPosition.title')}</h2>
 
       {locations.map(({ context, key }) => (
         <LocationSetting
           key={context}
           context={context}
-          label={i18n.t(`buttonPosition.${key}.label`)}
-          description={i18n.t(`buttonPosition.${key}.description`)}
+          label={t(`buttonPosition.${key}.label`)}
+          description={t(`buttonPosition.${key}.description`)}
         />
       ))}
     </div>

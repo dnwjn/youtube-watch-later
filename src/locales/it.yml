@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Apri Novità dopo l'aggiornamento"
       description: "Se attivata, dopo un aggiornamento si apre automaticamente una nuova scheda con le ultime modifiche."
+    language:
+      title: "Lingua"
+      auto: "Predefinita del browser"
+      description: "Scegli la lingua dell'estensione. Per impostazione predefinita segue quella del browser."
   button:
     title: "Impostazioni del pulsante"
     scope: "Queste impostazioni non riguardano il pulsante nei controlli del lettore video né nei video suggeriti su dispositivi mobili."

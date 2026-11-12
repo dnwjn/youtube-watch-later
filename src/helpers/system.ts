@@ -8,7 +8,7 @@ export const getSettings = async (): Promise<Settings> => {
 }
 
 // Content scripts in the MAIN world can't reach browser.i18n, so the labels are
-// resolved by the isolated-world relay and cached for the page's lifetime.
+// resolved by the isolated-world relay and cached until the language changes.
 let buttonLabels: Promise<ButtonLabels> | undefined
 
 export const getButtonLabels = (): Promise<ButtonLabels> => {
@@ -18,6 +18,10 @@ export const getButtonLabels = (): Promise<ButtonLabels> => {
 
   return buttonLabels
 }
+
+window.addEventListener('ytwl-language-changed', () => {
+  buttonLabels = undefined
+})
 
 export const loggingEnabled = async (): Promise<boolean> => {
   const settings: Settings = await sendToBackgroundViaRelay<Settings>({

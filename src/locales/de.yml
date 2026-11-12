@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "„Neuigkeiten“ nach Update öffnen"
       description: "Wenn aktiviert, öffnet sich nach einem Update automatisch ein neuer Tab mit den neuesten Änderungen."
+    language:
+      title: "Sprache"
+      auto: "Browser-Standard"
+      description: "Wähle die Sprache der Erweiterung. Standardmäßig folgt sie deinem Browser."
   button:
     title: "Schaltflächeneinstellungen"
     scope: "Diese Einstellungen gelten nicht für die Schaltfläche in den Steuerelementen des Videoplayers oder in vorgeschlagenen Videos auf Mobilgeräten."

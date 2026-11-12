@@ -1,8 +1,8 @@
 import packageJson from '@root/package.json'
-import { i18n } from '#i18n'
 import React, { useMemo } from 'react'
 
 import { openTab } from '~/helpers/browser'
+import useI18n from '~/hooks/useI18n'
 
 import '~/css/shared.css'
 
@@ -11,6 +11,7 @@ interface ExtensionFooterProps {
 }
 
 const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
+  const { t } = useI18n()
   const version = useMemo(() => {
     if (process.env.NODE_ENV === 'production') {
       return `v${packageJson.version}`
@@ -24,13 +25,13 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
       <button
         className="button bold small"
         onClick={() => openTab('https://dnwjn.dev')}>
-        {i18n.t('footer.craftedBy')} <span className="name">dnwjn</span>
+        {t('footer.craftedBy')} <span className="name">dnwjn</span>
       </button>
 
       <div className="bmac">
-        <div>{i18n.t('footer.enjoying')}</div>
-        <div className="bold">{i18n.t('footer.free')}</div>
-        <div>{i18n.t('footer.thanks')}</div>
+        <div>{t('footer.enjoying')}</div>
+        <div className="bold">{t('footer.free')}</div>
+        <div>{t('footer.thanks')}</div>
         <a
           className="bmac-link"
           href="https://coff.ee/dnwjn"
@@ -38,21 +39,21 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
           target="_blank">
           <img
             src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-            alt={i18n.t('footer.bmacAlt')}
+            alt={t('footer.bmacAlt')}
             style={{ height: 30 }}
           />
         </a>
       </div>
 
       <div className="credits small">
-        {i18n.t('footer.version')} <span className="name">{version}</span>
+        {t('footer.version')} <span className="name">{version}</span>
         {showWhatsNew && (
           <>
             {' | '}
             <button
               className="whats-new-link"
               onClick={() => openTab(chrome.runtime.getURL('whats-new.html'))}>
-              {i18n.t('footer.whatsNew')}
+              {t('footer.whatsNew')}
             </button>
           </>
         )}

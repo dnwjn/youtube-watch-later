@@ -23,6 +23,10 @@ popup:
     whatsNew:
       title: "Wat is er nieuw openen bij update"
       description: "Wanneer ingeschakeld opent na een update automatisch een nieuw tabblad met de laatste wijzigingen."
+    language:
+      title: "Taal"
+      auto: "Browserstandaard"
+      description: "Kies de taal van de extensie. Standaard volgt deze je browser."
   button:
     title: "Knopinstellingen"
     scope: "Deze instellingen gelden niet voor de knop in de bediening van de videospeler of in voorgestelde video's op mobiel."
