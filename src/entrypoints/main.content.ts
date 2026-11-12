@@ -1,3 +1,4 @@
+import { i18n } from '#i18n'
 import { browser } from 'wxt/browser'
 
 import { startRelay, type MessageName } from '~/helpers/messaging'
@@ -27,7 +28,18 @@ const sendToBackground = async <T>(name: MessageName): Promise<T> => {
 export default defineContentScript({
   matches: ['*://*.youtube.com/*'],
   main() {
-    startRelay((name) => sendToBackground(name))
+    startRelay(async (name) => {
+      if (name === 'button-labels') {
+        return {
+          add: i18n.t('button.add'),
+          adding: i18n.t('button.adding'),
+          added: i18n.t('button.added'),
+          error: i18n.t('button.error'),
+        }
+      }
+
+      return sendToBackground(name)
+    })
 
     watchStored(watchedButtonSettingsKeys, async () => {
       const settings = await sendToBackground<Settings>('settings')

@@ -19,4 +19,9 @@ export default {
     '',
     '^[./]',
   ],
+  overrides: [
+    // Locale values are always double-quoted so strings with apostrophes,
+    // colons or typographic quotes never need a per-line quoting decision.
+    { files: '*.yml', options: { singleQuote: false } },
+  ],
 }

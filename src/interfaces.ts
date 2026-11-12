@@ -1,3 +1,10 @@
+export interface ButtonLabels {
+  add: string
+  adding: string
+  added: string
+  error: string
+}
+
 export interface YTData {
   authUser: string | null
   clientTheme: string | null

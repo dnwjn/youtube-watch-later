@@ -1,4 +1,5 @@
 import logo from '@root/assets/icon.png'
+import { i18n } from '#i18n'
 import React from 'react'
 
 import '~/css/shared.css'
@@ -16,13 +17,13 @@ const ExtensionHeader = ({ title, subtitle, onBack }: Props) => {
         <button
           type="button"
           className="back-arrow"
-          aria-label="Back"
+          aria-label={i18n.t('common.back')}
           onClick={onBack}>
           ←
         </button>
       )}
 
-      <img className="logo" src={logo} alt="logo" />
+      <img className="logo" src={logo} alt={i18n.t('common.logoAlt')} />
 
       <h1 className="title">{title}</h1>
 

@@ -1,0 +1,131 @@
+extName: "YouTube Watch Later"
+extDescription: "Dodawaj filmy z YouTube do playlisty Do obejrzenia jednym kliknięciem."
+
+common:
+  enabled: "Włączone"
+  disabled: "Wyłączone"
+  enable: "Włącz"
+  disable: "Wyłącz"
+  back: "Wstecz"
+  logoAlt: "logo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "Ustawienia ogólne"
+    markRead:
+      title: "Oznaczaj powiadomienia jako przeczytane"
+      description: "Gdy włączone, powiadomienia będą oznaczane jako przeczytane po dodaniu ich do Do obejrzenia."
+      scope: "To ustawienie dotyczy tylko przycisku w panelu powiadomień."
+    logging:
+      title: "Dziennik"
+      description: "Gdy włączone, logi będą wyświetlane w konsoli."
+    whatsNew:
+      title: "Otwieraj Co nowego po aktualizacji"
+      description: "Gdy włączone, po aktualizacji automatycznie otwiera się nowa karta z najnowszymi zmianami."
+  button:
+    title: "Ustawienia przycisku"
+    scope: "Te ustawienia nie dotyczą przycisku w elementach sterujących odtwarzacza ani w sugerowanych filmach na urządzeniach mobilnych."
+    visibility:
+      title: "Widoczność przycisku"
+      always: "Zawsze"
+      alwaysChange: "Zmień na zawsze"
+      hover: "Po najechaniu"
+      hoverChange: "Zmień na po najechaniu"
+    opacity:
+      title: "Przezroczystość przycisku"
+      full: "Pełna"
+      fullChange: "Zmień na pełną"
+      half: "Połowa"
+      halfChange: "Zmień na połowę"
+    position:
+      title: "Położenie przycisku"
+      link: "Ustawienia położenia przycisku →"
+  contact:
+    title: "Kontakt"
+    description: "Masz sugestię, problem albo po prostu chcesz podziękować?"
+    website: "Odwiedź stronę"
+
+buttonPosition:
+  title: "Położenie przycisku"
+  corner:
+    topLeft: "Lewy górny róg"
+    topRight: "Prawy górny róg"
+    bottomLeft: "Lewy dolny róg"
+    bottomRight: "Prawy dolny róg"
+  thumbnail:
+    label: "Filmy w siatce"
+    description: "Filmy wyświetlane na stronie głównej, stronach kanałów i w wynikach wyszukiwania."
+  playlist:
+    label: "Filmy na playlistach"
+    description: "Filmy wyświetlane na stronie playlisty."
+  endscreenModern:
+    label: "Sugestie na ekranie końcowym"
+    description: "Sugerowane filmy wyświetlane w siatce po zakończeniu filmu."
+  sidebar:
+    label: "Panel boczny odtwarzacza"
+    description: "Sugerowane filmy wyświetlane obok odtwarzacza."
+  notification:
+    label: "Powiadomienia"
+    description: "Filmy wyświetlane w panelu powiadomień."
+  endscreen:
+    label: "Sugestie na starym ekranie końcowym"
+    description: "Sugerowane filmy wyświetlane w starszym układzie ekranu końcowego."
+
+footer:
+  craftedBy: "Stworzone z ❤️ + 💻 + 🧠 przez"
+  enjoying: "Podoba Ci się to małe dzieło?"
+  free: "Jest darmowe i zawsze takie będzie."
+  thanks: "Ale jeśli chcesz podziękować..."
+  bmacAlt: "Postaw mi kawę"
+  version: "Wersja:"
+  whatsNew: "Co nowego"
+
+whatsNew:
+  title: "Co nowego w YouTube Watch Later"
+  subtitle: "Poniżej wymieniono najważniejsze zmiany."
+  type:
+    new: "Nowość"
+    improved: "Ulepszono"
+    fixed: "Naprawiono"
+
+button:
+  add: "Dodaj do Do obejrzenia"
+  adding: "Dodawanie do Do obejrzenia…"
+  added: "Dodano do Do obejrzenia"
+  error: "Nie udało się dodać do Do obejrzenia"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Ograniczono zbędne ponowne renderowanie przycisku, unikając aktualizacji stanu wykonywanych synchronicznie podczas renderowania."
+  v0_6_2:
+    fixed_1: "Naprawiono problem, w którym rozszerzenie mogło spowalniać stronę tym bardziej, im dłużej przeglądałeś, przez usunięcie zbędnej pętli odświeżania przycisku."
+  v0_6_1:
+    new_1: "Dodano ustawienie „Otwieraj Co nowego po aktualizacji”, aby można było zdecydować, czy ta karta ma otwierać się automatycznie po aktualizacji."
+  v0_6_0:
+    new_1: "Dodano więcej opcji położenia przycisku, w tym lewy dolny i prawy dolny róg."
+    new_2: "Dodano link do karty Co nowego w stopce wyskakującego okna, dzięki czemu zawsze możesz zobaczyć najnowsze zmiany, a nie tylko raz po aktualizacji."
+    improved_1: "Przycisk pojawia się teraz dopiero po załadowaniu ustawień, dzięki czemu nie migocze w niewłaściwym miejscu."
+    improved_2: "Ustawienia położenia przeniesiono na osobną podstronę i są teraz stosowane natychmiast, bez konieczności przeładowania strony."
+    improved_3: "Zmniejszono rozmiary czcionek i ograniczono wysokość wyskakującego okna dla bardziej zwartego wyglądu."
+    fixed_1: "Naprawiono problem, w którym przycisk mógł przestać działać, gdy brakowało głównego pliku cookie, przez użycie jego wariantów first-party i third-party."
+    fixed_2: "Naprawiono znikanie lub migotanie przycisku po najechaniu na podglądy miniatur."
+  v0_5_3:
+    fixed_1: "Naprawiono problem, w którym przycisk nie pojawiał się w sugerowanych filmach po prawej stronie odtwarzacza."
+  v0_5_2:
+    fixed_1: "Naprawiono problem w Firefoksie, w którym przycisk nie działał razem z rozszerzeniem Multi-Account Containers."
+  v0_5_1:
+    new_1: "Dodano tę kartę Co nowego (cześć!), abyś mógł być na bieżąco z najważniejszymi ostatnimi zmianami."
+  v0_5_0:
+    new_1: "Dodano przycisk do sugerowanych filmów na stronie odtwarzacza, obok (komputer) i pod (telefon) odtwarzaczem."
+    improved_1: "Przycisk jest teraz okrągły, aby lepiej pasować do wyglądu YouTube."
+  v0_4_2:
+    fixed_1: "Naprawiono problem, w którym przycisk nie zawsze był widoczny."
+    fixed_2: "Naprawiono problem, w którym kolory nie pasowały do niestandardowych motywów."
+  v0_4_0:
+    new_1: "Dodano przycisk do sugerowanych filmów na nowoczesnym ekranie końcowym."
+    new_2: "Dodano przycisk do Shorts."
+  v0_3_0:
+    new_1: "Dodano przycisk do elementów sterujących odtwarzacza, obok przycisków „Lubię to” i „Nie lubię”."
+  v0_2_0:
+    new_1: "Dodano przycisk do sugerowanych filmów na klasycznym ekranie końcowym."

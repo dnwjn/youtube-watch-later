@@ -1,4 +1,5 @@
 import packageJson from '@root/package.json'
+import { i18n } from '#i18n'
 import React, { useMemo } from 'react'
 
 import { openTab } from '~/helpers/browser'
@@ -23,13 +24,13 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
       <button
         className="button bold small"
         onClick={() => openTab('https://dnwjn.dev')}>
-        Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
+        {i18n.t('footer.craftedBy')} <span className="name">dnwjn</span>
       </button>
 
       <div className="bmac">
-        <div>Enjoying this little creation?</div>
-        <div className="bold">It's free&mdash;always will be.</div>
-        <div>But if you'd like to say thanks...</div>
+        <div>{i18n.t('footer.enjoying')}</div>
+        <div className="bold">{i18n.t('footer.free')}</div>
+        <div>{i18n.t('footer.thanks')}</div>
         <a
           className="bmac-link"
           href="https://coff.ee/dnwjn"
@@ -37,21 +38,21 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
           target="_blank">
           <img
             src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-            alt="Buy Me a Coffee"
+            alt={i18n.t('footer.bmacAlt')}
             style={{ height: 30 }}
           />
         </a>
       </div>
 
       <div className="credits small">
-        Version: <span className="name">{version}</span>
+        {i18n.t('footer.version')} <span className="name">{version}</span>
         {showWhatsNew && (
           <>
             {' | '}
             <button
               className="whats-new-link"
               onClick={() => openTab(chrome.runtime.getURL('whats-new.html'))}>
-              What's new
+              {i18n.t('footer.whatsNew')}
             </button>
           </>
         )}

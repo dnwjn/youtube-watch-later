@@ -1,0 +1,131 @@
+extName: "YouTube Watch Later"
+extDescription: "Voeg YouTube-video's met één klik toe aan je afspeellijst Later kijken."
+
+common:
+  enabled: "Ingeschakeld"
+  disabled: "Uitgeschakeld"
+  enable: "Inschakelen"
+  disable: "Uitschakelen"
+  back: "Terug"
+  logoAlt: "logo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "Algemene instellingen"
+    markRead:
+      title: "Meldingen als gelezen markeren"
+      description: "Wanneer ingeschakeld worden meldingen als gelezen gemarkeerd zodra je ze aan Later kijken toevoegt."
+      scope: "Deze instelling geldt alleen voor de knop in het meldingenpaneel."
+    logging:
+      title: "Logboek"
+      description: "Wanneer ingeschakeld worden logs in de console getoond."
+    whatsNew:
+      title: "Wat is er nieuw openen bij update"
+      description: "Wanneer ingeschakeld opent na een update automatisch een nieuw tabblad met de laatste wijzigingen."
+  button:
+    title: "Knopinstellingen"
+    scope: "Deze instellingen gelden niet voor de knop in de bediening van de videospeler of in voorgestelde video's op mobiel."
+    visibility:
+      title: "Zichtbaarheid van de knop"
+      always: "Altijd"
+      alwaysChange: "Wijzig naar altijd"
+      hover: "Bij aanwijzen"
+      hoverChange: "Wijzig naar bij aanwijzen"
+    opacity:
+      title: "Doorzichtigheid van de knop"
+      full: "Volledig"
+      fullChange: "Wijzig naar volledig"
+      half: "Half"
+      halfChange: "Wijzig naar half"
+    position:
+      title: "Positie van de knop"
+      link: "Instellingen voor knoppositie →"
+  contact:
+    title: "Contact"
+    description: "Heb je een suggestie, een probleem, of wil je gewoon bedanken?"
+    website: "Bezoek de website"
+
+buttonPosition:
+  title: "Positie van de knop"
+  corner:
+    topLeft: "Linksboven"
+    topRight: "Rechtsboven"
+    bottomLeft: "Linksonder"
+    bottomRight: "Rechtsonder"
+  thumbnail:
+    label: "Video's in het raster"
+    description: "Video's op de startpagina, kanaalpagina's en in zoekresultaten."
+  playlist:
+    label: "Video's in afspeellijsten"
+    description: "Video's op een afspeellijstpagina."
+  endscreenModern:
+    label: "Suggesties in het eindscherm"
+    description: "Voorgestelde video's die in een raster worden getoond wanneer een video eindigt."
+  sidebar:
+    label: "Zijbalk van de speler"
+    description: "Voorgestelde video's naast de videospeler."
+  notification:
+    label: "Meldingen"
+    description: "Video's in het meldingenpaneel."
+  endscreen:
+    label: "Suggesties in het oude eindscherm"
+    description: "Voorgestelde video's in de oudere indeling van het eindscherm."
+
+footer:
+  craftedBy: "Gemaakt met ❤️ + 💻 + 🧠 door"
+  enjoying: "Bevalt dit kleine creatiefje?"
+  free: "Het is gratis, en blijft het ook."
+  thanks: "Maar als je bedankt wilt zeggen..."
+  bmacAlt: "Trakteer me op een koffie"
+  version: "Versie:"
+  whatsNew: "Wat is er nieuw"
+
+whatsNew:
+  title: "Wat is er nieuw in YouTube Watch Later"
+  subtitle: "Hieronder staan de belangrijkste wijzigingen."
+  type:
+    new: "Nieuw"
+    improved: "Verbeterd"
+    fixed: "Opgelost"
+
+button:
+  add: "Toevoegen aan Later kijken"
+  adding: "Toevoegen aan Later kijken…"
+  added: "Toegevoegd aan Later kijken"
+  error: "Kan niet toevoegen aan Later kijken"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Onnodige herrenders van de knop verminderd door statusupdates te vermijden die synchroon tijdens het renderen liepen."
+  v0_6_2:
+    fixed_1: "Een probleem opgelost waarbij de extensie de pagina trager kon maken naarmate je langer bleef browsen, door een overbodige verversingslus voor de knop te verwijderen."
+  v0_6_1:
+    new_1: "Een instelling 'Wat is er nieuw openen bij update' toegevoegd, zodat je kunt bepalen of dit tabblad na een update automatisch opent."
+  v0_6_0:
+    new_1: "Meer positieopties voor de knop toegevoegd, waaronder linksonder en rechtsonder."
+    new_2: "Een link naar dit tabblad 'Wat is er nieuw' toegevoegd in de voettekst van de popup, zodat je de laatste wijzigingen altijd kunt zien in plaats van slechts één keer per update."
+    improved_1: "De knop verschijnt nu pas zodra je instellingen zijn geladen, waardoor hij niet meer op de verkeerde plek flitst."
+    improved_2: "Positie-instellingen verplaatst naar een eigen subpagina; ze worden nu direct toegepast, zonder de pagina te hoeven herladen."
+    improved_3: "Lettergroottes verkleind en de hoogte van de popup beperkt voor een compactere uitstraling."
+    fixed_1: "Een probleem opgelost waarbij de knop kon stoppen met werken als de primaire cookie ontbrak, door terug te vallen op de first-party- en third-partyvarianten."
+    fixed_2: "Opgelost dat de knop verdween of flitste bij het aanwijzen van miniatuurvoorbeelden."
+  v0_5_3:
+    fixed_1: "Een probleem opgelost waarbij de knop niet verscheen in de voorgestelde video's rechts van de videospeler."
+  v0_5_2:
+    fixed_1: "Een probleem in Firefox opgelost waarbij de knop niet werkte in combinatie met de extensie Multi-Account Containers."
+  v0_5_1:
+    new_1: "Dit tabblad 'Wat is er nieuw' toegevoegd (hoi!), zodat je op de hoogte blijft van de belangrijkste recente wijzigingen."
+  v0_5_0:
+    new_1: "De knop toegevoegd aan de voorgestelde video's op de spelerpagina, naast (desktop) en onder (mobiel) de speler."
+    improved_1: "De knop is nu rond, zodat hij beter bij het ontwerp van YouTube past."
+  v0_4_2:
+    fixed_1: "Een probleem opgelost waarbij de knop niet altijd zichtbaar was."
+    fixed_2: "Een probleem opgelost waarbij de kleuren niet bij aangepaste thema's pasten."
+  v0_4_0:
+    new_1: "De knop toegevoegd aan de voorgestelde video's in het moderne eindscherm."
+    new_2: "De knop toegevoegd aan Shorts."
+  v0_3_0:
+    new_1: "De knop toegevoegd aan de bediening van de videospeler, naast de like- en dislikeknoppen."
+  v0_2_0:
+    new_1: "De knop toegevoegd aan de voorgestelde video's in het klassieke eindscherm."

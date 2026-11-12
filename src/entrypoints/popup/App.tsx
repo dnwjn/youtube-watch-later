@@ -1,3 +1,4 @@
+import { i18n } from '#i18n'
 import React, { useEffect, useState } from 'react'
 
 import ButtonPositionSettings from '~/components/ButtonPositionSettings'
@@ -37,7 +38,7 @@ const Popup = () => {
     return (
       <div className="popup-root">
         <ExtensionHeader
-          title="Button position"
+          title={i18n.t('buttonPosition.title')}
           onBack={() => setView('main')}
         />
 
@@ -50,13 +51,13 @@ const Popup = () => {
 
   return (
     <div className="popup-root">
-      <ExtensionHeader title="YouTube Watch Later" />
+      <ExtensionHeader title={i18n.t('popup.title')} />
 
       <div className="content">
-        <h2 className="title">General settings</h2>
+        <h2 className="title">{i18n.t('popup.general.title')}</h2>
 
         <div className="setting">
-          <h3 className="title">Mark notifications as read</h3>
+          <h3 className="title">{i18n.t('popup.general.markRead.title')}</h3>
 
           <button
             className="button"
@@ -65,90 +66,101 @@ const Popup = () => {
             }>
             <div className="default">
               <span className="status">
-                {markNotificationsAsRead ? 'Enabled' : 'Disabled'}
+                {markNotificationsAsRead
+                  ? i18n.t('common.enabled')
+                  : i18n.t('common.disabled')}
               </span>
             </div>
             <div className="hover">
               <span className="status">
-                {markNotificationsAsRead ? 'Disable' : 'Enable'}
+                {markNotificationsAsRead
+                  ? i18n.t('common.disable')
+                  : i18n.t('common.enable')}
               </span>
             </div>
           </button>
 
           <p className="instruction spacing">
-            When enabled, notifications will be marked as read when you add them
-            to Watch Later.
+            {i18n.t('popup.general.markRead.description')}
           </p>
 
           <p className="instruction spacing">
-            This setting only affects the button inside the notification drawer.
+            {i18n.t('popup.general.markRead.scope')}
           </p>
         </div>
 
         <div className="setting">
-          <h3 className="title">Logging</h3>
+          <h3 className="title">{i18n.t('popup.general.logging.title')}</h3>
 
           <button className="button" onClick={() => setIsLogging(!isLogging)}>
             <div className="default">
               <span className="status">
-                {isLogging ? 'Enabled' : 'Disabled'}
+                {isLogging
+                  ? i18n.t('common.enabled')
+                  : i18n.t('common.disabled')}
               </span>
             </div>
             <div className="hover">
-              <span className="status">{isLogging ? 'Disable' : 'Enable'}</span>
+              <span className="status">
+                {isLogging ? i18n.t('common.disable') : i18n.t('common.enable')}
+              </span>
             </div>
           </button>
 
           <p className="instruction spacing">
-            When enabled, logs will be shown in the console.
+            {i18n.t('popup.general.logging.description')}
           </p>
         </div>
 
         <div className="setting">
-          <h3 className="title">Open What's New on update</h3>
+          <h3 className="title">{i18n.t('popup.general.whatsNew.title')}</h3>
 
           <button
             className="button"
             onClick={() => setOpenWhatsNewOnUpdate(!openWhatsNewOnUpdate)}>
             <div className="default">
               <span className="status">
-                {openWhatsNewOnUpdate ? 'Enabled' : 'Disabled'}
+                {openWhatsNewOnUpdate
+                  ? i18n.t('common.enabled')
+                  : i18n.t('common.disabled')}
               </span>
             </div>
             <div className="hover">
               <span className="status">
-                {openWhatsNewOnUpdate ? 'Disable' : 'Enable'}
+                {openWhatsNewOnUpdate
+                  ? i18n.t('common.disable')
+                  : i18n.t('common.enable')}
               </span>
             </div>
           </button>
 
           <p className="instruction spacing">
-            When enabled, a new tab with the latest changes opens automatically
-            after an update.
+            {i18n.t('popup.general.whatsNew.description')}
           </p>
         </div>
       </div>
 
       <div className="content">
-        <h2 className="title">Button settings</h2>
+        <h2 className="title">{i18n.t('popup.button.title')}</h2>
 
-        <p className="instruction">
-          These settings do not affect the button inside the video player
-          controls or in suggested videos on mobile.
-        </p>
+        <p className="instruction">{i18n.t('popup.button.scope')}</p>
 
         <div className="setting">
-          <h3 className="title">Button visibility</h3>
+          <h3 className="title">{i18n.t('popup.button.visibility.title')}</h3>
 
           <button
             className="button w-half"
             disabled={buttonVisibility === ButtonVisibility.Always}
             onClick={() => setButtonVisibility(ButtonVisibility.Always)}>
             <div className="default">
-              <span className="status">Always</span>
+              <span className="status">
+                {i18n.t('popup.button.visibility.always')}
+              </span>
             </div>
             <div className="hover">
-              <span className="status">Change to always</span>
+              <span className="status">
+                {i18n.t('popup.button.visibility.alwaysChange')}
+              </span>
             </div>
           </button>
 
@@ -157,26 +169,34 @@ const Popup = () => {
             disabled={buttonVisibility === ButtonVisibility.Hover}
             onClick={() => setButtonVisibility(ButtonVisibility.Hover)}>
             <div className="default">
-              <span className="status">Hover</span>
+              <span className="status">
+                {i18n.t('popup.button.visibility.hover')}
+              </span>
             </div>
             <div className="hover">
-              <span className="status">Change to hover</span>
+              <span className="status">
+                {i18n.t('popup.button.visibility.hoverChange')}
+              </span>
             </div>
           </button>
         </div>
 
         <div className="setting">
-          <h3 className="title">Button opacity</h3>
+          <h3 className="title">{i18n.t('popup.button.opacity.title')}</h3>
 
           <button
             className="button w-half"
             disabled={buttonOpacity === ButtonOpacity.Full}
             onClick={() => setButtonOpacity(ButtonOpacity.Full)}>
             <div className="default">
-              <span className="status">Full</span>
+              <span className="status">
+                {i18n.t('popup.button.opacity.full')}
+              </span>
             </div>
             <div className="hover">
-              <span className="status">Change to full</span>
+              <span className="status">
+                {i18n.t('popup.button.opacity.fullChange')}
+              </span>
             </div>
           </button>
 
@@ -185,35 +205,38 @@ const Popup = () => {
             disabled={buttonOpacity === ButtonOpacity.Half}
             onClick={() => setButtonOpacity(ButtonOpacity.Half)}>
             <div className="default">
-              <span className="status">Half</span>
+              <span className="status">
+                {i18n.t('popup.button.opacity.half')}
+              </span>
             </div>
             <div className="hover">
-              <span className="status">Change to half</span>
+              <span className="status">
+                {i18n.t('popup.button.opacity.halfChange')}
+              </span>
             </div>
           </button>
         </div>
 
         <div className="setting">
-          <h3 className="title">Button position</h3>
+          <h3 className="title">{i18n.t('popup.button.position.title')}</h3>
 
           <button className="button" onClick={() => setView('positions')}>
-            <span className="status">Button position settings →</span>
+            <span className="status">
+              {i18n.t('popup.button.position.link')}
+            </span>
           </button>
         </div>
       </div>
 
       <div className="content">
-        <h2 className="title">Contact</h2>
+        <h2 className="title">{i18n.t('popup.contact.title')}</h2>
 
-        <p className="instruction">
-          Do you have a suggestion, an issue, or do you just want to say thank
-          you?
-        </p>
+        <p className="instruction">{i18n.t('popup.contact.description')}</p>
 
         <button
           className="button bold"
           onClick={() => openTab('https://youtube-watch-later.com')}>
-          Visit website
+          {i18n.t('popup.contact.website')}
         </button>
       </div>
 

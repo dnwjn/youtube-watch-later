@@ -1,0 +1,131 @@
+extName: "YouTube Watch Later"
+extDescription: "Add YouTube videos to your Watch Later playlist with a single click."
+
+common:
+  enabled: "Enabled"
+  disabled: "Disabled"
+  enable: "Enable"
+  disable: "Disable"
+  back: "Back"
+  logoAlt: "logo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "General settings"
+    markRead:
+      title: "Mark notifications as read"
+      description: "When enabled, notifications will be marked as read when you add them to Watch Later."
+      scope: "This setting only affects the button inside the notification drawer."
+    logging:
+      title: "Logging"
+      description: "When enabled, logs will be shown in the console."
+    whatsNew:
+      title: "Open What's New on update"
+      description: "When enabled, a new tab with the latest changes opens automatically after an update."
+  button:
+    title: "Button settings"
+    scope: "These settings do not affect the button inside the video player controls or in suggested videos on mobile."
+    visibility:
+      title: "Button visibility"
+      always: "Always"
+      alwaysChange: "Change to always"
+      hover: "Hover"
+      hoverChange: "Change to hover"
+    opacity:
+      title: "Button opacity"
+      full: "Full"
+      fullChange: "Change to full"
+      half: "Half"
+      halfChange: "Change to half"
+    position:
+      title: "Button position"
+      link: "Button position settings →"
+  contact:
+    title: "Contact"
+    description: "Do you have a suggestion, an issue, or do you just want to say thank you?"
+    website: "Visit website"
+
+buttonPosition:
+  title: "Button position"
+  corner:
+    topLeft: "Top left"
+    topRight: "Top right"
+    bottomLeft: "Bottom left"
+    bottomRight: "Bottom right"
+  thumbnail:
+    label: "Grid videos"
+    description: "Videos shown on the home page, channel pages, and search results."
+  playlist:
+    label: "Playlist videos"
+    description: "Videos shown on a playlist page."
+  endscreenModern:
+    label: "Endscreen suggestions"
+    description: "Suggested videos shown in the grid when a video ends."
+  sidebar:
+    label: "Player sidebar"
+    description: "Suggested videos shown next to the video player."
+  notification:
+    label: "Notifications"
+    description: "Videos shown in the notification drawer."
+  endscreen:
+    label: "Old endscreen suggestions"
+    description: "Suggested videos shown in the older endscreen layout."
+
+footer:
+  craftedBy: "Crafted with ❤️ + 💻 + 🧠 by"
+  enjoying: "Enjoying this little creation?"
+  free: "It's free—always will be."
+  thanks: "But if you'd like to say thanks..."
+  bmacAlt: "Buy Me a Coffee"
+  version: "Version:"
+  whatsNew: "What's new"
+
+whatsNew:
+  title: "What's new in YouTube Watch Later"
+  subtitle: "The noteworthy changes are listed below."
+  type:
+    new: "New"
+    improved: "Improved"
+    fixed: "Fixed"
+
+button:
+  add: "Add to Watch Later"
+  adding: "Adding to Watch Later…"
+  added: "Added to Watch Later"
+  error: "Could not add to Watch Later"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Reduced unnecessary re-renders of the button by avoiding state updates that ran synchronously during render."
+  v0_6_2:
+    fixed_1: "Fixed an issue where the extension could slow down the page the longer you kept browsing, by removing a redundant refresh loop for the button."
+  v0_6_1:
+    new_1: "Added an 'Open What's New on update' setting, so you can control whether this tab opens automatically after an update."
+  v0_6_0:
+    new_1: "Added more position options for the button, including bottom-left and bottom-right."
+    new_2: "Added a link to this What's New tab in the popup footer, so you can now always see the latest changes instead of just once per update."
+    improved_1: "The button now only shows once your settings have finished loading, preventing it from flashing in the wrong position."
+    improved_2: "Position settings moved to their own subpage and now apply immediately, without needing to reload the page."
+    improved_3: "Decreased font sizes and limited the height of the popup for a more compact look."
+    fixed_1: "Fixed an issue where the button could stop working if the primary cookie was missing, by falling back to its 1st-party and 3rd-party variants."
+    fixed_2: "Fixed the button disappearing or flashing when hovering over thumbnail previews."
+  v0_5_3:
+    fixed_1: "Fixed an issue where the button would not show up in the suggested videos on the right side of the video player."
+  v0_5_2:
+    fixed_1: "Fixed an issue on Firefox, where the button would not work in combination with the Multi-Account Containers extension."
+  v0_5_1:
+    new_1: "Added this What's New tab (hi!), so you can stay informed about the noteworthy recent changes."
+  v0_5_0:
+    new_1: "Added the button to the suggested videos on the player page, next to (desktop) and below (mobile) the player."
+    improved_1: "The button is now round to better match YouTube's design."
+  v0_4_2:
+    fixed_1: "Fixed an issue where the button would not always be visible."
+    fixed_2: "Fixed an issue where the colors would not match custom themes."
+  v0_4_0:
+    new_1: "Added the button to the suggested videos in the modern video endscreen."
+    new_2: "Added the button to shorts."
+  v0_3_0:
+    new_1: "Added the button to the video player controls, next to the like/dislike buttons."
+  v0_2_0:
+    new_1: "Added the button to the suggested videos in the classic video endscreen."

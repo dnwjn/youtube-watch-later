@@ -1,7 +1,7 @@
 // MAIN-world scripts have no access to extension APIs, so requests travel
 // page -> isolated content script (`startRelay`) -> background. Message names
 // are shared by both ends.
-export type MessageName = 'settings' | 'visitor-cookie'
+export type MessageName = 'settings' | 'visitor-cookie' | 'button-labels'
 
 type RelayRequest = {
   ytwl: 'request'

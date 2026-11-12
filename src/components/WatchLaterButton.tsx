@@ -15,9 +15,15 @@ import {
   elementIsOnVideoDetailPage,
 } from '~/helpers/matching'
 import { computeOverlayButtonStyle } from '~/helpers/overlay'
-import { getSettings } from '~/helpers/system'
+import { getButtonLabels, getSettings } from '~/helpers/system'
 import useOverlayAlignmentGuard from '~/hooks/useOverlayAlignmentGuard'
-import type { ButtonAnchor, ButtonConfig, Settings, YTData } from '~/interfaces'
+import type {
+  ButtonAnchor,
+  ButtonConfig,
+  ButtonLabels,
+  Settings,
+  YTData,
+} from '~/interfaces'
 import { useWatchLaterStore } from '~/store'
 import {
   ButtonOpacity,
@@ -235,6 +241,21 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
 
   useOverlayAlignmentGuard(isOverlay, element, buttonRef)
 
+  const [labels, setLabels] = useState<ButtonLabels | null>(null)
+  useEffect(() => {
+    getButtonLabels()
+      .then(setLabels)
+      .catch(() => {})
+  }, [])
+
+  const label = labels
+    ? {
+        [ButtonStatus.Loading]: labels.adding,
+        [ButtonStatus.Success]: labels.added,
+        [ButtonStatus.Error]: labels.error,
+      }[status] || labels.add
+    : undefined
+
   const fetchButtonConfig = async () => {
     const settings = await getSettings()
     setButtonConfig((previous) =>
@@ -417,6 +438,8 @@ const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
     <button
       ref={buttonRef}
       className={buttonClasses}
+      aria-label={label}
+      title={label}
       disabled={status !== ButtonStatus.Default}
       onClick={addVideo}
       style={buttonStyle}>
