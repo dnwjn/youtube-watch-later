@@ -42,6 +42,7 @@ The following general settings can be configured:
 |----------------------------|--------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------|--------|
 | Mark notifications as read | Allow notifications to be marked as read when you add those videos to your Watch Later playlist. | disabled | Only affects the button inside the notification drawer. |        |
 | Logging                    | Allow the extension to send logs to your console. Could be useful for debugging purposes.        | disabled |                                                         |        |
+| Language                   | Choose the language of the extension. See [Translations](#translations) for the available languages. | `auto`   | `auto` follows your browser language.                   | v1.0.0 |
 | Open What's New on update  | Automatically open a new tab with the latest changes after an update.                            | enabled  |                                                         | v0.6.1 |
 
 ### Button
@@ -68,6 +69,16 @@ The position of the button can be configured separately for each location it app
 | Notifications             | `top right`, `bottom right`                            | `top right` |
 | Old endscreen suggestions | `top left`, `bottom left`                              | `top left`  |
 
+## Translations
+
+[![Translation status](https://hosted.weblate.org/widget/youtube-watch-later/extension/svg-badge.svg)](https://hosted.weblate.org/engage/youtube-watch-later/)
+
+The extension is available in English, German, Spanish, French, Italian, Dutch, Polish, Portuguese (Brazil), Portuguese (Portugal), Russian, Turkish and Ukrainian. By default it follows your browser language, and you can pick another language in the popup.
+
+Translations are managed on [Weblate][Weblate]. Help improve a translation or add your language there, rather than editing `src/locales/*.yml` directly. `src/locales/en.yml` is the source and is only changed through pull requests.
+
+A new language also needs an entry in `LANGUAGES` in `src/helpers/i18n.ts`, so please open an issue if yours is missing.
+
 ## Changelog
 
 Please see the [changelog] for more information about what has changed recently.
@@ -80,5 +91,6 @@ The scripts and documentation in this project are released under the [GPL-3.0 li
 [Edge]: https://microsoftedge.microsoft.com/addons/detail/youtube-watch-later
 [Firefox]: https://addons.mozilla.org/en-US/firefox/addon/youtube-watch-later
 [GitHub latest]: https://github.com/dnwjn/youtube-watch-later/releases/latest
+[Weblate]: https://hosted.weblate.org/engage/youtube-watch-later/
 [changelog]: CHANGELOG.md
 [license]: LICENSE.md
