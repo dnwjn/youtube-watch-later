@@ -100,6 +100,9 @@ button:
   error: "Konnte nicht zu „Später ansehen“ hinzugefügt werden"
 
 changelog:
+  v1_0_0:
+    new_1: "Unterstützung für 12 Sprachen hinzugefügt. Standardmäßig folgt die Erweiterung der Sprache deines Browsers."
+    new_2: "Eine Spracheinstellung im Popup hinzugefügt, mit der du die Sprache der Erweiterung selbst wählen kannst."
   v0_6_3:
     fixed_1: "Unnötige Neuberechnungen der Schaltfläche reduziert, indem Statusaktualisierungen vermieden werden, die synchron während des Renderns liefen."
   v0_6_2:

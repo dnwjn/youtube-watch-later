@@ -100,6 +100,9 @@ button:
   error: "Não foi possível adicionar a Ver mais tarde"
 
 changelog:
+  v1_0_0:
+    new_1: "Adicionado suporte para 12 idiomas. Por predefinição, a extensão segue o idioma do seu navegador."
+    new_2: "Adicionada a definição de idioma no popup, para escolher o idioma da extensão."
   v0_6_3:
     fixed_1: "Redução das renderizações desnecessárias do botão, evitando atualizações de estado que corriam de forma síncrona durante a renderização."
   v0_6_2:

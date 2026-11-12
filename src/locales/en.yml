@@ -100,6 +100,9 @@ button:
   error: "Could not add to Watch Later"
 
 changelog:
+  v1_0_0:
+    new_1: "Added support for 12 languages. By default, the extension follows your browser language."
+    new_2: "Added a Language setting to the popup, so you can choose the extension's language yourself."
   v0_6_3:
     fixed_1: "Reduced unnecessary re-renders of the button by avoiding state updates that ran synchronously during render."
   v0_6_2:

@@ -100,6 +100,9 @@ button:
   error: "Nie udało się dodać do Do obejrzenia"
 
 changelog:
+  v1_0_0:
+    new_1: "Dodano obsługę 12 języków. Domyślnie rozszerzenie używa języka przeglądarki."
+    new_2: "Dodano ustawienie języka w oknie popup, aby można było samodzielnie wybrać język rozszerzenia."
   v0_6_3:
     fixed_1: "Ograniczono zbędne ponowne renderowanie przycisku, unikając aktualizacji stanu wykonywanych synchronicznie podczas renderowania."
   v0_6_2:

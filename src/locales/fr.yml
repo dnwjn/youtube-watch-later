@@ -100,6 +100,9 @@ button:
   error: "Impossible d'ajouter à À regarder plus tard"
 
 changelog:
+  v1_0_0:
+    new_1: "Ajout de la prise en charge de 12 langues. Par défaut, l'extension suit la langue de votre navigateur."
+    new_2: "Ajout d'un paramètre de langue dans la popup pour choisir vous-même la langue de l'extension."
   v0_6_3:
     fixed_1: "Réduction des rendus inutiles du bouton en évitant les mises à jour d'état exécutées de façon synchrone pendant le rendu."
   v0_6_2:

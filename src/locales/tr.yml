@@ -100,6 +100,9 @@ button:
   error: "Daha Sonra İzle'ye eklenemedi"
 
 changelog:
+  v1_0_0:
+    new_1: "12 dil desteği eklendi. Varsayılan olarak uzantı tarayıcınızın dilini kullanır."
+    new_2: "Uzantının dilini kendiniz seçebilmeniz için açılır pencereye bir dil ayarı eklendi."
   v0_6_3:
     fixed_1: "Oluşturma sırasında eşzamanlı çalışan durum güncellemeleri önlenerek düğmenin gereksiz yeniden oluşturulmaları azaltıldı."
   v0_6_2:

@@ -100,6 +100,9 @@ button:
   error: "Kan niet toevoegen aan Later kijken"
 
 changelog:
+  v1_0_0:
+    new_1: "Ondersteuning voor 12 talen toegevoegd. Standaard volgt de extensie de taal van je browser."
+    new_2: "Een taalinstelling toegevoegd aan de popup, zodat je zelf de taal van de extensie kunt kiezen."
   v0_6_3:
     fixed_1: "Onnodige herrenders van de knop verminderd door statusupdates te vermijden die synchroon tijdens het renderen liepen."
   v0_6_2:

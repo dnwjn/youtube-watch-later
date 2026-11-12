@@ -100,6 +100,9 @@ button:
   error: "Impossibile aggiungere a Guarda più tardi"
 
 changelog:
+  v1_0_0:
+    new_1: "Aggiunto il supporto per 12 lingue. Per impostazione predefinita, l'estensione segue la lingua del browser."
+    new_2: "Aggiunta un'impostazione della lingua nel popup, per scegliere tu stesso la lingua dell'estensione."
   v0_6_3:
     fixed_1: "Ridotti i rendering inutili del pulsante evitando aggiornamenti di stato eseguiti in modo sincrono durante il rendering."
   v0_6_2:

@@ -19,6 +19,11 @@ export interface ChangelogVersion {
 // 3. Make sure the version string matches package.json
 export const changelog: ChangelogVersion[] = [
   {
+    version: '1.0.0',
+    date: '2026-11-12',
+    entries: { new: 2 },
+  },
+  {
     version: '0.6.3',
     date: '2026-08-31',
     entries: { fixed: 1 },
