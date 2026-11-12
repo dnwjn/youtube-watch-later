@@ -19,6 +19,7 @@ The following general settings can be configured:
 - 'Mark notifications as read' allows for notifications to be marked as read when you add those videos to your Watch Later playlist.
 - 'Logging' allows the plugin to send logs to your console. Could be useful for debugging purposes.
 - (v0.6.1+) 'Open What's New on update' automatically opens a new tab with the latest changes after an update.
+- (v1.0.0+) 'Language' allows you to choose the language of the extension. By default it follows your browser language.
 
 The following button settings can be configured:
 
@@ -30,6 +31,8 @@ The following button settings can be configured:
 - Grid videos, playlist videos, and endscreen suggestions can be set to 'top left', 'top right', 'bottom left', or 'bottom right'.
 - The player sidebar and old endscreen suggestions can be set to 'top left' or 'bottom left'.
 - Notifications can be set to 'top right' or 'bottom right'.
+
+(v1.0.0+) The extension is available in English, German, Spanish, French, Italian, Dutch, Polish, Portuguese (Brazil), Portuguese (Portugal), Russian, Turkish and Ukrainian. Help improve a translation or add your language on Weblate: https://hosted.weblate.org/engage/youtube-watch-later/
 
 ---
 
