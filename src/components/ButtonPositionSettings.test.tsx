@@ -2,13 +2,12 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-import { useStorage } from '@plasmohq/storage/hook'
+import ButtonPositionSettings from '~/components/ButtonPositionSettings'
+import useStorage from '~/hooks/useStorage'
+import { ButtonPosition } from '~/types'
 
-import ButtonPositionSettings from '~components/ButtonPositionSettings'
-import { ButtonPosition } from '~types'
-
-vi.mock('@plasmohq/storage/hook', () => ({
-  useStorage: vi.fn(),
+vi.mock('~/hooks/useStorage', () => ({
+  default: vi.fn(),
 }))
 
 const mockedUseStorage = vi.mocked(useStorage)
@@ -18,12 +17,7 @@ describe('ButtonPositionSettings', () => {
     mockedUseStorage.mockReturnValue([
       ButtonPosition.TopLeft,
       vi.fn(),
-      {
-        isLoading: true,
-        setRenderValue: vi.fn(),
-        setStoreValue: vi.fn(),
-        remove: vi.fn(),
-      },
+      { isLoading: true },
     ])
 
     render(<ButtonPositionSettings />)
@@ -36,12 +30,7 @@ describe('ButtonPositionSettings', () => {
     mockedUseStorage.mockReturnValue([
       ButtonPosition.TopLeft,
       vi.fn(),
-      {
-        isLoading: false,
-        setRenderValue: vi.fn(),
-        setStoreValue: vi.fn(),
-        remove: vi.fn(),
-      },
+      { isLoading: false },
     ])
 
     render(<ButtonPositionSettings />)

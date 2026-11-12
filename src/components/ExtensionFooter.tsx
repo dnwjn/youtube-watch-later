@@ -1,15 +1,17 @@
 import packageJson from '@root/package.json'
 import React, { useMemo } from 'react'
 
-import { openTab } from '~helpers/browser'
+import { openTab } from '~/helpers/browser'
+import useI18n from '~/hooks/useI18n'
 
-import '~css/shared.css'
+import '~/css/shared.css'
 
 interface ExtensionFooterProps {
   showWhatsNew?: boolean
 }
 
 const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
+  const { t } = useI18n()
   const version = useMemo(() => {
     if (process.env.NODE_ENV === 'production') {
       return `v${packageJson.version}`
@@ -23,13 +25,13 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
       <button
         className="button bold small"
         onClick={() => openTab('https://dnwjn.dev')}>
-        Crafted with ❤️ + 💻 + 🧠 by <span className="name">dnwjn</span>
+        {t('footer.craftedBy')} <span className="name">dnwjn</span>
       </button>
 
       <div className="bmac">
-        <div>Enjoying this little creation?</div>
-        <div className="bold">It's free&mdash;always will be.</div>
-        <div>But if you'd like to say thanks...</div>
+        <div>{t('footer.enjoying')}</div>
+        <div className="bold">{t('footer.free')}</div>
+        <div>{t('footer.thanks')}</div>
         <a
           className="bmac-link"
           href="https://coff.ee/dnwjn"
@@ -37,23 +39,21 @@ const ExtensionFooter = ({ showWhatsNew = false }: ExtensionFooterProps) => {
           target="_blank">
           <img
             src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-            alt="Buy Me a Coffee"
+            alt={t('footer.bmacAlt')}
             style={{ height: 30 }}
           />
         </a>
       </div>
 
       <div className="credits small">
-        Version: <span className="name">{version}</span>
+        {t('footer.version')} <span className="name">{version}</span>
         {showWhatsNew && (
           <>
             {' | '}
             <button
               className="whats-new-link"
-              onClick={() =>
-                openTab(chrome.runtime.getURL('tabs/whats-new.html'))
-              }>
-              What's new
+              onClick={() => openTab(chrome.runtime.getURL('whats-new.html'))}>
+              {t('footer.whatsNew')}
             </button>
           </>
         )}

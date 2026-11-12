@@ -1,47 +1,22 @@
 import React from 'react'
 
-import { useStorage } from '@plasmohq/storage/hook'
-
-import PositionPicker from '~components/PositionPicker'
+import PositionPicker from '~/components/PositionPicker'
+import useI18n from '~/hooks/useI18n'
+import useStorage from '~/hooks/useStorage'
 import {
   buttonPositionAllowed,
   ButtonPositionContext,
   buttonPositionDefault,
-} from '~types'
+} from '~/types'
 
 const locations = [
-  {
-    context: ButtonPositionContext.Thumbnail,
-    label: 'Grid videos',
-    description:
-      'Videos shown on the home page, channel pages, and search results.',
-  },
-  {
-    context: ButtonPositionContext.Playlist,
-    label: 'Playlist videos',
-    description: 'Videos shown on a playlist page.',
-  },
-  {
-    context: ButtonPositionContext.EndscreenModern,
-    label: 'Endscreen suggestions',
-    description: 'Suggested videos shown in the grid when a video ends.',
-  },
-  {
-    context: ButtonPositionContext.Sidebar,
-    label: 'Player sidebar',
-    description: 'Suggested videos shown next to the video player.',
-  },
-  {
-    context: ButtonPositionContext.Notification,
-    label: 'Notifications',
-    description: 'Videos shown in the notification drawer.',
-  },
-  {
-    context: ButtonPositionContext.Endscreen,
-    label: 'Old endscreen suggestions',
-    description: 'Suggested videos shown in the older endscreen layout.',
-  },
-]
+  { context: ButtonPositionContext.Thumbnail, key: 'thumbnail' },
+  { context: ButtonPositionContext.Playlist, key: 'playlist' },
+  { context: ButtonPositionContext.EndscreenModern, key: 'endscreenModern' },
+  { context: ButtonPositionContext.Sidebar, key: 'sidebar' },
+  { context: ButtonPositionContext.Notification, key: 'notification' },
+  { context: ButtonPositionContext.Endscreen, key: 'endscreen' },
+] as const
 
 interface LocationSettingProps {
   context: string
@@ -79,16 +54,18 @@ const LocationSetting = ({
 }
 
 const ButtonPositionSettings = () => {
+  const { t } = useI18n()
+
   return (
     <div className="content">
-      <h2 className="title">Button position</h2>
+      <h2 className="title">{t('buttonPosition.title')}</h2>
 
-      {locations.map(({ context, label, description }) => (
+      {locations.map(({ context, key }) => (
         <LocationSetting
           key={context}
           context={context}
-          label={label}
-          description={description}
+          label={t(`buttonPosition.${key}.label`)}
+          description={t(`buttonPosition.${key}.description`)}
         />
       ))}
     </div>

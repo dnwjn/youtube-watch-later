@@ -11,6 +11,10 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: '#i18n',
+        replacement: path.resolve(__dirname, './src/test/i18n.ts'),
+      },
+      {
         find: /^~(.*)$/,
         replacement: path.resolve(__dirname, './src') + '/$1',
       },

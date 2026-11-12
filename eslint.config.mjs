@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   {
-    ignores: ['build/**', '.plasmo/**', 'node_modules/**'],
+    ignores: ['build/**', '.output/**', '.wxt/**', 'node_modules/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

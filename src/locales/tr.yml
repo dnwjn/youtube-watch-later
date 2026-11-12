@@ -1,0 +1,135 @@
+extName: "YouTube Watch Later"
+extDescription: "YouTube videolarını tek tıkla Daha Sonra İzle oynatma listenize ekleyin."
+
+common:
+  enabled: "Açık"
+  disabled: "Kapalı"
+  enable: "Aç"
+  disable: "Kapat"
+  back: "Geri"
+  logoAlt: "logo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "Genel ayarlar"
+    markRead:
+      title: "Bildirimleri okundu olarak işaretle"
+      description: "Açıkken, bildirimleri Daha Sonra İzle'ye eklediğinizde okundu olarak işaretlenir."
+      scope: "Bu ayar yalnızca bildirim panelindeki düğmeyi etkiler."
+    logging:
+      title: "Günlük kaydı"
+      description: "Açıkken, günlükler konsolda gösterilir."
+    whatsNew:
+      title: "Güncellemede Yenilikler'i aç"
+      description: "Açıkken, güncellemeden sonra en son değişiklikleri içeren yeni bir sekme otomatik olarak açılır."
+    language:
+      title: "Dil"
+      auto: "Tarayıcı varsayılanı"
+      description: "Uzantının dilini seçin. Varsayılan olarak tarayıcınızı takip eder."
+  button:
+    title: "Düğme ayarları"
+    scope: "Bu ayarlar, video oynatıcı denetimlerindeki düğmeyi veya mobildeki önerilen videoları etkilemez."
+    visibility:
+      title: "Düğme görünürlüğü"
+      always: "Her zaman"
+      alwaysChange: "Her zaman olarak değiştir"
+      hover: "Üzerine gelince"
+      hoverChange: "Üzerine gelince olarak değiştir"
+    opacity:
+      title: "Düğme opaklığı"
+      full: "Tam"
+      fullChange: "Tam olarak değiştir"
+      half: "Yarım"
+      halfChange: "Yarım olarak değiştir"
+    position:
+      title: "Düğme konumu"
+      link: "Düğme konumu ayarları →"
+  contact:
+    title: "İletişim"
+    description: "Bir öneriniz, bir sorununuz mu var ya da sadece teşekkür etmek mi istiyorsunuz?"
+    website: "Web sitesini ziyaret et"
+
+buttonPosition:
+  title: "Düğme konumu"
+  corner:
+    topLeft: "Sol üst"
+    topRight: "Sağ üst"
+    bottomLeft: "Sol alt"
+    bottomRight: "Sağ alt"
+  thumbnail:
+    label: "Izgaradaki videolar"
+    description: "Ana sayfada, kanal sayfalarında ve arama sonuçlarında gösterilen videolar."
+  playlist:
+    label: "Oynatma listesi videoları"
+    description: "Bir oynatma listesi sayfasında gösterilen videolar."
+  endscreenModern:
+    label: "Bitiş ekranı önerileri"
+    description: "Bir video bittiğinde ızgarada gösterilen önerilen videolar."
+  sidebar:
+    label: "Oynatıcı kenar çubuğu"
+    description: "Video oynatıcının yanında gösterilen önerilen videolar."
+  notification:
+    label: "Bildirimler"
+    description: "Bildirim panelinde gösterilen videolar."
+  endscreen:
+    label: "Eski bitiş ekranı önerileri"
+    description: "Eski bitiş ekranı düzeninde gösterilen önerilen videolar."
+
+footer:
+  craftedBy: "❤️ + 💻 + 🧠 ile geliştiren:"
+  enjoying: "Bu küçük eseri beğendiniz mi?"
+  free: "Ücretsiz ve her zaman öyle kalacak."
+  thanks: "Ama teşekkür etmek isterseniz..."
+  bmacAlt: "Bana bir kahve ısmarla"
+  version: "Sürüm:"
+  whatsNew: "Yenilikler"
+
+whatsNew:
+  title: "YouTube Watch Later'daki yenilikler"
+  subtitle: "Önemli değişiklikler aşağıda listelenmiştir."
+  type:
+    new: "Yeni"
+    improved: "İyileştirildi"
+    fixed: "Düzeltildi"
+
+button:
+  add: "Daha Sonra İzle'ye ekle"
+  adding: "Daha Sonra İzle'ye ekleniyor…"
+  added: "Daha Sonra İzle'ye eklendi"
+  error: "Daha Sonra İzle'ye eklenemedi"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Oluşturma sırasında eşzamanlı çalışan durum güncellemeleri önlenerek düğmenin gereksiz yeniden oluşturulmaları azaltıldı."
+  v0_6_2:
+    fixed_1: "Düğme için gereksiz bir yenileme döngüsü kaldırılarak, uzantının gezindikçe sayfayı yavaşlatabilmesi sorunu düzeltildi."
+  v0_6_1:
+    new_1: "Güncellemeden sonra bu sekmenin otomatik açılıp açılmayacağını kontrol edebilmeniz için “Güncellemede Yenilikler'i aç” ayarı eklendi."
+  v0_6_0:
+    new_1: "Düğme için sol alt ve sağ alt dahil daha fazla konum seçeneği eklendi."
+    new_2: "Açılır pencerenin altbilgisine bu Yenilikler sekmesine bir bağlantı eklendi; böylece son değişiklikleri yalnızca güncelleme başına bir kez değil, her zaman görebilirsiniz."
+    improved_1: "Düğme artık yalnızca ayarlarınız yüklendikten sonra gösteriliyor; yanlış konumda yanıp sönmesi önlendi."
+    improved_2: "Konum ayarları kendi alt sayfasına taşındı ve artık sayfayı yeniden yüklemeye gerek kalmadan hemen uygulanıyor."
+    improved_3: "Daha derli toplu bir görünüm için yazı tipi boyutları küçültüldü ve açılır pencerenin yüksekliği sınırlandırıldı."
+    fixed_1: "Birincil çerez eksik olduğunda düğmenin çalışmayı durdurabilmesi sorunu, birinci taraf ve üçüncü taraf varyantlarına geri dönülerek düzeltildi."
+    fixed_2: "Küçük resim önizlemelerinin üzerine gelindiğinde düğmenin kaybolması veya yanıp sönmesi düzeltildi."
+  v0_5_3:
+    fixed_1: "Düğmenin video oynatıcının sağındaki önerilen videolarda görünmemesi sorunu düzeltildi."
+  v0_5_2:
+    fixed_1: "Firefox'ta düğmenin Multi-Account Containers uzantısıyla birlikte çalışmaması sorunu düzeltildi."
+  v0_5_1:
+    new_1: "Önemli son değişikliklerden haberdar olabilmeniz için bu Yenilikler sekmesi eklendi (merhaba!)."
+  v0_5_0:
+    new_1: "Düğme, oynatıcı sayfasındaki önerilen videolara eklendi: oynatıcının yanında (masaüstü) ve altında (mobil)."
+    improved_1: "Düğme artık YouTube'un tasarımına daha iyi uyması için yuvarlak."
+  v0_4_2:
+    fixed_1: "Düğmenin her zaman görünür olmaması sorunu düzeltildi."
+    fixed_2: "Renklerin özel temalarla uyuşmaması sorunu düzeltildi."
+  v0_4_0:
+    new_1: "Düğme, modern bitiş ekranındaki önerilen videolara eklendi."
+    new_2: "Düğme Shorts'a eklendi."
+  v0_3_0:
+    new_1: "Düğme, video oynatıcı denetimlerine, beğen ve beğenme düğmelerinin yanına eklendi."
+  v0_2_0:
+    new_1: "Düğme, klasik bitiş ekranındaki önerilen videolara eklendi."

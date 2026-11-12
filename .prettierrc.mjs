@@ -15,12 +15,13 @@ export default {
     '<BUILTIN_MODULES>', // Node.js built-in modules
     '<THIRD_PARTY_MODULES>', // Imports not matched by other special words or groups.
     '', // Empty line
-    '^@plasmo/(.*)$',
-    '',
-    '^@plasmohq/(.*)$',
-    '',
     '^~(.*)$',
     '',
     '^[./]',
+  ],
+  overrides: [
+    // Locale values are always double-quoted so strings with apostrophes,
+    // colons or typographic quotes never need a per-line quoting decision.
+    { files: '*.yml', options: { singleQuote: false } },
   ],
 }

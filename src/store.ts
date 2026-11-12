@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import type { YTData } from '~interfaces'
+import type { YTData } from '~/interfaces'
 
 interface WatchLaterState {
   ytData: YTData | null

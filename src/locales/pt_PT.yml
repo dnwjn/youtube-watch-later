@@ -1,0 +1,135 @@
+extName: "YouTube Watch Later"
+extDescription: "Adicione vídeos do YouTube à sua playlist Ver mais tarde com um único clique."
+
+common:
+  enabled: "Ativado"
+  disabled: "Desativado"
+  enable: "Ativar"
+  disable: "Desativar"
+  back: "Voltar"
+  logoAlt: "logótipo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "Definições gerais"
+    markRead:
+      title: "Marcar notificações como lidas"
+      description: "Quando ativado, as notificações são marcadas como lidas ao adicioná-las a Ver mais tarde."
+      scope: "Esta definição afeta apenas o botão dentro do painel de notificações."
+    logging:
+      title: "Registo"
+      description: "Quando ativado, os registos são apresentados na consola."
+    whatsNew:
+      title: "Abrir Novidades ao atualizar"
+      description: "Quando ativado, é aberto automaticamente um novo separador com as últimas alterações após uma atualização."
+    language:
+      title: "Idioma"
+      auto: "Predefinição do navegador"
+      description: "Escolha o idioma da extensão. Por predefinição, segue o do seu navegador."
+  button:
+    title: "Definições do botão"
+    scope: "Estas definições não afetam o botão dentro dos controlos do leitor de vídeo nem nos vídeos sugeridos no telemóvel."
+    visibility:
+      title: "Visibilidade do botão"
+      always: "Sempre"
+      alwaysChange: "Mudar para sempre"
+      hover: "Ao passar o rato"
+      hoverChange: "Mudar para ao passar o rato"
+    opacity:
+      title: "Opacidade do botão"
+      full: "Total"
+      fullChange: "Mudar para total"
+      half: "Metade"
+      halfChange: "Mudar para metade"
+    position:
+      title: "Posição do botão"
+      link: "Definições da posição do botão →"
+  contact:
+    title: "Contacto"
+    description: "Tem uma sugestão, um problema ou quer simplesmente agradecer?"
+    website: "Visitar o site"
+
+buttonPosition:
+  title: "Posição do botão"
+  corner:
+    topLeft: "Canto superior esquerdo"
+    topRight: "Canto superior direito"
+    bottomLeft: "Canto inferior esquerdo"
+    bottomRight: "Canto inferior direito"
+  thumbnail:
+    label: "Vídeos em grelha"
+    description: "Vídeos apresentados na página inicial, nas páginas de canais e nos resultados de pesquisa."
+  playlist:
+    label: "Vídeos de playlists"
+    description: "Vídeos apresentados na página de uma playlist."
+  endscreenModern:
+    label: "Sugestões do ecrã final"
+    description: "Vídeos sugeridos apresentados em grelha quando um vídeo termina."
+  sidebar:
+    label: "Barra lateral do leitor"
+    description: "Vídeos sugeridos apresentados junto ao leitor de vídeo."
+  notification:
+    label: "Notificações"
+    description: "Vídeos apresentados no painel de notificações."
+  endscreen:
+    label: "Sugestões do ecrã final antigo"
+    description: "Vídeos sugeridos apresentados na disposição mais antiga do ecrã final."
+
+footer:
+  craftedBy: "Criado com ❤️ + 💻 + 🧠 por"
+  enjoying: "Está a gostar desta pequena criação?"
+  free: "É grátis, e será sempre."
+  thanks: "Mas se quiser agradecer..."
+  bmacAlt: "Pague-me um café"
+  version: "Versão:"
+  whatsNew: "Novidades"
+
+whatsNew:
+  title: "Novidades do YouTube Watch Later"
+  subtitle: "As alterações mais relevantes estão listadas abaixo."
+  type:
+    new: "Novo"
+    improved: "Melhorado"
+    fixed: "Corrigido"
+
+button:
+  add: "Adicionar a Ver mais tarde"
+  adding: "A adicionar a Ver mais tarde…"
+  added: "Adicionado a Ver mais tarde"
+  error: "Não foi possível adicionar a Ver mais tarde"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Redução das renderizações desnecessárias do botão, evitando atualizações de estado que corriam de forma síncrona durante a renderização."
+  v0_6_2:
+    fixed_1: "Corrigido um problema em que a extensão podia tornar a página mais lenta quanto mais tempo navegava, removendo um ciclo de atualização redundante do botão."
+  v0_6_1:
+    new_1: "Adicionada a definição “Abrir Novidades ao atualizar”, para controlar se este separador abre automaticamente após uma atualização."
+  v0_6_0:
+    new_1: "Adicionadas mais opções de posição para o botão, incluindo inferior esquerdo e inferior direito."
+    new_2: "Adicionada uma ligação para este separador Novidades no rodapé do popup, para que possa ver sempre as últimas alterações, e não apenas uma vez por atualização."
+    improved_1: "O botão agora só aparece depois de as definições terminarem de carregar, evitando que pisque na posição errada."
+    improved_2: "As definições de posição foram movidas para uma subpágina própria e agora são aplicadas imediatamente, sem ser preciso recarregar a página."
+    improved_3: "Tamanhos de letra reduzidos e altura do popup limitada para um aspeto mais compacto."
+    fixed_1: "Corrigido um problema em que o botão podia deixar de funcionar se o cookie principal estivesse em falta, recorrendo às variantes first-party e third-party."
+    fixed_2: "Corrigido o botão que desaparecia ou piscava ao passar o rato sobre as pré-visualizações das miniaturas."
+  v0_5_3:
+    fixed_1: "Corrigido um problema em que o botão não aparecia nos vídeos sugeridos à direita do leitor de vídeo."
+  v0_5_2:
+    fixed_1: "Corrigido um problema no Firefox em que o botão não funcionava em conjunto com a extensão Multi-Account Containers."
+  v0_5_1:
+    new_1: "Adicionado este separador Novidades (olá!), para se manter informado sobre as alterações recentes mais relevantes."
+  v0_5_0:
+    new_1: "Adicionado o botão aos vídeos sugeridos na página do leitor, ao lado (computador) e abaixo (telemóvel) do leitor."
+    improved_1: "O botão é agora redondo, para combinar melhor com o design do YouTube."
+  v0_4_2:
+    fixed_1: "Corrigido um problema em que o botão nem sempre estava visível."
+    fixed_2: "Corrigido um problema em que as cores não correspondiam a temas personalizados."
+  v0_4_0:
+    new_1: "Adicionado o botão aos vídeos sugeridos no ecrã final moderno."
+    new_2: "Adicionado o botão aos Shorts."
+  v0_3_0:
+    new_1: "Adicionado o botão aos controlos do leitor de vídeo, ao lado dos botões de gosto e não gosto."
+  v0_2_0:
+    new_1: "Adicionado o botão aos vídeos sugeridos no ecrã final clássico."

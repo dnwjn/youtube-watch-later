@@ -1,0 +1,135 @@
+extName: "YouTube Watch Later"
+extDescription: "Aggiungi video di YouTube alla tua playlist Guarda più tardi con un solo clic."
+
+common:
+  enabled: "Attivato"
+  disabled: "Disattivato"
+  enable: "Attiva"
+  disable: "Disattiva"
+  back: "Indietro"
+  logoAlt: "logo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "Impostazioni generali"
+    markRead:
+      title: "Segna le notifiche come lette"
+      description: "Se attivata, le notifiche vengono segnate come lette quando le aggiungi a Guarda più tardi."
+      scope: "Questa impostazione riguarda solo il pulsante nel pannello delle notifiche."
+    logging:
+      title: "Registro"
+      description: "Se attivata, i log vengono mostrati nella console."
+    whatsNew:
+      title: "Apri Novità dopo l'aggiornamento"
+      description: "Se attivata, dopo un aggiornamento si apre automaticamente una nuova scheda con le ultime modifiche."
+    language:
+      title: "Lingua"
+      auto: "Predefinita del browser"
+      description: "Scegli la lingua dell'estensione. Per impostazione predefinita segue quella del browser."
+  button:
+    title: "Impostazioni del pulsante"
+    scope: "Queste impostazioni non riguardano il pulsante nei controlli del lettore video né nei video suggeriti su dispositivi mobili."
+    visibility:
+      title: "Visibilità del pulsante"
+      always: "Sempre"
+      alwaysChange: "Cambia in sempre"
+      hover: "Al passaggio del mouse"
+      hoverChange: "Cambia in al passaggio del mouse"
+    opacity:
+      title: "Opacità del pulsante"
+      full: "Piena"
+      fullChange: "Cambia in piena"
+      half: "Metà"
+      halfChange: "Cambia in metà"
+    position:
+      title: "Posizione del pulsante"
+      link: "Impostazioni di posizione del pulsante →"
+  contact:
+    title: "Contatti"
+    description: "Hai un suggerimento, un problema o vuoi semplicemente dire grazie?"
+    website: "Visita il sito web"
+
+buttonPosition:
+  title: "Posizione del pulsante"
+  corner:
+    topLeft: "In alto a sinistra"
+    topRight: "In alto a destra"
+    bottomLeft: "In basso a sinistra"
+    bottomRight: "In basso a destra"
+  thumbnail:
+    label: "Video in griglia"
+    description: "Video mostrati nella home page, nelle pagine dei canali e nei risultati di ricerca."
+  playlist:
+    label: "Video delle playlist"
+    description: "Video mostrati nella pagina di una playlist."
+  endscreenModern:
+    label: "Suggerimenti della schermata finale"
+    description: "Video suggeriti mostrati in griglia quando un video termina."
+  sidebar:
+    label: "Barra laterale del lettore"
+    description: "Video suggeriti mostrati accanto al lettore video."
+  notification:
+    label: "Notifiche"
+    description: "Video mostrati nel pannello delle notifiche."
+  endscreen:
+    label: "Suggerimenti della vecchia schermata finale"
+    description: "Video suggeriti mostrati nel layout precedente della schermata finale."
+
+footer:
+  craftedBy: "Creato con ❤️ + 💻 + 🧠 da"
+  enjoying: "Ti piace questa piccola creazione?"
+  free: "È gratis, e lo sarà sempre."
+  thanks: "Ma se vuoi dire grazie..."
+  bmacAlt: "Offrimi un caffè"
+  version: "Versione:"
+  whatsNew: "Novità"
+
+whatsNew:
+  title: "Novità di YouTube Watch Later"
+  subtitle: "Di seguito trovi le modifiche più rilevanti."
+  type:
+    new: "Novità"
+    improved: "Migliorato"
+    fixed: "Corretto"
+
+button:
+  add: "Aggiungi a Guarda più tardi"
+  adding: "Aggiunta a Guarda più tardi…"
+  added: "Aggiunto a Guarda più tardi"
+  error: "Impossibile aggiungere a Guarda più tardi"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Ridotti i rendering inutili del pulsante evitando aggiornamenti di stato eseguiti in modo sincrono durante il rendering."
+  v0_6_2:
+    fixed_1: "Corretto un problema per cui l'estensione poteva rallentare la pagina quanto più a lungo navigavi, rimuovendo un ciclo di aggiornamento ridondante del pulsante."
+  v0_6_1:
+    new_1: "Aggiunta l'impostazione «Apri Novità dopo l'aggiornamento», per decidere se questa scheda si apre automaticamente dopo un aggiornamento."
+  v0_6_0:
+    new_1: "Aggiunte più opzioni di posizione per il pulsante, tra cui in basso a sinistra e in basso a destra."
+    new_2: "Aggiunto un link a questa scheda Novità nel piè di pagina del popup, così puoi vedere sempre le ultime modifiche e non solo una volta per aggiornamento."
+    improved_1: "Il pulsante ora compare solo dopo che le impostazioni sono state caricate, evitando che lampeggi nella posizione sbagliata."
+    improved_2: "Le impostazioni di posizione sono state spostate in una sottopagina dedicata e ora si applicano subito, senza ricaricare la pagina."
+    improved_3: "Ridotte le dimensioni dei caratteri e limitata l'altezza del popup per un aspetto più compatto."
+    fixed_1: "Corretto un problema per cui il pulsante poteva smettere di funzionare se mancava il cookie principale, ripiegando sulle varianti first-party e third-party."
+    fixed_2: "Corretto il pulsante che scompariva o lampeggiava passando il mouse sulle anteprime delle miniature."
+  v0_5_3:
+    fixed_1: "Corretto un problema per cui il pulsante non compariva nei video suggeriti a destra del lettore video."
+  v0_5_2:
+    fixed_1: "Corretto un problema su Firefox per cui il pulsante non funzionava insieme all'estensione Multi-Account Containers."
+  v0_5_1:
+    new_1: "Aggiunta questa scheda Novità (ciao!), per restare informato sulle ultime modifiche rilevanti."
+  v0_5_0:
+    new_1: "Aggiunto il pulsante ai video suggeriti nella pagina del lettore, accanto (desktop) e sotto (mobile) al lettore."
+    improved_1: "Il pulsante ora è rotondo, per adattarsi meglio al design di YouTube."
+  v0_4_2:
+    fixed_1: "Corretto un problema per cui il pulsante non era sempre visibile."
+    fixed_2: "Corretto un problema per cui i colori non corrispondevano ai temi personalizzati."
+  v0_4_0:
+    new_1: "Aggiunto il pulsante ai video suggeriti nella schermata finale moderna."
+    new_2: "Aggiunto il pulsante agli Shorts."
+  v0_3_0:
+    new_1: "Aggiunto il pulsante ai controlli del lettore video, accanto ai pulsanti Mi piace e Non mi piace."
+  v0_2_0:
+    new_1: "Aggiunto il pulsante ai video suggeriti nella schermata finale classica."

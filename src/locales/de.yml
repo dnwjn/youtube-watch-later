@@ -1,0 +1,135 @@
+extName: "YouTube Watch Later"
+extDescription: "Füge YouTube-Videos mit einem einzigen Klick zu deiner Playlist „Später ansehen“ hinzu."
+
+common:
+  enabled: "Aktiviert"
+  disabled: "Deaktiviert"
+  enable: "Aktivieren"
+  disable: "Deaktivieren"
+  back: "Zurück"
+  logoAlt: "Logo"
+
+popup:
+  title: "YouTube Watch Later"
+  general:
+    title: "Allgemeine Einstellungen"
+    markRead:
+      title: "Benachrichtigungen als gelesen markieren"
+      description: "Wenn aktiviert, werden Benachrichtigungen als gelesen markiert, sobald du sie zu „Später ansehen“ hinzufügst."
+      scope: "Diese Einstellung betrifft nur die Schaltfläche im Benachrichtigungsfenster."
+    logging:
+      title: "Protokollierung"
+      description: "Wenn aktiviert, werden Protokolle in der Konsole angezeigt."
+    whatsNew:
+      title: "„Neuigkeiten“ nach Update öffnen"
+      description: "Wenn aktiviert, öffnet sich nach einem Update automatisch ein neuer Tab mit den neuesten Änderungen."
+    language:
+      title: "Sprache"
+      auto: "Browser-Standard"
+      description: "Wähle die Sprache der Erweiterung. Standardmäßig folgt sie deinem Browser."
+  button:
+    title: "Schaltflächeneinstellungen"
+    scope: "Diese Einstellungen gelten nicht für die Schaltfläche in den Steuerelementen des Videoplayers oder in vorgeschlagenen Videos auf Mobilgeräten."
+    visibility:
+      title: "Sichtbarkeit der Schaltfläche"
+      always: "Immer"
+      alwaysChange: "Auf „Immer“ ändern"
+      hover: "Beim Darüberfahren"
+      hoverChange: "Auf „Beim Darüberfahren“ ändern"
+    opacity:
+      title: "Deckkraft der Schaltfläche"
+      full: "Voll"
+      fullChange: "Auf „Voll“ ändern"
+      half: "Halb"
+      halfChange: "Auf „Halb“ ändern"
+    position:
+      title: "Position der Schaltfläche"
+      link: "Einstellungen zur Position →"
+  contact:
+    title: "Kontakt"
+    description: "Hast du einen Vorschlag, ein Problem oder möchtest du einfach Danke sagen?"
+    website: "Website besuchen"
+
+buttonPosition:
+  title: "Position der Schaltfläche"
+  corner:
+    topLeft: "Oben links"
+    topRight: "Oben rechts"
+    bottomLeft: "Unten links"
+    bottomRight: "Unten rechts"
+  thumbnail:
+    label: "Videos im Raster"
+    description: "Videos auf der Startseite, auf Kanalseiten und in den Suchergebnissen."
+  playlist:
+    label: "Videos in Playlists"
+    description: "Videos auf einer Playlist-Seite."
+  endscreenModern:
+    label: "Vorschläge im Endbildschirm"
+    description: "Vorgeschlagene Videos, die am Ende eines Videos im Raster angezeigt werden."
+  sidebar:
+    label: "Seitenleiste des Players"
+    description: "Vorgeschlagene Videos neben dem Videoplayer."
+  notification:
+    label: "Benachrichtigungen"
+    description: "Videos im Benachrichtigungsfenster."
+  endscreen:
+    label: "Vorschläge im alten Endbildschirm"
+    description: "Vorgeschlagene Videos im älteren Layout des Endbildschirms."
+
+footer:
+  craftedBy: "Mit ❤️ + 💻 + 🧠 entwickelt von"
+  enjoying: "Gefällt dir diese kleine Kreation?"
+  free: "Sie ist kostenlos – und bleibt es auch."
+  thanks: "Aber wenn du Danke sagen möchtest..."
+  bmacAlt: "Spendiere mir einen Kaffee"
+  version: "Version:"
+  whatsNew: "Neuigkeiten"
+
+whatsNew:
+  title: "Neuigkeiten bei YouTube Watch Later"
+  subtitle: "Die wichtigsten Änderungen findest du unten."
+  type:
+    new: "Neu"
+    improved: "Verbessert"
+    fixed: "Behoben"
+
+button:
+  add: "Zu „Später ansehen“ hinzufügen"
+  adding: "Wird zu „Später ansehen“ hinzugefügt …"
+  added: "Zu „Später ansehen“ hinzugefügt"
+  error: "Konnte nicht zu „Später ansehen“ hinzugefügt werden"
+
+changelog:
+  v0_6_3:
+    fixed_1: "Unnötige Neuberechnungen der Schaltfläche reduziert, indem Statusaktualisierungen vermieden werden, die synchron während des Renderns liefen."
+  v0_6_2:
+    fixed_1: "Ein Problem behoben, bei dem die Erweiterung die Seite umso langsamer machen konnte, je länger du gesurft hast, indem eine überflüssige Aktualisierungsschleife für die Schaltfläche entfernt wurde."
+  v0_6_1:
+    new_1: "Eine Einstellung „‚Neuigkeiten‘ nach Update öffnen“ hinzugefügt, mit der du steuern kannst, ob dieser Tab nach einem Update automatisch geöffnet wird."
+  v0_6_0:
+    new_1: "Weitere Positionsoptionen für die Schaltfläche hinzugefügt, darunter unten links und unten rechts."
+    new_2: "Einen Link zu diesem Tab „Neuigkeiten“ in der Fußzeile des Popups hinzugefügt, sodass du die neuesten Änderungen jetzt jederzeit sehen kannst und nicht nur einmal pro Update."
+    improved_1: "Die Schaltfläche wird jetzt erst angezeigt, wenn deine Einstellungen geladen sind, sodass sie nicht mehr an der falschen Stelle aufblitzt."
+    improved_2: "Positionseinstellungen auf eine eigene Unterseite verschoben; sie werden jetzt sofort angewendet, ohne die Seite neu laden zu müssen."
+    improved_3: "Schriftgrößen verkleinert und die Höhe des Popups begrenzt für ein kompakteres Aussehen."
+    fixed_1: "Ein Problem behoben, bei dem die Schaltfläche nicht mehr funktionieren konnte, wenn das primäre Cookie fehlte, indem auf die First-Party- und Third-Party-Varianten zurückgegriffen wird."
+    fixed_2: "Behoben, dass die Schaltfläche beim Darüberfahren über Thumbnail-Vorschauen verschwand oder flackerte."
+  v0_5_3:
+    fixed_1: "Ein Problem behoben, bei dem die Schaltfläche in den vorgeschlagenen Videos rechts neben dem Videoplayer nicht angezeigt wurde."
+  v0_5_2:
+    fixed_1: "Ein Problem in Firefox behoben, bei dem die Schaltfläche in Kombination mit der Erweiterung Multi-Account Containers nicht funktionierte."
+  v0_5_1:
+    new_1: "Diesen Tab „Neuigkeiten“ hinzugefügt (hallo!), damit du über die wichtigsten aktuellen Änderungen informiert bleibst."
+  v0_5_0:
+    new_1: "Die Schaltfläche zu den vorgeschlagenen Videos auf der Playerseite hinzugefügt, neben (Desktop) und unter (Mobil) dem Player."
+    improved_1: "Die Schaltfläche ist jetzt rund, um besser zum Design von YouTube zu passen."
+  v0_4_2:
+    fixed_1: "Ein Problem behoben, bei dem die Schaltfläche nicht immer sichtbar war."
+    fixed_2: "Ein Problem behoben, bei dem die Farben nicht zu benutzerdefinierten Designs passten."
+  v0_4_0:
+    new_1: "Die Schaltfläche zu den vorgeschlagenen Videos im modernen Endbildschirm hinzugefügt."
+    new_2: "Die Schaltfläche zu Shorts hinzugefügt."
+  v0_3_0:
+    new_1: "Die Schaltfläche zu den Steuerelementen des Videoplayers hinzugefügt, neben den Gefällt-mir- und Gefällt-mir-nicht-Schaltflächen."
+  v0_2_0:
+    new_1: "Die Schaltfläche zu den vorgeschlagenen Videos im klassischen Endbildschirm hinzugefügt."

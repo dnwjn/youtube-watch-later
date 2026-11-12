@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ButtonStatus } from '~types'
+import { ButtonStatus } from '~/types'
 
 const WatchLaterIcon = ({ status }: { status: number }) => {
   if (status === ButtonStatus.Success) {

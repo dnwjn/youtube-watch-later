@@ -2,8 +2,15 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-import PositionPicker from '~components/PositionPicker'
-import { ButtonPosition } from '~types'
+import PositionPicker from '~/components/PositionPicker'
+import { ButtonPosition } from '~/types'
+
+const labels: Record<string, string> = {
+  [ButtonPosition.TopLeft]: 'Top left',
+  [ButtonPosition.TopRight]: 'Top right',
+  [ButtonPosition.BottomLeft]: 'Bottom left',
+  [ButtonPosition.BottomRight]: 'Bottom right',
+}
 
 const allowed = [
   ButtonPosition.TopLeft,
@@ -34,14 +41,12 @@ describe('PositionPicker', () => {
       />,
     )
 
-    expect(screen.getByLabelText(ButtonPosition.BottomRight)).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
-    expect(screen.getByLabelText(ButtonPosition.TopLeft)).toHaveAttribute(
-      'aria-pressed',
-      'false',
-    )
+    expect(
+      screen.getByLabelText(labels[ButtonPosition.BottomRight]),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(
+      screen.getByLabelText(labels[ButtonPosition.TopLeft]),
+    ).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('calls onChange with the clicked position', () => {
@@ -54,7 +59,7 @@ describe('PositionPicker', () => {
       />,
     )
 
-    fireEvent.click(screen.getByLabelText(ButtonPosition.TopRight))
+    fireEvent.click(screen.getByLabelText(labels[ButtonPosition.TopRight]))
 
     expect(onChange).toHaveBeenCalledWith(ButtonPosition.TopRight)
   })
@@ -70,7 +75,7 @@ describe('PositionPicker', () => {
 
     expect(screen.getAllByRole('button')).toHaveLength(2)
     expect(
-      screen.queryByLabelText(ButtonPosition.TopRight),
+      screen.queryByLabelText(labels[ButtonPosition.TopRight]),
     ).not.toBeInTheDocument()
   })
 })

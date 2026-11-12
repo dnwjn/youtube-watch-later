@@ -1,7 +1,9 @@
-import logo from 'data-base64:@root/assets/icon.png'
+import logo from '@root/assets/icon.png'
 import React from 'react'
 
-import '~css/shared.css'
+import useI18n from '~/hooks/useI18n'
+
+import '~/css/shared.css'
 
 interface Props {
   title: string
@@ -10,19 +12,21 @@ interface Props {
 }
 
 const ExtensionHeader = ({ title, subtitle, onBack }: Props) => {
+  const { t } = useI18n()
+
   return (
     <div className="header">
       {onBack && (
         <button
           type="button"
           className="back-arrow"
-          aria-label="Back"
+          aria-label={t('common.back')}
           onClick={onBack}>
           ←
         </button>
       )}
 
-      <img className="logo" src={logo} alt="logo" />
+      <img className="logo" src={logo} alt={t('common.logoAlt')} />
 
       <h1 className="title">{title}</h1>
 

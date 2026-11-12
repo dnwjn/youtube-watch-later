@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from 'react'
 
-import { useStorage } from '@plasmohq/storage/hook'
+import ButtonPositionSettings from '~/components/ButtonPositionSettings'
+import Dropdown from '~/components/Dropdown'
+import ExtensionFooter from '~/components/ExtensionFooter'
+import ExtensionHeader from '~/components/ExtensionHeader'
+import { openTab } from '~/helpers/browser'
+import {
+  DEFAULT_LANGUAGE,
+  isLanguage,
+  LANGUAGES,
+  type Language,
+} from '~/helpers/i18n'
+import useI18n from '~/hooks/useI18n'
+import useStorage from '~/hooks/useStorage'
+import { ButtonOpacity, ButtonVisibility } from '~/types'
 
-import ButtonPositionSettings from '~components/ButtonPositionSettings'
-import ExtensionFooter from '~components/ExtensionFooter'
-import ExtensionHeader from '~components/ExtensionHeader'
-import { openTab } from '~helpers/browser'
-import { ButtonOpacity, ButtonVisibility } from '~types'
-
-import '~css/popup.css'
+import '~/css/popup.css'
 
 const Popup = () => {
+  const { t, language } = useI18n()
+  const [, setLanguage] = useStorage<Language>('language', DEFAULT_LANGUAGE)
+
+  useEffect(() => {
+    document.title = t('popup.title')
+  }, [t])
   const [view, setView] = useState<'main' | 'positions'>('main')
 
   useEffect(() => {
@@ -38,7 +51,7 @@ const Popup = () => {
     return (
       <div className="popup-root">
         <ExtensionHeader
-          title="Button position"
+          title={t('buttonPosition.title')}
           onBack={() => setView('main')}
         />
 
@@ -51,13 +64,13 @@ const Popup = () => {
 
   return (
     <div className="popup-root">
-      <ExtensionHeader title="YouTube Watch Later" />
+      <ExtensionHeader title={t('popup.title')} />
 
       <div className="content">
-        <h2 className="title">General settings</h2>
+        <h2 className="title">{t('popup.general.title')}</h2>
 
         <div className="setting">
-          <h3 className="title">Mark notifications as read</h3>
+          <h3 className="title">{t('popup.general.markRead.title')}</h3>
 
           <button
             className="button"
@@ -66,90 +79,124 @@ const Popup = () => {
             }>
             <div className="default">
               <span className="status">
-                {markNotificationsAsRead ? 'Enabled' : 'Disabled'}
+                {markNotificationsAsRead
+                  ? t('common.enabled')
+                  : t('common.disabled')}
               </span>
             </div>
             <div className="hover">
               <span className="status">
-                {markNotificationsAsRead ? 'Disable' : 'Enable'}
+                {markNotificationsAsRead
+                  ? t('common.disable')
+                  : t('common.enable')}
               </span>
             </div>
           </button>
 
           <p className="instruction spacing">
-            When enabled, notifications will be marked as read when you add them
-            to Watch Later.
+            {t('popup.general.markRead.description')}
           </p>
 
           <p className="instruction spacing">
-            This setting only affects the button inside the notification drawer.
+            {t('popup.general.markRead.scope')}
           </p>
         </div>
 
         <div className="setting">
-          <h3 className="title">Logging</h3>
+          <h3 className="title">{t('popup.general.logging.title')}</h3>
 
           <button className="button" onClick={() => setIsLogging(!isLogging)}>
             <div className="default">
               <span className="status">
-                {isLogging ? 'Enabled' : 'Disabled'}
+                {isLogging ? t('common.enabled') : t('common.disabled')}
               </span>
             </div>
             <div className="hover">
-              <span className="status">{isLogging ? 'Disable' : 'Enable'}</span>
+              <span className="status">
+                {isLogging ? t('common.disable') : t('common.enable')}
+              </span>
             </div>
           </button>
 
           <p className="instruction spacing">
-            When enabled, logs will be shown in the console.
+            {t('popup.general.logging.description')}
           </p>
         </div>
 
         <div className="setting">
-          <h3 className="title">Open What's New on update</h3>
+          <h3 className="title">{t('popup.general.whatsNew.title')}</h3>
 
           <button
             className="button"
             onClick={() => setOpenWhatsNewOnUpdate(!openWhatsNewOnUpdate)}>
             <div className="default">
               <span className="status">
-                {openWhatsNewOnUpdate ? 'Enabled' : 'Disabled'}
+                {openWhatsNewOnUpdate
+                  ? t('common.enabled')
+                  : t('common.disabled')}
               </span>
             </div>
             <div className="hover">
               <span className="status">
-                {openWhatsNewOnUpdate ? 'Disable' : 'Enable'}
+                {openWhatsNewOnUpdate
+                  ? t('common.disable')
+                  : t('common.enable')}
               </span>
             </div>
           </button>
 
           <p className="instruction spacing">
-            When enabled, a new tab with the latest changes opens automatically
-            after an update.
+            {t('popup.general.whatsNew.description')}
+          </p>
+        </div>
+
+        <div className="setting">
+          <h3 className="title" id="language-title">
+            {t('popup.general.language.title')}
+          </h3>
+
+          <Dropdown
+            value={language}
+            labelledBy="language-title"
+            options={[
+              { value: 'auto', label: t('popup.general.language.auto') },
+              ...Object.entries(LANGUAGES).map(([value, label]) => ({
+                value,
+                label,
+              })),
+            ]}
+            onChange={(value) => {
+              if (isLanguage(value)) setLanguage(value)
+            }}
+          />
+
+          <p className="instruction spacing">
+            {t('popup.general.language.description')}
           </p>
         </div>
       </div>
 
       <div className="content">
-        <h2 className="title">Button settings</h2>
+        <h2 className="title">{t('popup.button.title')}</h2>
 
-        <p className="instruction">
-          These settings do not affect the button inside the video player
-          controls or in suggested videos on mobile.
-        </p>
+        <p className="instruction">{t('popup.button.scope')}</p>
 
         <div className="setting">
-          <h3 className="title">Button visibility</h3>
+          <h3 className="title">{t('popup.button.visibility.title')}</h3>
 
           <button
             className="button w-half"
             disabled={buttonVisibility === ButtonVisibility.Always}
             onClick={() => setButtonVisibility(ButtonVisibility.Always)}>
             <div className="default">
-              <span className="status">Always</span>
+              <span className="status">
+                {t('popup.button.visibility.always')}
+              </span>
             </div>
             <div className="hover">
-              <span className="status">Change to always</span>
+              <span className="status">
+                {t('popup.button.visibility.alwaysChange')}
+              </span>
             </div>
           </button>
 
@@ -158,26 +205,32 @@ const Popup = () => {
             disabled={buttonVisibility === ButtonVisibility.Hover}
             onClick={() => setButtonVisibility(ButtonVisibility.Hover)}>
             <div className="default">
-              <span className="status">Hover</span>
+              <span className="status">
+                {t('popup.button.visibility.hover')}
+              </span>
             </div>
             <div className="hover">
-              <span className="status">Change to hover</span>
+              <span className="status">
+                {t('popup.button.visibility.hoverChange')}
+              </span>
             </div>
           </button>
         </div>
 
         <div className="setting">
-          <h3 className="title">Button opacity</h3>
+          <h3 className="title">{t('popup.button.opacity.title')}</h3>
 
           <button
             className="button w-half"
             disabled={buttonOpacity === ButtonOpacity.Full}
             onClick={() => setButtonOpacity(ButtonOpacity.Full)}>
             <div className="default">
-              <span className="status">Full</span>
+              <span className="status">{t('popup.button.opacity.full')}</span>
             </div>
             <div className="hover">
-              <span className="status">Change to full</span>
+              <span className="status">
+                {t('popup.button.opacity.fullChange')}
+              </span>
             </div>
           </button>
 
@@ -186,35 +239,34 @@ const Popup = () => {
             disabled={buttonOpacity === ButtonOpacity.Half}
             onClick={() => setButtonOpacity(ButtonOpacity.Half)}>
             <div className="default">
-              <span className="status">Half</span>
+              <span className="status">{t('popup.button.opacity.half')}</span>
             </div>
             <div className="hover">
-              <span className="status">Change to half</span>
+              <span className="status">
+                {t('popup.button.opacity.halfChange')}
+              </span>
             </div>
           </button>
         </div>
 
         <div className="setting">
-          <h3 className="title">Button position</h3>
+          <h3 className="title">{t('popup.button.position.title')}</h3>
 
           <button className="button" onClick={() => setView('positions')}>
-            <span className="status">Button position settings →</span>
+            <span className="status">{t('popup.button.position.link')}</span>
           </button>
         </div>
       </div>
 
       <div className="content">
-        <h2 className="title">Contact</h2>
+        <h2 className="title">{t('popup.contact.title')}</h2>
 
-        <p className="instruction">
-          Do you have a suggestion, an issue, or do you just want to say thank
-          you?
-        </p>
+        <p className="instruction">{t('popup.contact.description')}</p>
 
         <button
           className="button bold"
           onClick={() => openTab('https://youtube-watch-later.com')}>
-          Visit website
+          {t('popup.contact.website')}
         </button>
       </div>
 

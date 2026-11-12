@@ -1,3 +1,10 @@
+export interface ButtonLabels {
+  add: string
+  adding: string
+  added: string
+  error: string
+}
+
 export interface YTData {
   authUser: string | null
   clientTheme: string | null
@@ -30,4 +37,9 @@ export interface VisitorCookies {
   sapisid: string | null
   sapisid1p: string | null
   sapisid3p: string | null
+}
+
+export interface ButtonAnchor {
+  element: HTMLElement
+  type: 'inline' | 'overlay'
 }

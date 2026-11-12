@@ -11,7 +11,7 @@ import {
   elementIsInThumbnail,
   elementIsOnVideoDetailPage,
   elementNeedsButton,
-} from '~helpers/matching'
+} from '~/helpers/matching'
 
 afterEach(() => {
   window.history.pushState(null, '', '/')

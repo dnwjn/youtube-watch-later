@@ -1,19 +1,19 @@
 export const buttonStyles = `
-#plasmo-shadow-container {
+#ytwl-shadow-container {
     z-index: 10 !important;
 }
 
-#plasmo-shadow-container,
-#plasmo-shadow-container .plasmo-csui-container {
+#ytwl-shadow-container,
+#ytwl-shadow-container .ytwl-csui-container {
     position: unset !important;
 }
 
-ytd-thumbnail:has(> #plasmo-shadow-container),
-yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
+ytd-thumbnail:has(> #ytwl-shadow-container),
+yt-thumbnail-view-model:has(> #ytwl-shadow-container) {
     position: relative;
 }
 
-#plasmo-shadow-container:has(.watch-later-btn.in-notification.spaced) {
+#ytwl-shadow-container:has(.watch-later-btn.in-notification.spaced) {
     margin-top: 60px;
 }
 
@@ -273,13 +273,13 @@ yt-thumbnail-view-model:has(> #plasmo-shadow-container) {
     pointer-events: none !important;
 }
 
-:host(.ytwl-overlay-root) #plasmo-shadow-container {
+:host(.ytwl-overlay-root) #ytwl-shadow-container {
     position: relative !important;
     z-index: 2000 !important;
     pointer-events: none !important;
 }
 
-:host(.ytwl-overlay-root) #plasmo-shadow-container .plasmo-csui-container {
+:host(.ytwl-overlay-root) #ytwl-shadow-container .ytwl-csui-container {
     position: absolute !important;
     pointer-events: none !important;
 }

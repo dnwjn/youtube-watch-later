@@ -1,8 +1,7 @@
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging'
-
-import { logError, logLine } from '~helpers/logging'
-import { markNotificationsAsRead as shouldMarkNotificationsAsRead } from '~helpers/system'
-import type { VisitorCookies, YTData } from '~interfaces'
+import { logError, logLine } from '~/helpers/logging'
+import { sendToBackgroundViaRelay } from '~/helpers/messaging'
+import { markNotificationsAsRead as shouldMarkNotificationsAsRead } from '~/helpers/system'
+import type { VisitorCookies, YTData } from '~/interfaces'
 
 const sha1 = async (message: string) => {
   const encoder = new TextEncoder()

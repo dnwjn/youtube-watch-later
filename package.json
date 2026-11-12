@@ -6,17 +6,14 @@
   "author": "dnwjn <hello@dnwjn.dev>",
   "license": "GPL-3.0-only",
   "scripts": {
-    "dev": "plasmo dev",
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox --mv2",
+    "postinstall": "wxt prepare",
     "build": "pnpm run build:chrome && pnpm run build:edge && pnpm run build:firefox",
-    "build:brave": "plasmo build --zip --target=brave-mv3",
-    "build:chrome": "plasmo build --zip --target=chrome-mv3",
-    "build:chrome:raw": "plasmo build --target=chrome-mv3",
-    "build:edge": "plasmo build --zip --target=edge-mv3",
-    "build:firefox": "plasmo build --zip --target=firefox-mv2",
-    "build:opera": "plasmo build --zip --target=opera-mv3",
+    "build:chrome": "wxt build -b chrome && wxt zip -b chrome",
+    "build:edge": "wxt build -b edge && wxt zip -b edge",
+    "build:firefox": "wxt build -b firefox --mv2 && wxt zip -b firefox --mv2",
     "build:source": "./bin/build-source.sh",
-    "build:bundle": "plasmo build --source-maps --bundle-buddy",
-    "package": "plasmo package",
     "lint": "eslint .",
     "pretty": "prettier --write src",
     "pretty:check": "prettier --check src",
@@ -30,9 +27,6 @@
     "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
-    "@plasmohq/messaging": "0.7.1",
-    "@plasmohq/storage": "1.15.0",
-    "plasmo": "0.90.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "zustand": "5.0.15"
@@ -47,6 +41,9 @@
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@vitejs/plugin-react": "^6.0.5",
+    "@wxt-dev/auto-icons": "^1.1.2",
+    "@wxt-dev/i18n": "^0.2.8",
+    "@wxt-dev/module-react": "^1.2.2",
     "auto-changelog": "^2.7.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
@@ -55,23 +52,9 @@
     "prettier": "3.9.6",
     "typescript": "6.0.3",
     "typescript-eslint": "^8.71.2",
-    "vitest": "^4.1.11"
-  },
-  "manifest": {
-    "browser_specific_settings": {
-      "gecko": {
-        "id": "{767563c0-f773-41a2-afa9-e36cc0d49c31}"
-      }
-    },
-    "host_permissions": [
-      "https://www.youtube.com/*",
-      "https://m.youtube.com/*",
-      "https://*.youtube.com/*"
-    ],
-    "permissions": [
-      "cookies",
-      "storage"
-    ]
+    "vitest": "^4.1.11",
+    "wxt": "^0.21.5",
+    "yaml": "^2.9.1"
   },
   "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065"
 }

@@ -1,18 +1,9 @@
-import type {
-  PlasmoCSConfig,
-  PlasmoCSUIWatch,
-  PlasmoGetInlineAnchorList,
-  PlasmoGetOverlayAnchorList,
-  PlasmoGetStyle,
-  PlasmoMountShadowHost,
-  PlasmoWatchOverlayAnchor,
-} from 'plasmo'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import WatchLaterIcon from '~components/WatchLaterIcon'
-import { addToWatchLater, markNotificationAsRead } from '~helpers/api'
-import { hasPath, hasSearch } from '~helpers/browser'
-import { getVideoId } from '~helpers/extracting'
+import WatchLaterIcon from '~/components/WatchLaterIcon'
+import { addToWatchLater, markNotificationAsRead } from '~/helpers/api'
+import { hasPath, hasSearch } from '~/helpers/browser'
+import { getVideoId } from '~/helpers/extracting'
 import {
   elementIsInEndscreenSuggested,
   elementIsInMobilePlayerSuggested,
@@ -22,164 +13,25 @@ import {
   elementIsInPlaylist,
   elementIsInThumbnail,
   elementIsOnVideoDetailPage,
-  elementNeedsButton,
-} from '~helpers/matching'
-import {
-  computeOverlayButtonStyle,
-  getOverlayAnchorElements,
-  previewOverlayAnchorSelector,
-  watchOverlayEviction,
-} from '~helpers/overlay'
-import { getSettings } from '~helpers/system'
-import useOverlayAlignmentGuard from '~hooks/useOverlayAlignmentGuard'
-import useVideoPreviewListener from '~hooks/useVideoPreviewListener'
-import type { ButtonConfig, Settings, YTData } from '~interfaces'
-import { useWatchLaterStore } from '~store'
+} from '~/helpers/matching'
+import { computeOverlayButtonStyle } from '~/helpers/overlay'
+import { getButtonLabels, getSettings } from '~/helpers/system'
+import useOverlayAlignmentGuard from '~/hooks/useOverlayAlignmentGuard'
+import type {
+  ButtonAnchor,
+  ButtonConfig,
+  ButtonLabels,
+  Settings,
+  YTData,
+} from '~/interfaces'
+import { useWatchLaterStore } from '~/store'
 import {
   ButtonOpacity,
   ButtonPosition,
   ButtonPositionContext,
   ButtonStatus,
   ButtonVisibility,
-} from '~types'
-
-import { buttonStyles } from './button.styles'
-
-export const config: PlasmoCSConfig = {
-  matches: ['*://*.youtube.com/*'],
-  all_frames: true,
-  world: 'MAIN',
-}
-
-export const getStyle: PlasmoGetStyle = () => {
-  const style = document.createElement('style')
-  style.textContent = buttonStyles
-  return style
-}
-
-const anchorListSelectors = [
-  // General videos
-  'ytd-rich-item-renderer',
-  // Videos on playlist page
-  'ytd-playlist-video-renderer',
-  // Videos in notification drawer
-  'ytd-notification-renderer',
-  // Videos on search page
-  'ytd-search ytd-video-renderer',
-  // Suggested videos in video player when finished
-  '.ytp-endscreen-content .ytp-videowall-still',
-  '.ytp-fullscreen-grid .ytp-modern-videowall-still',
-  // Buttons below video player
-  'ytd-watch-metadata #top-level-buttons-computed',
-  // Suggested videos next to video player
-  'yt-lockup-view-model.ytd-item-section-renderer > .yt-lockup-view-model',
-  // Suggested videos next to video player (new classname since May 2026)
-  'yt-lockup-view-model.ytd-item-section-renderer > .ytLockupViewModelHost',
-  // Suggested videos below video player on mobile
-  'ytm-media-item .media-item-menu',
-]
-
-export const getInlineAnchorList: PlasmoGetInlineAnchorList = async () => {
-  const elements = document.querySelectorAll(anchorListSelectors.join(','))
-
-  return (
-    Array.from(elements)
-      // Filter out elements that already have the button.
-      .filter((element) => !element.querySelector('.watch-later-btn'))
-      // Thumbnail cards are mounted through the overlay API so they can sit
-      // above YouTube's global hover-preview player.
-      .filter(
-        (element) =>
-          !element.matches(previewOverlayAnchorSelector) &&
-          !elementIsInThumbnail(element) &&
-          !elementIsInPlaylist(element),
-      )
-      // Filter out elements that are not a video.
-      .filter((element) => elementNeedsButton(element))
-      .map((element) => ({
-        element,
-        insertPosition: 'beforebegin',
-      }))
-  )
-}
-
-export const getOverlayAnchorList: PlasmoGetOverlayAnchorList = async () => {
-  let elements = getOverlayAnchorElements()
-
-  // YouTube's own hover-preview player briefly detaches/reattaches the feed
-  // during layout, which can make every anchor selector miss for a single
-  // poll tick even though nothing actually changed. Treating that as "no
-  // anchors" tears down and rebuilds every mounted button (visible as
-  // flicker), so re-check after a frame before trusting an empty result.
-  if (elements.length === 0) {
-    await new Promise((resolve) => requestAnimationFrame(resolve))
-    elements = getOverlayAnchorElements()
-  }
-
-  return elements as unknown as NodeList
-}
-
-export const watch: PlasmoCSUIWatch = ({ observer }) =>
-  watchOverlayEviction(observer)
-
-export const watchOverlayAnchor: PlasmoWatchOverlayAnchor = (
-  updatePosition,
-) => {
-  // Right after a (re)mount YouTube may still be laying out the swapped-in
-  // content, so track the anchor at frame rate for a short burst before
-  // dropping to the slow interval - otherwise the container sits at a stale
-  // position for up to 250ms.
-  let burstFramesLeft = 30
-  let rafId = 0
-
-  const burst = () => {
-    updatePosition()
-    burstFramesLeft -= 1
-    if (burstFramesLeft > 0) rafId = requestAnimationFrame(burst)
-  }
-  rafId = requestAnimationFrame(burst)
-
-  const interval = setInterval(updatePosition, 250)
-
-  return () => {
-    cancelAnimationFrame(rafId)
-    clearInterval(interval)
-  }
-}
-
-export const mountShadowHost: PlasmoMountShadowHost = ({
-  shadowHost,
-  anchor,
-  mountState,
-}) => {
-  const element = anchor.element
-
-  if (anchor.type === 'overlay') {
-    shadowHost.classList.add('ytwl-overlay-root')
-    const overlayRoot = document.body || document.documentElement
-    overlayRoot.appendChild(shadowHost)
-  } else if (elementIsInMobilePlayerSuggested(element)) {
-    element.appendChild(shadowHost)
-  } else if (elementIsInThumbnail(element)) {
-    // Mount inside the thumbnail image wrapper (rather than the whole video
-    // card) so absolute positioning is relative to the thumbnail itself, not
-    // the card including the title/channel metadata below it.
-    const thumbnail = element.querySelector(
-      'ytd-thumbnail, yt-thumbnail-view-model',
-    )
-    const mountTarget = thumbnail ?? element
-    mountTarget.insertBefore(shadowHost, mountTarget.firstChild)
-  } else {
-    element.insertBefore(shadowHost, element.firstChild)
-  }
-
-  // Deliberate: this kills Plasmo's own MutationObserver, whose callback
-  // runs a full-page anchor scan on every DOM mutation - a constant cost on
-  // YouTube's ever-churning DOM. Plasmo's 142ms interval keeps running and
-  // is what picks up new anchors and rebuilds the overlay host after our
-  // `watch` evicts it. Don't "fix" this by reconnecting the observer.
-  mountState.observer.disconnect()
-}
+} from '~/types'
 
 const computeButtonConfig = (
   settings: Settings,
@@ -216,35 +68,40 @@ const handleGlobalNavigateFinish = (event: CustomEvent) => {
   if (ytData) setEnabled(ytData.loggedIn === true)
 }
 
-window.addEventListener('ytwl-yt-nav-start', handleGlobalNavigateStart)
-window.addEventListener(
-  'ytwl-yt-nav-finish',
-  handleGlobalNavigateFinish as EventListener,
-)
+export const registerGlobalNavigationHandlers = () => {
+  window.addEventListener('ytwl-yt-nav-start', handleGlobalNavigateStart)
+  window.addEventListener(
+    'ytwl-yt-nav-finish',
+    handleGlobalNavigateFinish as EventListener,
+  )
+}
 
-const WatchLaterButton = ({ anchor }) => {
+const WatchLaterButton = ({ anchor }: { anchor: ButtonAnchor }) => {
   const { element } = anchor
   const isOverlay = anchor.type === 'overlay'
 
-  useVideoPreviewListener()
-
-  const {
-    ytData,
-    url,
-    enabled,
-    latestElementRef,
-    videoPreviewIsHovered,
-    addedVideoIds,
-    pendingVideoIds,
-    erroredVideoIds,
-    setYtData,
-    setEnabled,
-    setLatestElementRef,
-    markVideoAsPending,
-    markVideoAsAdded,
-    markVideoAsErrored,
-    clearVideoError,
-  } = useWatchLaterStore()
+  // Scoped selectors: subscribing to the whole store would re-render every
+  // mounted button on any change (hover, an add anywhere, navigation).
+  const ytData = useWatchLaterStore((state) => state.ytData)
+  const url = useWatchLaterStore((state) => state.url)
+  const enabled = useWatchLaterStore((state) => state.enabled)
+  const setYtData = useWatchLaterStore((state) => state.setYtData)
+  const setEnabled = useWatchLaterStore((state) => state.setEnabled)
+  const setLatestElementRef = useWatchLaterStore(
+    (state) => state.setLatestElementRef,
+  )
+  const markVideoAsPending = useWatchLaterStore(
+    (state) => state.markVideoAsPending,
+  )
+  const markVideoAsAdded = useWatchLaterStore((state) => state.markVideoAsAdded)
+  const markVideoAsErrored = useWatchLaterStore(
+    (state) => state.markVideoAsErrored,
+  )
+  const clearVideoError = useWatchLaterStore((state) => state.clearVideoError)
+  const isPreviewHoveredForElement = useWatchLaterStore(
+    (state) =>
+      state.videoPreviewIsHovered && state.latestElementRef === element,
+  )
 
   const [status, setStatus] = useState<number>(ButtonStatus.Hidden)
   const [hasData, setHasData] = useState<boolean>(false)
@@ -268,6 +125,15 @@ const WatchLaterButton = ({ anchor }) => {
   const isInPlayerSuggestedMobile = elementIsInMobilePlayerSuggested(element)
   const usesThumbnailButtonStyle = isInThumbnail || (isOverlay && !isInPlaylist)
   const videoId = useMemo(() => getVideoId(element), [element])
+  const isAdded = useWatchLaterStore(
+    (state) => !!videoId && state.addedVideoIds.has(videoId),
+  )
+  const isErrored = useWatchLaterStore(
+    (state) => !!videoId && state.erroredVideoIds.has(videoId),
+  )
+  const isPending = useWatchLaterStore(
+    (state) => !!videoId && state.pendingVideoIds.has(videoId),
+  )
 
   let positionContext: string | null = null
   if (isInPlaylist) positionContext = ButtonPositionContext.Playlist
@@ -362,20 +228,39 @@ const WatchLaterButton = ({ anchor }) => {
     if (isOnVideoDetail) return true // Always show on video detail page
     if (buttonConfig.visibility === ButtonVisibility.Always) return true
     if (isHovered) return true
-    if (videoPreviewIsHovered && latestElementRef === element) return true
+    if (isPreviewHoveredForElement) return true
     return false
   }, [
     configLoaded,
     status,
     buttonConfig,
     isHovered,
-    videoPreviewIsHovered,
-    latestElementRef,
+    isPreviewHoveredForElement,
     isOnVideoDetail,
-    element,
   ])
 
   useOverlayAlignmentGuard(isOverlay, element, buttonRef)
+
+  const [labels, setLabels] = useState<ButtonLabels | null>(null)
+  useEffect(() => {
+    const loadLabels = () =>
+      getButtonLabels()
+        .then(setLabels)
+        .catch(() => {})
+
+    loadLabels()
+    window.addEventListener('ytwl-language-changed', loadLabels)
+
+    return () => window.removeEventListener('ytwl-language-changed', loadLabels)
+  }, [])
+
+  const label = labels
+    ? {
+        [ButtonStatus.Loading]: labels.adding,
+        [ButtonStatus.Success]: labels.added,
+        [ButtonStatus.Error]: labels.error,
+      }[status] || labels.add
+    : undefined
 
   const fetchButtonConfig = async () => {
     const settings = await getSettings()
@@ -505,11 +390,11 @@ const WatchLaterButton = ({ anchor }) => {
     // render time; this effect resyncs it with the shared store.
     /* eslint-disable react-hooks/set-state-in-effect */
     if (visible && hasData) {
-      if (videoId && addedVideoIds.has(videoId)) {
+      if (isAdded) {
         setStatus(ButtonStatus.Success)
-      } else if (videoId && erroredVideoIds.has(videoId)) {
+      } else if (isErrored) {
         setStatus(ButtonStatus.Error)
-      } else if (videoId && pendingVideoIds.has(videoId)) {
+      } else if (isPending) {
         setStatus(ButtonStatus.Loading)
       } else {
         setStatus(ButtonStatus.Default)
@@ -518,14 +403,7 @@ const WatchLaterButton = ({ anchor }) => {
       setStatus(ButtonStatus.Hidden)
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [
-    visible,
-    hasData,
-    videoId,
-    addedVideoIds,
-    pendingVideoIds,
-    erroredVideoIds,
-  ])
+  }, [visible, hasData, isAdded, isErrored, isPending])
 
   // init/cleanup close over per-render state (ytData, url, positionContext, ...)
   // but the mount effect below must only run once, so the latest versions are
@@ -566,6 +444,8 @@ const WatchLaterButton = ({ anchor }) => {
     <button
       ref={buttonRef}
       className={buttonClasses}
+      aria-label={label}
+      title={label}
       disabled={status !== ButtonStatus.Default}
       onClick={addVideo}
       style={buttonStyle}>

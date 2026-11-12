@@ -1,6 +1,8 @@
 import React from 'react'
 
-import { ButtonPosition } from '~types'
+import type { MessageKey } from '~/helpers/i18n'
+import useI18n from '~/hooks/useI18n'
+import { ButtonPosition } from '~/types'
 
 interface Props {
   value: string
@@ -15,14 +17,28 @@ const cornerStyle: Record<string, React.CSSProperties> = {
   [ButtonPosition.BottomRight]: { bottom: 4, right: 4 },
 }
 
+const cornerLabel = (position: string, t: (key: MessageKey) => string) => {
+  switch (position) {
+    case ButtonPosition.TopLeft:
+      return t('buttonPosition.corner.topLeft')
+    case ButtonPosition.TopRight:
+      return t('buttonPosition.corner.topRight')
+    case ButtonPosition.BottomLeft:
+      return t('buttonPosition.corner.bottomLeft')
+    default:
+      return t('buttonPosition.corner.bottomRight')
+  }
+}
+
 const PositionPicker = ({ value, allowed, onChange }: Props) => {
+  const { t } = useI18n()
   return (
     <div className="position-picker">
       {allowed.map((position) => (
         <button
           key={position}
           type="button"
-          aria-label={position}
+          aria-label={cornerLabel(position, t)}
           aria-pressed={value === position}
           className={
             value === position

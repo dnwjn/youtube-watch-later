@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { getMobileSuggestedMenuHref, getVideoId } from '~helpers/extracting'
+import { getMobileSuggestedMenuHref, getVideoId } from '~/helpers/extracting'
 
 afterEach(() => {
   window.history.pushState(null, '', '/')

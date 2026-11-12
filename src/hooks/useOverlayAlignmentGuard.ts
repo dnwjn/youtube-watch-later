@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from 'react'
 
-// An overlay button's Plasmo container tracks the anchor through React
+// An overlay button's container tracks the anchor through React
 // state, which starts at (0, 0) and lags behind whenever YouTube swaps
 // content: a freshly mounted button paints before its container is
 // positioned, and an existing button's anchor can collapse to a zero rect
@@ -42,8 +42,8 @@ const useOverlayAlignmentGuard = (
           Math.abs(containerRect.top - anchorRect.top) < 1
       }
 
-      // Safety valve: alignment assumes Plasmo's positioned container is the
-      // button's parent element. If a Plasmo upgrade ever breaks that, the
+      // Safety valve: alignment assumes the positioned container is the
+      // button's parent element. If that ever breaks, the
       // guard would keep every button hidden forever - so after ~1s of a
       // valid anchor that never aligns, show the button anyway. Normal
       // operation aligns within a few frames and never gets near this.
